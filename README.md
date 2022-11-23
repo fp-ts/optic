@@ -5,7 +5,7 @@
 </h3>
 
 <p align="center">
-Functional programming in TypeScript
+Access and transform immutable data
 </p>
 
 <p align="center">
@@ -14,18 +14,43 @@ Functional programming in TypeScript
   </a>
 </p>
 
-# Typed functional programming in TypeScript
+# Optics
 
-This is a fork of [`fp-ts`](https://github.com/gcanti/fp-ts).
+```mermaid
+flowchart TD
+  Optic --> Iso
+  Iso --> Lens
+  Iso --> Prism
+  Lens --> Optional
+  Prism --> Optional
+  Optional --> Traversal
+  Lens --> Getter
+  Getter --> Fold
+  Traversal --> Fold
+  Traversal --> Setter
+```
 
-The goal of this fork is a potential reconciliation with [`effect-ts`](https://github.com/effect-ts/core) in order to unify the ecosystems.
+# Optic Composition Table
+
+Almost all optics compose with the other optics. The composition of one type and itself results in the same type of optic.
+
+|               |   Fold   |   Getter   |   Setter   |   Traversal   |   Optional   |   Prism   |   Lens    |    Iso    |
+| ------------- | :------: | :--------: | :--------: | :-----------: | :----------: | :-------: | :-------: | :-------: |
+| **Fold**      | **Fold** |    Fold    |    Fold    |     Fold      |     Fold     |   Fold    |   Fold    |   Fold    |
+| **Getter**    |   Fold   | **Getter** |     -      |     Fold      |     Fold     |   Fold    |  Getter   |  Getter   |
+| **Setter**    |    -     |     -      | **Setter** |    Setter     |    Setter    |  Setter   |  Setter   |  Setter   |
+| **Traversal** |   Fold   |    Fold    |   Setter   | **Traversal** |  Traversal   | Traversal | Traversal | Traversal |
+| **Optional**  |   Fold   |    Fold    |   Setter   |   Traversal   | **Optional** | Optional  | Optional  | Optional  |
+| **Prism**     |   Fold   |    Fold    |   Setter   |   Traversal   |   Optional   | **Prism** | Optional  |   Prism   |
+| **Lens**      |   Fold   |   Getter   |   Setter   |   Traversal   |   Optional   | Optional  | **Lens**  |   Lens    |
+| **Iso**       |   Fold   |   Getter   |   Setter   |   Traversal   |   Optional   |   Prism   |   Lens    |  **Iso**  |
 
 # Installation
 
 To install the **alpha** version:
 
 ```
-npm install @fp-ts/codec
+npm install @fp-ts/optic
 ```
 
 # Documentation
