@@ -49,27 +49,14 @@ describe("examples", () => {
       }
     }
 
-    const name = Optic.id<Employee>()
-      .compose(Optic.field("company"))
-      .compose(Optic.field("address"))
-      .compose(Optic.field("street"))
-      .compose(Optic.field("name"))
+    const _name = Optic.id<Employee>()
+      .compose(Optic.key("company"))
+      .compose(Optic.key("address"))
+      .compose(Optic.key("street"))
+      .compose(Optic.key("name"))
 
-    const capitalizeName = Optic.modify(name)(capitalize)
+    const capitalizeName = Optic.modify(_name)(capitalize)
 
     expect(capitalizeName(employee)).toEqual(employeeCapitalized)
-
-    const name2 = Optic.id<Employee>().compose(Optic.path("company", "address", "street", "name"))
-
-    const capitalizeName2 = Optic.modify(name2)(capitalize)
-
-    expect(capitalizeName2(employee)).toEqual(employeeCapitalized)
-
-    const name3 = Optic.id<Employee>()
-      .compose(Optic.zoom((_) => _.company.address.street.name))
-
-    const capitalizeName3 = Optic.modify(name3)(capitalize)
-
-    expect(capitalizeName3(employee)).toEqual(employeeCapitalized)
   })
 })

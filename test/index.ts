@@ -48,7 +48,7 @@ describe("Optic", () => {
     }
 
     const f = _.modify(
-      _.id<S>().compose(_.field("b")).compose(_.some()).compose(_.field("d")).compose(_.some())
+      _.id<S>().compose(_.key("b")).compose(_.some()).compose(_.key("d")).compose(_.some())
     )((
       n
     ) => n * 2)
@@ -72,17 +72,27 @@ describe("Optic", () => {
       readonly c: boolean
     }
 
-    it("field", () => {
-      const _a = _.id<S>()
-        .compose(_.field("a"))
+    describe("key", () => {
+      it("objects", () => {
+        const _a = _.id<S>()
+          .compose(_.key("a"))
 
-      expect(pipe({ a: "a", b: 1, c: true }, _.get(_a))).toEqual("a")
-      expect(pipe({ a: "a", b: 1, c: true }, _.set(_a)("a2"))).toEqual({ a: "a2", b: 1, c: true })
+        expect(pipe({ a: "a", b: 1, c: true }, _.get(_a))).toEqual("a")
+        expect(pipe({ a: "a", b: 1, c: true }, _.set(_a)("a2"))).toEqual({ a: "a2", b: 1, c: true })
+      })
+
+      it("tuples", () => {
+        const _0 = _.id<readonly [string, number]>()
+          .compose(_.key("0"))
+
+        expect(pipe(["a", 1], _.get(_0))).toEqual("a")
+        expect(pipe(["b", 2], _.set(_0)("a"))).toEqual(["a", 2])
+      })
     })
 
-    it("fields", () => {
+    it("pick", () => {
       const _a_b = _.id<S>()
-        .compose(_.fields("a", "b"))
+        .compose(_.pick("a", "b"))
 
       expect(pipe({ a: "a", b: 1, c: true }, _.get(_a_b))).toEqual({ a: "a", b: 1 })
       expect(pipe({ a: "a1", b: 1, c: true }, _.set(_a_b)({ a: "a2", b: 2 }))).toEqual({
@@ -90,14 +100,6 @@ describe("Optic", () => {
         b: 2,
         c: true
       })
-    })
-
-    it("component", () => {
-      const _0 = _.id<readonly [string, number]>()
-        .compose(_.component("0"))
-
-      expect(pipe(["a", 1], _.get(_0))).toEqual("a")
-      expect(pipe(["b", 2], _.set(_0)("a"))).toEqual(["a", 2])
     })
 
     it("first", () => {

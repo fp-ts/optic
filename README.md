@@ -30,8 +30,6 @@ flowchart TD
 # Example
 
 ```ts
-import * as Optic from "@fp-ts/optic";
-
 interface Street {
   num: number;
   name: string;
@@ -48,7 +46,11 @@ interface Employee {
   name: string;
   company: Company;
 }
+```
 
+Let's say we have an employee and we need to upper case the first character of his company street name. Here is how we could write it in vanilla TypeScript
+
+```ts
 const employee: Employee = {
   name: "john",
   company: {
@@ -79,24 +81,22 @@ const employeeCapitalized = {
     },
   },
 };
+```
 
-const name = Optic.id<Employee>()
-  .compose(Optic.field("company"))
-  .compose(Optic.field("address"))
-  .compose(Optic.field("street"))
-  .compose(Optic.field("name"));
+As we can see copy is not convenient to update nested objects because we need to repeat ourselves. Let's see what could we do with `@fp-ts/optic`
 
-const capitalizeName = Optic.modify(name)(capitalize);
+```ts
+import * as Optic from "@fp-ts/optic";
+
+const _name = Optic.id<Employee>()
+  .compose(Optic.key("company"))
+  .compose(Optic.key("address"))
+  .compose(Optic.key("street"))
+  .compose(Optic.key("name"));
+
+const capitalizeName = Optic.modify(_name)(capitalize);
 
 expect(capitalizeName(employee)).toEqual(employeeCapitalized);
-
-const name2 = Optic.id<Employee>().compose(
-  Optic.path("company", "address", "street", "name")
-);
-
-const capitalizeName2 = Optic.modify(name2)(capitalize);
-
-expect(capitalizeName2(employee)).toEqual(employeeCapitalized);
 ```
 
 # Installation
