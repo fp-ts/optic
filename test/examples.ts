@@ -1,3 +1,5 @@
+import { pipe } from "@fp-ts/data/Function"
+import * as Option from "@fp-ts/data/Option"
 import * as Optic from "@fp-ts/optic"
 
 describe("examples", () => {
@@ -13,6 +15,7 @@ describe("examples", () => {
     interface Company {
       name: string
       address: Address
+      owners: ReadonlyArray<string>
     }
     interface Employee {
       name: string
@@ -29,7 +32,8 @@ describe("examples", () => {
             num: 23,
             name: "high street"
           }
-        }
+        },
+        owners: ["mike"]
       }
     }
 
@@ -58,5 +62,24 @@ describe("examples", () => {
     const capitalizeName = Optic.modify(_name)(capitalize)
 
     expect(capitalizeName(employee)).toEqual(employeeCapitalized)
+
+    const name2 = Optic.id<Employee>().compose(Optic.path("company", "address", "street", "name"))
+
+    const capitalizeName2 = Optic.modify(name2)(capitalize)
+
+    expect(capitalizeName2(employee)).toEqual(employeeCapitalized)
+
+    const name3 = Optic.id<Employee>()
+      .compose(Optic.zoom((_) => _.company.address.street.name))
+
+    const capitalizeName3 = Optic.modify(name3)(capitalize)
+
+    expect(capitalizeName3(employee)).toEqual(employeeCapitalized)
+
+    const firstOwner = Optic.id<Employee>()
+      .compose(Optic.zoom((_) => _.company.owners))
+      .compose(Optic.at(0))
+
+    expect(pipe(employeeCapitalized, Optic.getOption(firstOwner))).toEqual(Option.some("mike"))
   })
 })
