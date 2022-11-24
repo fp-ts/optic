@@ -21,7 +21,6 @@ export interface Optic<
   out GetPiece,
   out SetWholeAfter
 > {
-  readonly composition: "prism" | "lens"
   readonly getOptic: (GetWhole: GetWhole) => Either<readonly [GetError, SetWholeAfter], GetPiece>
   readonly setOptic: (
     SetPiece: SetPiece
@@ -29,10 +28,11 @@ export interface Optic<
 
   compose<A, B, S>(this: Iso<S, A>, that: Iso<A, B>): Iso<S, B>
   compose<A, B, S>(this: Iso<S, A>, that: Prism<A, B>): Prism<S, B>
+  compose<A, B, S>(this: Iso<S, A>, that: Lens<A, B>): Lens<S, B>
   compose<A, B, S>(this: Lens<S, A>, that: Lens<A, B>): Lens<S, B>
-  compose<A, B, S>(this: Lens<S, A>, that: Prism<A, B>): Optional<S, B>
   compose<A, B, S>(this: Lens<S, A>, that: Optional<A, B>): Optional<S, B>
   compose<A, B, S>(this: Prism<S, A>, that: Prism<A, B>): Prism<S, B>
+  compose<A, B, S>(this: Prism<S, A>, that: Optional<A, B>): Optional<S, B>
   compose<A, B, S>(this: Optional<S, A>, that: Optional<A, B>): Optional<S, B>
 }
 
@@ -66,33 +66,6 @@ class OpticImpl<GetWhole, SetWholeBefore, SetPiece, GetError, SetError, GetPiece
 /**
  * @since 1.0.0
  */
-export const optic = <
-  GetWhole,
-  SetWholeBefore,
-  SetPiece,
-  GetError,
-  SetError,
-  GetPiece,
-  SetWholeAfter
->(
-  composition: "prism" | "lens",
-  getOptic: (GetWhole: GetWhole) => Either<readonly [GetError, SetWholeAfter], GetPiece>,
-  setOptic: (
-    SetPiece: SetPiece
-  ) => (SetWholeBefore: SetWholeBefore) => Either<readonly [SetError, SetWholeAfter], SetWholeAfter>
-): Optic<
-  GetWhole,
-  SetWholeBefore,
-  SetPiece,
-  GetError,
-  SetError,
-  GetPiece,
-  SetWholeAfter
-> => new OpticImpl(composition, getOptic, setOptic)
-
-/**
- * @since 1.0.0
- */
 export interface OpticError {
   readonly message: string
 }
@@ -120,7 +93,7 @@ const prismComposition = <GetPiece, SetPiece1, GetError1, SetError1, GetPiece1, 
   >(
     self: Optic<GetWhole, SetWholeBefore, SetPiece, GetError, SetError, GetPiece, SetWholeAfter>
   ): Optic<GetWhole, SetWholeBefore, SetPiece1, GetError1, SetError1, GetPiece1, SetWholeAfter> =>
-    optic(
+    new OpticImpl(
       "prism",
       (getWhole) =>
         pipe(
@@ -183,7 +156,7 @@ const lensComposition = <
   >(
     self: Optic<GetWhole, SetWholeBefore, SetPiece, GetError, SetError, GetPiece, SetWholeAfter>
   ): Optic<GetWhole, GetWhole, SetPiece1, GetError1, SetError1, GetPiece1, SetWholeAfter> =>
-    optic(
+    new OpticImpl(
       "lens",
       (s) =>
         pipe(
@@ -238,25 +211,14 @@ export interface IsoP<in S, out T, out A, in B> extends Optic<S, unknown, B, nev
 export interface Iso<in out S, in out A> extends IsoP<S, S, A, A> {}
 
 /**
- * @since 1.0.0
- */
-export const get: <S, A>(optic: Lens<S, A>) => (whole: S) => A = (optic) =>
-  (whole) => pipe(optic.getOptic(whole), E.getOrThrow(identity))
-
-/**
- * @since 1.0.0
- */
-export const getOption: <S, A>(optic: Getter<S, A>) => (whole: S) => O.Option<A> = (optic) =>
-  (whole) => pipe(optic.getOptic(whole), E.getRight)
-
-/**
  * @category constructors
  * @since 1.0.0
  */
 export const isoP = <S, T, A, B>(
   get: (s: S) => A,
   encode: (b: B) => T
-): IsoP<S, T, A, B> => optic("prism", (s) => E.right(get(s)), (a) => () => E.right(encode(a)))
+): IsoP<S, T, A, B> =>
+  new OpticImpl("prism", (s) => E.right(get(s)), (a) => () => E.right(encode(a)))
 
 /**
  * @category constructors
@@ -283,7 +245,8 @@ export interface LensP<in S, out T, out A, in B> extends Optic<S, S, B, never, n
 export const lensP = <S, T, A, B>(
   get: (s: S) => A,
   set: (b: B) => (s: S) => T
-): LensP<S, T, A, B> => optic("lens", (s) => E.right(get(s)), (b) => (s) => E.right(set(b)(s)))
+): LensP<S, T, A, B> =>
+  new OpticImpl("lens", (s) => E.right(get(s)), (b) => (s) => E.right(set(b)(s)))
 
 /**
  * @since 1.0.0
@@ -295,6 +258,12 @@ export interface Lens<in out S, in out A> extends LensP<S, S, A, A> {}
  * @since 1.0.0
  */
 export const lens: <S, A>(get: (s: S) => A, set: (a: A) => (s: S) => S) => Lens<S, A> = lensP
+
+/**
+ * @since 1.0.0
+ */
+export const get: <S, A>(optic: Lens<S, A>) => (whole: S) => A = (optic) =>
+  (whole) => pipe(optic.getOptic(whole), E.getOrThrow(identity))
 
 /**
  * An optic that accesses a prop of a struct.
@@ -350,7 +319,7 @@ export interface PrismP<in S, out T, out A, in B>
 export const prismP = <S, T, A, B>(
   decode: (s: S) => Either<readonly [OpticError, T], A>,
   encode: (b: B) => T
-): PrismP<S, T, A, B> => optic("prism", decode, (b) => (_) => E.right(encode(b)))
+): PrismP<S, T, A, B> => new OpticImpl("prism", decode, (b) => (_) => E.right(encode(b)))
 
 /**
  * @since 1.0.0
@@ -483,7 +452,7 @@ export interface OptionalP<in S, out T, out A, in B>
 export const optionalP = <S, T, A, B>(
   decode: (s: S) => Either<readonly [OpticError, T], A>,
   replace: (b: B) => (s: S) => Either<readonly [OpticError, T], T>
-): OptionalP<S, T, A, B> => optic("lens", decode, replace)
+): OptionalP<S, T, A, B> => new OpticImpl("lens", decode, replace)
 
 /**
  * @since 1.0.0
@@ -545,7 +514,7 @@ export interface TraversalP<in S, out T, out A, in B>
 export const traversalP = <S, T, A, B>(
   decode: (s: S) => Either<readonly [OpticError, T], ReadonlyArray<A>>,
   replace: (bs: ReadonlyArray<B>) => (s: S) => Either<readonly [OpticError, T], T>
-): TraversalP<S, T, A, B> => optic("lens", decode, replace)
+): TraversalP<S, T, A, B> => new OpticImpl("lens", decode, replace)
 
 /**
  * @since 1.0.0
@@ -612,3 +581,9 @@ export interface Fold<in S, out A>
 export interface Getter<in S, out A>
   extends Optic<S, never, never, OpticError, unknown, A, unknown>
 {}
+
+/**
+ * @since 1.0.0
+ */
+export const getOption: <S, A>(optic: Getter<S, A>) => (whole: S) => O.Option<A> = (optic) =>
+  (whole) => pipe(optic.getOptic(whole), E.getRight)
