@@ -51,10 +51,11 @@ class OpticImpl<GetWhole, SetWholeBefore, SetPiece, GetError, SetError, GetPiece
 
   compose<A, B, S>(this: Iso<S, A>, that: Iso<A, B>): Iso<S, B>
   compose<A, B, S>(this: Iso<S, A>, that: Prism<A, B>): Prism<S, B>
+  compose<A, B, S>(this: Iso<S, A>, that: Lens<A, B>): Lens<S, B>
   compose<A, B, S>(this: Lens<S, A>, that: Lens<A, B>): Lens<S, B>
-  compose<A, B, S>(this: Lens<S, A>, that: Prism<A, B>): Optional<S, B>
   compose<A, B, S>(this: Lens<S, A>, that: Optional<A, B>): Optional<S, B>
   compose<A, B, S>(this: Prism<S, A>, that: Prism<A, B>): Prism<S, B>
+  compose<A, B, S>(this: Prism<S, A>, that: Optional<A, B>): Optional<S, B>
   compose<A, B, S>(this: Optional<S, A>, that: Optional<A, B>): Optional<S, B>
   compose(that: any) {
     return this.composition === "lens" || that.composition === "lens" ?
@@ -262,14 +263,40 @@ export interface Lens<in out S, in out A> extends LensPoly<S, S, A, A> {}
 export const lens: <S, A>(get: (s: S) => A, set: (a: A) => (s: S) => S) => Lens<S, A> = lensPoly
 
 /**
- * An optic that accesses a field of a struct.
+ * An optic that accesses a key of a struct or a tuple.
  *
  * @since 1.0.0
  */
-export const field = <S, Key extends keyof S>(
+export const key = <S, Key extends keyof S & (string | symbol)>(
   key: Key
-): Lens<S, S[Key]> => lens((s) => s[key], (a) => (s) => ({ ...s, [key]: a }))
+): Lens<S, S[Key]> =>
+  lens((s) => s[key], (a) =>
+    (s) => {
+      if (Array.isArray(s)) {
+        const out: any = s.slice()
+        out[key] = a
+        return out
+      }
+      return { ...s, [key]: a }
+    })
 
+/**
+ * An optic that accesses a group of keys of a struct.
+ *
+ * @since 1.0.0
+ */
+export const pick = <S, Keys extends readonly [keyof S, ...Array<keyof S>]>(
+  ...keys: Keys
+): Lens<S, { readonly [K in Keys[number]]: S[K] }> =>
+  lens((s) => {
+    const out: any = {}
+    for (const k of keys) {
+      out[k] = s[k]
+    }
+    return out
+  }, (a) => (s) => ({ ...s, ...a }))
+
+// TODO: remove in favour of `zoom`?
 /**
  * An optic that accesses a nested field of a struct.
  *
@@ -303,8 +330,8 @@ export function path<S, K1 extends keyof S, K2 extends keyof S[K1]>(
 export function path<S, K1 extends keyof S>(...path: [K1]): Lens<S, S[K1]>
 export function path<S>(...path: ReadonlyArray<string>): Lens<S, any> {
   let out: Lens<S, any> = id<S>()
-  for (const key of path) {
-    out = out.compose(field(key))
+  for (const k of path) {
+    out = out.compose(key(k))
   }
   return out
 }
@@ -334,60 +361,29 @@ export type Zoomer<S> = {
  * @since 1.0.0
  */
 export const zoom = <S, A>(f: (s: Zoomer<S>) => Zoomer<A>): Lens<S, A> => {
-  const p: Array<string | symbol> = []
+  const path: Array<string | symbol> = []
   const detector = (): any =>
     new Proxy({}, {
-      get: (_target, _prop, _rec) => {
-        if (_rec !== lastDetector) {
-          throw new Error("Invalid access pattern detected")
+      get: (_target, prop, rec) => {
+        if (rec !== lastDetector) {
+          throw new Error("Invalid `zoom` pattern detected")
         }
-        p.push(_prop)
+        path.push(prop)
         lastDetector = detector()
         return lastDetector
       }
-    }) as any
-  let lastDetector: any = detector()
-  const r = f(lastDetector)
-  if (r !== lastDetector) {
-    throw new Error("Invalid access pattern detected")
+    })
+  let lastDetector = detector()
+  const a = f(lastDetector)
+  if (a !== lastDetector) {
+    throw new Error("Invalid `zoom` pattern detected")
   }
   let out: Lens<S, any> = id<S>()
-  for (const key of p) {
-    out = out.compose(field(key))
+  for (const k of path) {
+    out = out.compose(key(k))
   }
   return out
 }
-
-/**
- * An optic that accesses some fields of a struct.
- *
- * @since 1.0.0
- */
-export const fields = <S, Keys extends readonly [keyof S, ...Array<keyof S>]>(
-  ...keys: Keys
-): Lens<S, { readonly [K in Keys[number]]: S[K] }> =>
-  lens((s) => {
-    const out: any = {}
-    for (const k of keys) {
-      out[k] = s[k]
-    }
-    return out
-  }, (a) => (s) => ({ ...s, ...a }))
-
-/**
- * An optic that accesses an index of a tuple.
- *
- * @since 1.0.0
- */
-export const component = <S extends ReadonlyArray<unknown>, P extends keyof S & string>(
-  prop: P
-): Lens<S, S[P]> =>
-  lens((s) => s[prop], (a) =>
-    (s) => {
-      const out: S = s.slice() as any
-      out[prop] = a
-      return out
-    })
 
 /**
  * An optic that accesses the first element of a tuple.
