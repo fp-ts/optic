@@ -64,5 +64,11 @@ describe("examples", () => {
     const capitalizeName2 = Optic.modify(name2)(capitalize)
 
     expect(capitalizeName2(employee)).toEqual(employeeCapitalized)
+
+    const name3 = Optic.id<Employee>().compose(Optic.access((_) => _.company.address.street.name))
+
+    const capitalizeName3 = Optic.modify(name3)(capitalize)
+
+    expect(capitalizeName3(employee)).toEqual(employeeCapitalized)
   })
 })
