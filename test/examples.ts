@@ -1,7 +1,7 @@
 import * as Optic from "@fp-ts/optic"
 
-describe("README", () => {
-  it("example", () => {
+describe("examples", () => {
+  it("README", () => {
     interface Street {
       num: number
       name: string
