@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "noImplicitReturns": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
+    "moduleResolution": "node",
+    "target": "es2015",
+    "lib": ["es2015"],
+    "paths": {
+      "@fp-ts/optic": ["../../src/index.ts"],
+      "@fp-ts/optic/test/*": ["../../test/*"],
+      "@fp-ts/optic/examples/*": ["../../examples/*"],
+      "@fp-ts/optic/*": ["../../src/*"]
+    }
+  }
+}
