@@ -15,13 +15,54 @@ describe("Optic", () => {
     expect(_.prism).exist
     expect(_.optionalP).exist
     expect(_.optional).exist
-    expect(_.traversalP).exist
-    expect(_.traversal).exist
 
     expect(_.someP).exist
     expect(_.rightP).exist
     expect(_.leftP).exist
     expect(_.consP).exist
+  })
+
+  it("replaceOption", () => {
+    const _at1 = _.id<ReadonlyArray<number>>()
+      .compose(_.at(1))
+
+    expect(pipe([1, 2, 3], _.replaceOption(_at1)(4))).toEqual(O.some([1, 4, 3]))
+    expect(pipe([1], _.replaceOption(_at1)(4))).toEqual(O.none)
+  })
+
+  it("getOrModify", () => {
+    const _at1 = _.id<ReadonlyArray<number>>()
+      .compose(_.at(1))
+
+    expect(pipe([1, 2, 3], _.getOrModify(_at1))).toEqual(E.right(2))
+    expect(pipe([1], _.getOrModify(_at1))).toEqual(E.left([1]))
+  })
+
+  it("modify", () => {
+    type S = {
+      readonly a: string
+      readonly b: O.Option<{
+        d: O.Option<number>
+      }>
+      readonly c: boolean
+    }
+
+    const f = _.modify(
+      _.id<S>().compose(_.field("b")).compose(_.some()).compose(_.field("d")).compose(_.some())
+    )((
+      n
+    ) => n * 2)
+    expect(f({ a: "a", b: O.some({ d: O.some(1) }), c: true })).toEqual({
+      a: "a",
+      b: O.some({ d: O.some(2) }),
+      c: true
+    })
+    expect(f({ a: "a", b: O.some({ d: O.none }), c: true })).toEqual({
+      a: "a",
+      b: O.some({ d: O.none }),
+      c: true
+    })
+    expect(f({ a: "a", b: O.none, c: true })).toEqual({ a: "a", b: O.none, c: true })
   })
 
   describe("lenses", () => {
@@ -31,17 +72,17 @@ describe("Optic", () => {
       readonly c: boolean
     }
 
-    it("prop", () => {
+    it("field", () => {
       const _a = _.id<S>()
-        .compose(_.prop("a"))
+        .compose(_.field("a"))
 
       expect(pipe({ a: "a", b: 1, c: true }, _.get(_a))).toEqual("a")
       expect(pipe({ a: "a", b: 1, c: true }, _.set(_a)("a2"))).toEqual({ a: "a2", b: 1, c: true })
     })
 
-    it("props", () => {
+    it("fields", () => {
       const _a_b = _.id<S>()
-        .compose(_.props("a", "b"))
+        .compose(_.fields("a", "b"))
 
       expect(pipe({ a: "a", b: 1, c: true }, _.get(_a_b))).toEqual({ a: "a", b: 1 })
       expect(pipe({ a: "a1", b: 1, c: true }, _.set(_a_b)({ a: "a2", b: 2 }))).toEqual({
@@ -81,10 +122,8 @@ describe("Optic", () => {
       const _none = _.id<O.Option<string>>()
         .compose(_.none())
 
-      expect(pipe(O.none, _.decode(_none))).toEqual(E.right(undefined))
-      expect(pipe(O.some("a"), _.decode(_none))).toEqual(
-        E.left(_.opticError("some(a) did not satisfy isNone"))
-      )
+      expect(pipe(O.none, _.getOption(_none))).toEqual(O.some(undefined))
+      expect(pipe(O.some("a"), _.getOption(_none))).toEqual(O.none)
       expect(pipe(undefined, _.encode(_none))).toEqual(O.none)
     })
 
@@ -92,10 +131,8 @@ describe("Optic", () => {
       const _some = _.id<O.Option<string>>()
         .compose(_.some())
 
-      expect(pipe(O.none, _.decode(_some))).toEqual(
-        E.left(_.opticError("none did not satisfy isSome"))
-      )
-      expect(pipe(O.some("a"), _.decode(_some))).toEqual(E.right("a"))
+      expect(pipe(O.none, _.getOption(_some))).toEqual(O.none)
+      expect(pipe(O.some("a"), _.getOption(_some))).toEqual(O.some("a"))
       expect(pipe("a", _.encode(_some))).toEqual(O.some("a"))
     })
 
@@ -103,10 +140,8 @@ describe("Optic", () => {
       const _right = _.id<E.Either<string, number>>()
         .compose(_.right())
 
-      expect(pipe(E.right(1), _.decode(_right))).toEqual(E.right(1))
-      expect(pipe(E.left("e"), _.decode(_right))).toEqual(
-        E.left(_.opticError("left(e) did not satisfy isRight"))
-      )
+      expect(pipe(E.right(1), _.getOption(_right))).toEqual(O.some(1))
+      expect(pipe(E.left("e"), _.getOption(_right))).toEqual(O.none)
       expect(pipe(2, _.encode(_right))).toEqual(E.right(2))
     })
 
@@ -114,10 +149,8 @@ describe("Optic", () => {
       const _left = _.id<E.Either<string, number>>()
         .compose(_.left())
 
-      expect(pipe(E.right(1), _.decode(_left))).toEqual(
-        E.left(_.opticError("right(1) did not satisfy isLeft"))
-      )
-      expect(pipe(E.left("e"), _.decode(_left))).toEqual(E.right("e"))
+      expect(pipe(E.right(1), _.getOption(_left))).toEqual(O.none)
+      expect(pipe(E.left("e"), _.getOption(_left))).toEqual(O.some("e"))
       expect(pipe("e", _.encode(_left))).toEqual(E.left("e"))
     })
 
@@ -125,12 +158,10 @@ describe("Optic", () => {
       const _cons = _.id<List<number>>()
         .compose(_.cons())
 
-      expect(pipe(list.fromIterable([1, 2, 3]), _.decode(_cons))).toEqual(
-        E.right([1, list.fromIterable([2, 3])])
+      expect(pipe(list.fromIterable([1, 2, 3]), _.getOption(_cons))).toEqual(
+        O.some([1, list.fromIterable([2, 3])])
       )
-      expect(pipe(list.nil(), _.decode(_cons))).toEqual(
-        E.left(_.opticError("Nil did not satisfy isCons"))
-      )
+      expect(pipe(list.nil(), _.getOption(_cons))).toEqual(O.none)
       expect(pipe([1, list.fromIterable([2, 3])], _.encode(_cons))).toEqual(
         list.fromIterable([1, 2, 3])
       )
@@ -142,14 +173,10 @@ describe("Optic", () => {
       const _at1 = _.id<ReadonlyArray<number>>()
         .compose(_.at(1))
 
-      expect(pipe([1, 2, 3], _.decode(_at1))).toEqual(E.right(2))
-      expect(pipe([1], _.decode(_at1))).toEqual(
-        E.left(_.opticError("[1] did not satisfy hasAt(1)"))
-      )
-      expect(pipe([1, 2, 3], _.replace(_at1)(4))).toEqual(E.right([1, 4, 3]))
-      expect(pipe([1], _.replace(_at1)(4))).toEqual(
-        E.left(_.opticError("[1] did not satisfy hasAt(1)"))
-      )
+      expect(pipe([1, 2, 3], _.getOption(_at1))).toEqual(O.some(2))
+      expect(pipe([1], _.getOption(_at1))).toEqual(O.none)
+      expect(pipe([1, 2, 3], _.replace(_at1)(4))).toEqual([1, 4, 3])
+      expect(pipe([1], _.replace(_at1)(4))).toEqual([1])
     })
   })
 })

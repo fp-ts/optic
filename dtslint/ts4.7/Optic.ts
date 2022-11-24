@@ -3,5 +3,5 @@ import * as O from "@fp-ts/data/Option"
 
 // $ExpectType Optional<{ a: Option<string>; }, string>
 _.id<{ a: O.Option<string> }>()
-  .compose(_.prop("a"))
+  .compose(_.field("a"))
   .compose(_.some())
