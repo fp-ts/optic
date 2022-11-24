@@ -333,6 +333,40 @@ export function path<S>(...path: ReadonlyArray<string>): Lens<S, any> {
 }
 
 /**
+ * An optic that accesses a nested field of a struct.
+ *
+ * @since 1.0.0
+ */
+export function stringPath<
+  S,
+  K1 extends keyof S & string,
+  K2 extends keyof S[K1] & string,
+  K3 extends keyof S[K1][K2] & string,
+  K4 extends keyof S[K1][K2][K3] & string
+>(
+  path: `${K1}.${K2}.${K3}.${K4}`
+): Lens<S, S[K1][K2][K3][K4]>
+export function stringPath<
+  S,
+  K1 extends keyof S & string,
+  K2 extends keyof S[K1] & string,
+  K3 extends keyof S[K1][K2] & string
+>(
+  path: `${K1}.${K2}.${K3}`
+): Lens<S, S[K1][K2][K3]>
+export function stringPath<S, K1 extends keyof S & string, K2 extends keyof S[K1] & string>(
+  path: `${K1}.${K2}`
+): Lens<S, S[K1][K2]>
+export function stringPath<S, K1 extends keyof S & string>(path: `${K1}`): Lens<S, S[K1]>
+export function stringPath<S>(path: string): Lens<S, any> {
+  let out: Lens<S, any> = id<S>()
+  for (const key of path.split(".")) {
+    out = out.compose(field(key))
+  }
+  return out
+}
+
+/**
  * An optic that accesses some fields of a struct.
  *
  * @since 1.0.0
