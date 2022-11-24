@@ -310,6 +310,36 @@ export function path<S>(...path: ReadonlyArray<string>): Lens<S, any> {
 }
 
 /**
+ * An optic that accesses a nested field of a struct.
+ *
+ * @since 1.0.0
+ */
+export const access = <S, A>(f: (s: S) => A): Lens<S, A> => {
+  const p: Array<string | symbol> = []
+  const detector = (): any =>
+    new Proxy({}, {
+      get: (_target, _prop, _rec) => {
+        if (_rec !== lastDetector) {
+          throw new Error("Invalid access pattern detected")
+        }
+        p.push(_prop)
+        lastDetector = detector()
+        return lastDetector
+      }
+    }) as any
+  let lastDetector: any = detector()
+  const r = f(lastDetector)
+  if (r !== lastDetector) {
+    throw new Error("Invalid access pattern detected")
+  }
+  let out: Lens<S, any> = id<S>()
+  for (const key of p) {
+    out = out.compose(field(key))
+  }
+  return out
+}
+
+/**
  * An optic that accesses some fields of a struct.
  *
  * @since 1.0.0
