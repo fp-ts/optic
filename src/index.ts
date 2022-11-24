@@ -190,28 +190,30 @@ const lensComposition = <
 /**
  * @since 1.0.0
  */
-export interface IsoP<in S, out T, out A, in B> extends Optic<S, unknown, B, never, never, A, T> {}
+export interface IsoPoly<in S, out T, out A, in B>
+  extends Optic<S, unknown, B, never, never, A, T>
+{}
 
 /**
  * @since 1.0.0
  */
-export interface Iso<in out S, in out A> extends IsoP<S, S, A, A> {}
+export interface Iso<in out S, in out A> extends IsoPoly<S, S, A, A> {}
 
 /**
  * @category constructors
  * @since 1.0.0
  */
-export const isoP = <S, T, A, B>(
+export const isoPoly = <S, T, A, B>(
   get: (s: S) => A,
   encode: (b: B) => T
-): IsoP<S, T, A, B> =>
+): IsoPoly<S, T, A, B> =>
   new OpticImpl("prism", (s) => E.right(get(s)), (a) => () => E.right(encode(a)))
 
 /**
  * @category constructors
  * @since 1.0.0
  */
-export const iso: <S, A>(get: (s: S) => A, encode: (a: A) => S) => Iso<S, A> = isoP
+export const iso: <S, A>(get: (s: S) => A, encode: (a: A) => S) => Iso<S, A> = isoPoly
 
 /**
  * The identity optic.
@@ -223,41 +225,41 @@ export const id = <A>(): Iso<A, A> => iso(identity, identity)
 /**
  * @since 1.0.0
  */
-export interface LensP<in S, out T, out A, in B> extends Optic<S, S, B, never, never, A, T> {}
+export interface LensPoly<in S, out T, out A, in B> extends Optic<S, S, B, never, never, A, T> {}
 
 /**
  * @category constructors
  * @since 1.0.0
  */
-export const lensP = <S, T, A, B>(
+export const lensPoly = <S, T, A, B>(
   get: (s: S) => A,
   set: (b: B) => (s: S) => T
-): LensP<S, T, A, B> =>
+): LensPoly<S, T, A, B> =>
   new OpticImpl("lens", (s) => E.right(get(s)), (b) => (s) => E.right(set(b)(s)))
 
 /**
  * @since 1.0.0
  */
-export const get = <S, T, A, B>(optic: LensP<S, T, A, B>) =>
+export const get = <S, T, A, B>(optic: LensPoly<S, T, A, B>) =>
   (GetWhole: S): A => pipe(optic.getOptic(GetWhole), E.getOrThrow(identity))
 
 /**
  * @since 1.0.0
  */
-export const set = <S, T, A, B>(optic: LensP<S, T, A, B>) =>
+export const set = <S, T, A, B>(optic: LensPoly<S, T, A, B>) =>
   (SetPiece: B) =>
     (SetWholeBefore: S): T => pipe(optic.setOptic(SetPiece)(SetWholeBefore), E.getOrThrow(identity))
 
 /**
  * @since 1.0.0
  */
-export interface Lens<in out S, in out A> extends LensP<S, S, A, A> {}
+export interface Lens<in out S, in out A> extends LensPoly<S, S, A, A> {}
 
 /**
  * @category constructors
  * @since 1.0.0
  */
-export const lens: <S, A>(get: (s: S) => A, set: (a: A) => (s: S) => S) => Lens<S, A> = lensP
+export const lens: <S, A>(get: (s: S) => A, set: (a: A) => (s: S) => S) => Lens<S, A> = lensPoly
 
 /**
  * An optic that accesses a field of a struct.
@@ -267,31 +269,6 @@ export const lens: <S, A>(get: (s: S) => A, set: (a: A) => (s: S) => S) => Lens<
 export const field = <S, Key extends keyof S>(
   key: Key
 ): Lens<S, S[Key]> => lens((s) => s[key], (a) => (s) => ({ ...s, [key]: a }))
-
-export interface LensFromPath<S> {
-  <
-    K1 extends keyof S,
-    K2 extends keyof S[K1],
-    K3 extends keyof S[K1][K2],
-    K4 extends keyof S[K1][K2][K3],
-    K5 extends keyof S[K1][K2][K3][K4]
-  >(
-    path: [K1, K2, K3, K4, K5]
-  ): Lens<S, S[K1][K2][K3][K4][K5]>
-  <
-    K1 extends keyof S,
-    K2 extends keyof S[K1],
-    K3 extends keyof S[K1][K2],
-    K4 extends keyof S[K1][K2][K3]
-  >(
-    path: [K1, K2, K3, K4]
-  ): Lens<S, S[K1][K2][K3][K4]>
-  <K1 extends keyof S, K2 extends keyof S[K1], K3 extends keyof S[K1][K2]>(
-    path: [K1, K2, K3]
-  ): Lens<S, S[K1][K2][K3]>
-  <K1 extends keyof S, K2 extends keyof S[K1]>(path: [K1, K2]): Lens<S, S[K1][K2]>
-  <K1 extends keyof S>(path: [K1]): Lens<S, S[K1]>
-}
 
 /**
  * An optic that accesses a nested field of a struct.
@@ -333,40 +310,6 @@ export function path<S>(...path: ReadonlyArray<string>): Lens<S, any> {
 }
 
 /**
- * An optic that accesses a nested field of a struct.
- *
- * @since 1.0.0
- */
-export function stringPath<
-  S,
-  K1 extends keyof S & string,
-  K2 extends keyof S[K1] & string,
-  K3 extends keyof S[K1][K2] & string,
-  K4 extends keyof S[K1][K2][K3] & string
->(
-  path: `${K1}.${K2}.${K3}.${K4}`
-): Lens<S, S[K1][K2][K3][K4]>
-export function stringPath<
-  S,
-  K1 extends keyof S & string,
-  K2 extends keyof S[K1] & string,
-  K3 extends keyof S[K1][K2] & string
->(
-  path: `${K1}.${K2}.${K3}`
-): Lens<S, S[K1][K2][K3]>
-export function stringPath<S, K1 extends keyof S & string, K2 extends keyof S[K1] & string>(
-  path: `${K1}.${K2}`
-): Lens<S, S[K1][K2]>
-export function stringPath<S, K1 extends keyof S & string>(path: `${K1}`): Lens<S, S[K1]>
-export function stringPath<S>(path: string): Lens<S, any> {
-  let out: Lens<S, any> = id<S>()
-  for (const key of path.split(".")) {
-    out = out.compose(field(key))
-  }
-  return out
-}
-
-/**
  * An optic that accesses some fields of a struct.
  *
  * @since 1.0.0
@@ -402,21 +345,21 @@ export const component = <S extends ReadonlyArray<unknown>, P extends keyof S & 
  *
  * @since 1.0.0
  */
-export const first = <A, B, C>(): LensP<readonly [A, B], readonly [C, B], A, C> =>
-  lensP(([a, _]) => a, (c) => ([_, b]) => [c, b])
+export const first = <A, B, C>(): LensPoly<readonly [A, B], readonly [C, B], A, C> =>
+  lensPoly(([a, _]) => a, (c) => ([_, b]) => [c, b])
 
 /**
  * An optic that accesses the second element of a tuple.
  *
  * @since 1.0.0
  */
-export const second = <A, B, C>(): LensP<readonly [A, B], readonly [A, C], B, C> =>
-  lensP(([_, b]) => b, (c) => ([a, _]) => [a, c])
+export const second = <A, B, C>(): LensPoly<readonly [A, B], readonly [A, C], B, C> =>
+  lensPoly(([_, b]) => b, (c) => ([a, _]) => [a, c])
 
 /**
  * @since 1.0.0
  */
-export interface PrismP<in S, out T, out A, in B>
+export interface PrismPoly<in S, out T, out A, in B>
   extends Optic<S, unknown, B, Error, never, A, T>
 {}
 
@@ -424,21 +367,21 @@ export interface PrismP<in S, out T, out A, in B>
  * @category constructors
  * @since 1.0.0
  */
-export const prismP = <S, T, A, B>(
+export const prismPoly = <S, T, A, B>(
   decodeP: (s: S) => Either<readonly [Error, T], A>,
   encode: (b: B) => T
-): PrismP<S, T, A, B> => new OpticImpl("prism", decodeP, (b) => (_) => E.right(encode(b)))
+): PrismPoly<S, T, A, B> => new OpticImpl("prism", decodeP, (b) => (_) => E.right(encode(b)))
 
 /**
  * @since 1.0.0
  */
-export const encode = <S, T, A, B>(optic: PrismP<S, T, A, B>) =>
+export const encode = <S, T, A, B>(optic: PrismPoly<S, T, A, B>) =>
   (SetPiece: B): T => pipe(optic.setOptic(SetPiece)(undefined), E.getOrThrow(identity))
 
 /**
  * @since 1.0.0
  */
-export interface Prism<in out S, in out A> extends PrismP<S, S, A, A> {}
+export interface Prism<in out S, in out A> extends PrismPoly<S, S, A, A> {}
 
 /**
  * @category constructors
@@ -447,7 +390,7 @@ export interface Prism<in out S, in out A> extends PrismP<S, S, A, A> {}
 export const prism = <S, A>(
   decode: (s: S) => Either<Error, A>,
   encode: (a: A) => S
-): Prism<S, A> => prismP((s) => pipe(decode(s), E.mapLeft((e) => [e, s])), encode)
+): Prism<S, A> => prismPoly((s) => pipe(decode(s), E.mapLeft((e) => [e, s])), encode)
 
 /**
  * An optic that accesses the `None` case of an `Option`.
@@ -468,8 +411,8 @@ export const none = <A>(): Prism<Option<A>, void> =>
  *
  * @since 1.0.0
  */
-export const someP = <A, B>(): PrismP<Option<A>, Option<B>, A, B> =>
-  prismP(
+export const somePoly = <A, B>(): PrismPoly<Option<A>, Option<B>, A, B> =>
+  prismPoly(
     O.match(
       () => E.left([Error("none did not satisfy isSome"), O.none]),
       (a) => E.right(a)
@@ -482,15 +425,15 @@ export const someP = <A, B>(): PrismP<Option<A>, Option<B>, A, B> =>
  *
  * @since 1.0.0
  */
-export const some: <A>() => Prism<Option<A>, A> = someP
+export const some: <A>() => Prism<Option<A>, A> = somePoly
 
 /**
  * An optic that accesses the `Right` case of an `Either`.
  *
  * @since 1.0.0
  */
-export const rightP = <A, B, C>(): PrismP<Either<A, B>, Either<A, C>, B, C> =>
-  prismP(
+export const rightPoly = <A, B, C>(): PrismPoly<Either<A, B>, Either<A, C>, B, C> =>
+  prismPoly(
     E.match(
       (a) => E.left([Error(`left(${a}) did not satisfy isRight`), E.left(a)]),
       (b) => E.right(b)
@@ -503,15 +446,15 @@ export const rightP = <A, B, C>(): PrismP<Either<A, B>, Either<A, C>, B, C> =>
  *
  * @since 1.0.0
  */
-export const right: <A, B>() => Prism<Either<A, B>, B> = rightP
+export const right: <A, B>() => Prism<Either<A, B>, B> = rightPoly
 
 /**
  * An optic that accesses the `Left` case of an `Either`.
  *
  * @since 1.0.0
  */
-export const leftP = <A, B, C>(): PrismP<Either<A, B>, Either<C, B>, A, C> =>
-  prismP(
+export const leftPoly = <A, B, C>(): PrismPoly<Either<A, B>, Either<C, B>, A, C> =>
+  prismPoly(
     E.match(
       (a) => E.right(a),
       (b) => E.left([Error(`right(${b}) did not satisfy isLeft`), E.right(b)])
@@ -524,20 +467,20 @@ export const leftP = <A, B, C>(): PrismP<Either<A, B>, Either<C, B>, A, C> =>
  *
  * @since 1.0.0
  */
-export const left: <A, B>() => Prism<Either<A, B>, A> = leftP
+export const left: <A, B>() => Prism<Either<A, B>, A> = leftPoly
 
 /**
  * An optic that accesses the `Cons` case of a `List`.
  *
  * @since 1.0.0
  */
-export const consP = <A, B>(): PrismP<
+export const consPoly = <A, B>(): PrismPoly<
   List<A>,
   List<B>,
   readonly [A, List<A>],
   readonly [B, List<B>]
 > =>
-  prismP(
+  prismPoly(
     (s) =>
       list.isCons(s) ?
         E.right([s.head, s.tail]) :
@@ -550,32 +493,34 @@ export const consP = <A, B>(): PrismP<
  *
  * @since 1.0.0
  */
-export const cons: <A>() => Prism<List<A>, readonly [A, List<A>]> = consP
+export const cons: <A>() => Prism<List<A>, readonly [A, List<A>]> = consPoly
 
 /**
  * @since 1.0.0
  */
-export interface OptionalP<in S, out T, out A, in B> extends Optic<S, S, B, Error, Error, A, T> {}
+export interface OptionalPoly<in S, out T, out A, in B>
+  extends Optic<S, S, B, Error, Error, A, T>
+{}
 
 /**
  * @category constructors
  * @since 1.0.0
  */
-export const optionalP = <S, T, A, B>(
+export const optionalPoly = <S, T, A, B>(
   decodeP: (s: S) => Either<readonly [Error, T], A>,
   replaceEitherP: (b: B) => (s: S) => Either<readonly [Error, T], T>
-): OptionalP<S, T, A, B> => new OpticImpl("lens", decodeP, replaceEitherP)
+): OptionalPoly<S, T, A, B> => new OpticImpl("lens", decodeP, replaceEitherP)
 
 /**
  * @since 1.0.0
  */
-export const getOrModify = <S, T, A, B>(optic: OptionalP<S, T, A, B>) =>
+export const getOrModify = <S, T, A, B>(optic: OptionalPoly<S, T, A, B>) =>
   (s: S): Either<T, A> => pipe(optic.getOptic(s), E.mapLeft(([_, t]) => t))
 
 /**
  * @since 1.0.0
  */
-export const modify = <S, T, A, B>(optic: OptionalP<S, T, A, B>) =>
+export const modify = <S, T, A, B>(optic: OptionalPoly<S, T, A, B>) =>
   (f: (a: A) => B) =>
     (s: S): T =>
       pipe(
@@ -587,7 +532,7 @@ export const modify = <S, T, A, B>(optic: OptionalP<S, T, A, B>) =>
 /**
  * @since 1.0.0
  */
-export interface Optional<in out S, in out A> extends OptionalP<S, S, A, A> {}
+export interface Optional<in out S, in out A> extends OptionalPoly<S, S, A, A> {}
 
 /**
  * @category constructors
@@ -597,7 +542,7 @@ export const optional = <S, A>(
   decode: (s: S) => Either<Error, A>,
   replace: (a: A) => (s: S) => Either<Error, S>
 ): Optional<S, A> =>
-  optionalP(
+  optionalPoly(
     (s) => pipe(decode(s), E.mapLeft((e) => [e, s])),
     (a) => (s) => pipe(replace(a)(s), E.mapLeft((e) => [e, s]))
   )
@@ -655,14 +600,14 @@ export const at = <A>(n: number): Optional<ReadonlyArray<A>, A> =>
 /**
  * @since 1.0.0
  */
-export interface SetterP<in S, out T, in A>
+export interface SetterPoly<in S, out T, in A>
   extends Optic<never, S, A, unknown, Error, unknown, T>
 {}
 
 /**
  * @since 1.0.0
  */
-export const replace = <S, T, A>(optic: SetterP<S, T, A>) =>
+export const replace = <S, T, A>(optic: SetterPoly<S, T, A>) =>
   (SetPiece: A) =>
     (SetWholeBefore: S): T =>
       pipe(optic.setOptic(SetPiece)(SetWholeBefore), E.match(([_, t]) => t, identity))
@@ -670,14 +615,14 @@ export const replace = <S, T, A>(optic: SetterP<S, T, A>) =>
 /**
  * @since 1.0.0
  */
-export const replaceOption = <S, T, A>(optic: SetterP<S, T, A>) =>
+export const replaceOption = <S, T, A>(optic: SetterPoly<S, T, A>) =>
   (SetPiece: A) =>
     (SetWholeBefore: S): Option<T> => E.getRight(optic.setOptic(SetPiece)(SetWholeBefore))
 
 /**
  * @since 1.0.0
  */
-export interface Setter<in out S, in A> extends SetterP<S, S, A> {}
+export interface Setter<in out S, in A> extends SetterPoly<S, S, A> {}
 
 /**
  * @since 1.0.0
@@ -690,14 +635,14 @@ export interface Getter<in S, out A> extends Optic<S, never, never, Error, unkno
 export const getOption = <S, A>(optic: Getter<S, A>) =>
   (s: S): Option<A> => E.getRight(optic.getOptic(s))
 
-// export interface TraversalP<in S, out T, out A, in B>
+// export interface TraversalPoly<in S, out T, out A, in B>
 //   extends OptionalP<S, T, ReadonlyArray<A>, ReadonlyArray<B>>
 // {}
 
-// export const traversalP = <S, T, A, B>(
+// export const traversalPoly = <S, T, A, B>(
 //   decode: (s: S) => Either<readonly [Error, T], ReadonlyArray<A>>,
 //   replace: (bs: ReadonlyArray<B>) => (s: S) => Either<readonly [Error, T], T>
-// ): TraversalP<S, T, A, B> => new OpticImpl("lens", decode, replace)
+// ): TraversalPoly<S, T, A, B> => new OpticImpl("lens", decode, replace)
 
 // export interface Traversal<in out S, in out A> extends TraversalP<S, S, A, A> {}
 
@@ -705,7 +650,7 @@ export const getOption = <S, A>(optic: Getter<S, A>) =>
 //   decode: (s: S) => Either<Error, ReadonlyArray<A>>,
 //   replace: (as: ReadonlyArray<A>) => (s: S) => Either<Error, S>
 // ): Traversal<S, A> =>
-//   traversalP(
+//   traversalPoly(
 //     (s) => pipe(decode(s), E.mapLeft((e) => [e, s])),
 //     (as) => (s) => pipe(replace(as)(s), E.mapLeft((e) => [e, s]))
 //   )
