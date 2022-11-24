@@ -251,6 +251,19 @@ export const lensP = <S, T, A, B>(
 /**
  * @since 1.0.0
  */
+export const get = <S, T, A, B>(optic: LensP<S, T, A, B>) =>
+  (GetWhole: S): A => pipe(optic.getOptic(GetWhole), E.getOrThrow(identity))
+
+/**
+ * @since 1.0.0
+ */
+export const set = <S, T, A, B>(optic: LensP<S, T, A, B>) =>
+  (SetPiece: B) =>
+    (SetWholeBefore: S): T => pipe(optic.setOptic(SetPiece)(SetWholeBefore), E.getOrThrow(identity))
+
+/**
+ * @since 1.0.0
+ */
 export interface Lens<in out S, in out A> extends LensP<S, S, A, A> {}
 
 /**
@@ -260,12 +273,6 @@ export interface Lens<in out S, in out A> extends LensP<S, S, A, A> {}
 export const lens: <S, A>(get: (s: S) => A, set: (a: A) => (s: S) => S) => Lens<S, A> = lensP
 
 /**
- * @since 1.0.0
- */
-export const get: <S, A>(optic: Lens<S, A>) => (whole: S) => A = (optic) =>
-  (whole) => pipe(optic.getOptic(whole), E.getOrThrow(identity))
-
-/**
  * An optic that accesses a prop of a struct.
  *
  * @since 1.0.0
@@ -273,6 +280,22 @@ export const get: <S, A>(optic: Lens<S, A>) => (whole: S) => A = (optic) =>
 export const prop = <S, P extends keyof S>(
   prop: P
 ): Lens<S, S[P]> => lens((s) => s[prop], (a) => (s) => ({ ...s, [prop]: a }))
+
+/**
+ * An optic that accesses some props of a struct.
+ *
+ * @since 1.0.0
+ */
+export const props = <S, P extends readonly [keyof S, ...Array<keyof S>]>(
+  ...props: P
+): Lens<S, { readonly [K in P[number]]: S[K] }> =>
+  lens((s) => {
+    const out: any = {}
+    for (const k of props) {
+      out[k] = s[k]
+    }
+    return out
+  }, (a) => (s) => ({ ...s, ...a }))
 
 /**
  * An optic that accesses an index of a tuple.
@@ -317,9 +340,15 @@ export interface PrismP<in S, out T, out A, in B>
  * @since 1.0.0
  */
 export const prismP = <S, T, A, B>(
-  decode: (s: S) => Either<readonly [OpticError, T], A>,
+  decodeP: (s: S) => Either<readonly [OpticError, T], A>,
   encode: (b: B) => T
-): PrismP<S, T, A, B> => new OpticImpl("prism", decode, (b) => (_) => E.right(encode(b)))
+): PrismP<S, T, A, B> => new OpticImpl("prism", decodeP, (b) => (_) => E.right(encode(b)))
+
+/**
+ * @since 1.0.0
+ */
+export const encode = <S, T, A, B>(optic: PrismP<S, T, A, B>) =>
+  (SetPiece: B): T => pipe(optic.setOptic(SetPiece)(undefined), E.getOrThrow(identity))
 
 /**
  * @since 1.0.0
@@ -450,9 +479,23 @@ export interface OptionalP<in S, out T, out A, in B>
  * @since 1.0.0
  */
 export const optionalP = <S, T, A, B>(
-  decode: (s: S) => Either<readonly [OpticError, T], A>,
-  replace: (b: B) => (s: S) => Either<readonly [OpticError, T], T>
-): OptionalP<S, T, A, B> => new OpticImpl("lens", decode, replace)
+  decodeP: (s: S) => Either<readonly [OpticError, T], A>,
+  replaceP: (b: B) => (s: S) => Either<readonly [OpticError, T], T>
+): OptionalP<S, T, A, B> => new OpticImpl("lens", decodeP, replaceP)
+
+/**
+ * @since 1.0.0
+ */
+export const decode = <S, T, A, B>(optic: OptionalP<S, T, A, B>) =>
+  (GetWhole: S): Either<OpticError, A> => pipe(optic.getOptic(GetWhole), E.mapLeft(([e]) => e))
+
+/**
+ * @since 1.0.0
+ */
+export const replace = <S, T, A, B>(optic: OptionalP<S, T, A, B>) =>
+  (SetPiece: B) =>
+    (SetWholeBefore: S): Either<OpticError, T> =>
+      pipe(optic.setOptic(SetPiece)(SetWholeBefore), E.mapLeft(([e]) => e))
 
 /**
  * @since 1.0.0
@@ -480,7 +523,7 @@ export const at = <A>(n: number): Optional<ReadonlyArray<A>, A> =>
     (as) =>
       n >= 0 && n < as.length ?
         E.right(as[n]) :
-        E.left(opticError(`${as} did not satisfy hasAt(${n})`)),
+        E.left(opticError(`[${as}] did not satisfy hasAt(${n})`)),
     (a) =>
       (as) => {
         if (n >= 0 && n < as.length) {
@@ -488,7 +531,7 @@ export const at = <A>(n: number): Optional<ReadonlyArray<A>, A> =>
           out[n] = a
           return E.right(out)
         }
-        return E.left(opticError(`${as} did not satisfy hasAt(${n})`))
+        return E.left(opticError(`[${as}] did not satisfy hasAt(${n})`))
       }
   )
 
@@ -585,5 +628,5 @@ export interface Getter<in S, out A>
 /**
  * @since 1.0.0
  */
-export const getOption: <S, A>(optic: Getter<S, A>) => (whole: S) => O.Option<A> = (optic) =>
-  (whole) => pipe(optic.getOptic(whole), E.getRight)
+export const getOption = <S, A>(optic: Getter<S, A>) =>
+  (s: S): O.Option<A> => E.getRight(optic.getOptic(s))
