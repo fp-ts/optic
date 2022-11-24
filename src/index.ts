@@ -310,11 +310,30 @@ export function path<S>(...path: ReadonlyArray<string>): Lens<S, any> {
 }
 
 /**
+ * @since 1.0.0
+ */
+export const ZoomerTypeId = Symbol.for("@fp-ts/optic/Zoomer")
+
+/**
+ * @since 1.0.0
+ */
+export type ZoomerTypeId = typeof ZoomerTypeId
+
+/**
+ * @since 1.0.0
+ */
+export type Zoomer<S> = {
+  [K in keyof S | ZoomerTypeId]: K extends ZoomerTypeId ? ZoomerTypeId
+    : K extends keyof S ? Zoomer<S[K]>
+    : never
+}
+
+/**
  * An optic that accesses a nested field of a struct.
  *
  * @since 1.0.0
  */
-export const access = <S, A>(f: (s: S) => A): Lens<S, A> => {
+export const zoom = <S, A>(f: (s: Zoomer<S>) => Zoomer<A>): Lens<S, A> => {
   const p: Array<string | symbol> = []
   const detector = (): any =>
     new Proxy({}, {
