@@ -5,7 +5,7 @@ import * as list from "@fp-ts/data/List"
 import * as O from "@fp-ts/data/Option"
 import * as _ from "@fp-ts/optic"
 
-describe("Optic", () => {
+describe("index", () => {
   it("100% coverage", () => {
     expect(_.isoPoly).exist
     expect(_.iso).exist
@@ -61,14 +61,14 @@ describe("Optic", () => {
   })
 
   describe("lenses", () => {
-    type S = {
-      readonly a: string
-      readonly b: number
-      readonly c: boolean
-    }
-
     describe("key", () => {
-      it("objects", () => {
+      it("struct", () => {
+        type S = {
+          readonly a: string
+          readonly b: number
+          readonly c: boolean
+        }
+
         const _a = _.id<S>()
           .compose(_.key("a"))
 
@@ -76,24 +76,12 @@ describe("Optic", () => {
         expect(pipe({ a: "a", b: 1, c: true }, _.set(_a)("a2"))).toEqual({ a: "a2", b: 1, c: true })
       })
 
-      it("tuples", () => {
+      it("tuple", () => {
         const _0 = _.id<readonly [string, number]>()
           .compose(_.key("0"))
 
         expect(pipe(["a", 1], _.get(_0))).toEqual("a")
         expect(pipe(["b", 2], _.set(_0)("a"))).toEqual(["a", 2])
-      })
-    })
-
-    it("pick", () => {
-      const _a_b = _.id<S>()
-        .compose(_.pick("a", "b"))
-
-      expect(pipe({ a: "a", b: 1, c: true }, _.get(_a_b))).toEqual({ a: "a", b: 1 })
-      expect(pipe({ a: "a1", b: 1, c: true }, _.set(_a_b)({ a: "a2", b: 2 }))).toEqual({
-        a: "a2",
-        b: 2,
-        c: true
       })
     })
 
