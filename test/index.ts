@@ -15,11 +15,6 @@ describe("Optic", () => {
     expect(_.prism).exist
     expect(_.optionalPoly).exist
     expect(_.optional).exist
-
-    expect(_.somePoly).exist
-    expect(_.rightPoly).exist
-    expect(_.leftPoly).exist
-    expect(_.consPoly).exist
   })
 
   it("replaceOption", () => {
