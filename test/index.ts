@@ -84,22 +84,6 @@ describe("index", () => {
         expect(pipe(["b", 2], _.set(_0)("a"))).toEqual(["a", 2])
       })
     })
-
-    it("first", () => {
-      const _0 = _.id<readonly [string, number]>()
-        .compose(_.first())
-
-      expect(pipe(["a", 1], _.get(_0))).toEqual("a")
-      expect(pipe(["b", 2], _.set(_0)("a"))).toEqual(["a", 2])
-    })
-
-    it("second", () => {
-      const _1 = _.id<readonly [string, number]>()
-        .compose(_.second())
-
-      expect(pipe(["a", 1], _.get(_1))).toEqual(1)
-      expect(pipe(["b", 2], _.set(_1)(3))).toEqual(["b", 3])
-    })
   })
 
   describe("prisms", () => {
