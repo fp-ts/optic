@@ -75,7 +75,10 @@ export interface Optic<
   ): PolyOptional<S, T, C, D>
 }
 
-/** @internal */
+/**
+ * @since 1.0.0
+ * @internal
+ */
 export class OpticImpl<
   GetWhole,
   SetWholeBefore,
@@ -97,6 +100,10 @@ export class OpticImpl<
     ) => Either<readonly [SetError, SetWholeAfter], SetWholeAfter>
   ) {}
 
+  /**
+   * @since 1.0.0
+   * @internal
+   */
   compose(that: any): any {
     return this.composition === "lens" || that.composition === "lens" ?
       lensComposition(that)(this as any) :
