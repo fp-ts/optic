@@ -1,5 +1,11 @@
 # @fp-ts/optic
 
+## 0.0.2
+
+### Patch Changes
+
+- [#7](https://github.com/fp-ts/optic/pull/7) [`ec102c3`](https://github.com/fp-ts/optic/commit/ec102c307f6d289033c2a074e2777c47302ecb26) Thanks [@mikearnaldi](https://github.com/mikearnaldi)! - Update @fp-ts/data
+
 ## 0.0.1
 
 ### Patch Changes
