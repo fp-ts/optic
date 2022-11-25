@@ -456,7 +456,10 @@ export const none = <A>(): Prism<Option<A>, void> =>
  *
  * @since 1.0.0
  */
-export const somePoly = <A, B>(): PrismPoly<Option<A>, Option<B>, A, B> =>
+export const some: {
+  <A>(): Prism<Option<A>, A>
+  <A, B>(): PrismPoly<Option<A>, Option<B>, A, B>
+} = <A, B>(): PrismPoly<Option<A>, Option<B>, A, B> =>
   prismPoly(
     O.match(
       () => E.left([Error("none did not satisfy isSome"), O.none]),
@@ -466,18 +469,14 @@ export const somePoly = <A, B>(): PrismPoly<Option<A>, Option<B>, A, B> =>
   )
 
 /**
- * An optic that accesses the `Some` case of an `Option`.
- *
- * @since 1.0.0
- */
-export const some: <A>() => Prism<Option<A>, A> = somePoly
-
-/**
  * An optic that accesses the `Right` case of an `Either`.
  *
  * @since 1.0.0
  */
-export const rightPoly = <A, B, C>(): PrismPoly<Either<A, B>, Either<A, C>, B, C> =>
+export const right: {
+  <A, B>(): Prism<Either<A, B>, B>
+  <A, B, C>(): PrismPoly<Either<A, B>, Either<A, C>, B, C>
+} = <A, B, C>(): PrismPoly<Either<A, B>, Either<A, C>, B, C> =>
   prismPoly(
     E.match(
       (a) => E.left([Error(`left(${a}) did not satisfy isRight`), E.left(a)]),
@@ -487,18 +486,14 @@ export const rightPoly = <A, B, C>(): PrismPoly<Either<A, B>, Either<A, C>, B, C
   )
 
 /**
- * An optic that accesses the `Right` case of an `Either`.
- *
- * @since 1.0.0
- */
-export const right: <A, B>() => Prism<Either<A, B>, B> = rightPoly
-
-/**
  * An optic that accesses the `Left` case of an `Either`.
  *
  * @since 1.0.0
  */
-export const leftPoly = <A, B, C>(): PrismPoly<Either<A, B>, Either<C, B>, A, C> =>
+export const left: {
+  <A, B>(): Prism<Either<A, B>, A>
+  <A, B, C>(): PrismPoly<Either<A, B>, Either<C, B>, A, C>
+} = <A, B, C>(): PrismPoly<Either<A, B>, Either<C, B>, A, C> =>
   prismPoly(
     E.match(
       (a) => E.right(a),
@@ -508,23 +503,14 @@ export const leftPoly = <A, B, C>(): PrismPoly<Either<A, B>, Either<C, B>, A, C>
   )
 
 /**
- * An optic that accesses the `Left` case of an `Either`.
- *
- * @since 1.0.0
- */
-export const left: <A, B>() => Prism<Either<A, B>, A> = leftPoly
-
-/**
  * An optic that accesses the `Cons` case of a `List`.
  *
  * @since 1.0.0
  */
-export const consPoly = <A, B>(): PrismPoly<
-  List<A>,
-  List<B>,
-  readonly [A, List<A>],
-  readonly [B, List<B>]
-> =>
+export const cons: {
+  <A>(): Prism<List<A>, readonly [A, List<A>]>
+  <A, B>(): PrismPoly<List<A>, List<B>, readonly [A, List<A>], readonly [B, List<B>]>
+} = <A, B>(): PrismPoly<List<A>, List<B>, readonly [A, List<A>], readonly [B, List<B>]> =>
   prismPoly(
     (s) =>
       list.isCons(s) ?
@@ -532,13 +518,6 @@ export const consPoly = <A, B>(): PrismPoly<
         E.left([Error(`Nil did not satisfy isCons`), list.nil()]),
     ([head, tail]): List<B> => list.cons(head, tail)
   )
-
-/**
- * An optic that accesses the `Cons` case of a `List`.
- *
- * @since 1.0.0
- */
-export const cons: <A>() => Prism<List<A>, readonly [A, List<A>]> = consPoly
 
 /**
  * @since 1.0.0
