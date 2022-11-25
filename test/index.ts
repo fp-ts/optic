@@ -6,9 +6,7 @@ import * as OptionOptic from "@fp-ts/optic/data/Option"
 
 describe("index", () => {
   it("100% coverage", () => {
-    expect(Optic.polyIso).exist
     expect(Optic.iso).exist
-    expect(Optic.polyLens).exist
     expect(Optic.lens).exist
     expect(Optic.polyPrism).exist
     expect(Optic.prism).exist
@@ -143,5 +141,15 @@ describe("index", () => {
     expect(pipe([], Optic.replace(_tail)([4]))).toEqual(
       []
     )
+  })
+
+  it("nullable", () => {
+    const _nullable = Optic.id<string | undefined | null>()
+      .compose(Optic.nullable())
+
+    expect(pipe(null, Optic.getOption(_nullable))).toEqual(O.none)
+    expect(pipe(undefined, Optic.getOption(_nullable))).toEqual(O.none)
+    expect(pipe("a", Optic.getOption(_nullable))).toEqual(O.some("a"))
+    expect(pipe("a", Optic.encode(_nullable))).toEqual("a")
   })
 })

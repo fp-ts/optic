@@ -244,17 +244,17 @@ export interface Iso<in out S, in out A> extends PolyIso<S, S, A, A> {}
  * @category constructors
  * @since 1.0.0
  */
-export const polyIso = <S, T, A, B>(
+export const iso: {
+  <S, A>(get: (s: S) => A, encode: (a: A) => S): Iso<S, A>
+  <S, T, A, B>(
+    get: (s: S) => A,
+    encode: (b: B) => T
+  ): PolyIso<S, T, A, B>
+} = <S, T, A, B>(
   get: (s: S) => A,
   encode: (b: B) => T
 ): PolyIso<S, T, A, B> =>
   new OpticImpl("prism", (s) => E.right(get(s)), (a) => () => E.right(encode(a)))
-
-/**
- * @category constructors
- * @since 1.0.0
- */
-export const iso: <S, A>(get: (s: S) => A, encode: (a: A) => S) => Iso<S, A> = polyIso
 
 /**
  * The identity optic.
@@ -264,7 +264,7 @@ export const iso: <S, A>(get: (s: S) => A, encode: (a: A) => S) => Iso<S, A> = p
 export const id: {
   <S>(): Iso<S, S>
   <S, T>(): PolyIso<S, T, S, T>
-} = <S, T>(): PolyIso<S, T, S, T> => polyIso(identity, identity)
+} = <S, T>(): PolyIso<S, T, S, T> => iso<S, T, S, T>(identity, identity)
 
 /**
  * @since 1.0.0
@@ -272,10 +272,21 @@ export const id: {
 export interface PolyLens<in S, out T, out A, in B> extends Optic<S, S, B, never, never, A, T> {}
 
 /**
+ * @since 1.0.0
+ */
+export interface Lens<in out S, in out A> extends PolyLens<S, S, A, A> {}
+
+/**
  * @category constructors
  * @since 1.0.0
  */
-export const polyLens = <S, T, A, B>(
+export const lens: {
+  <S, A>(get: (s: S) => A, set: (a: A) => (s: S) => S): Lens<S, A>
+  <S, T, A, B>(
+    get: (s: S) => A,
+    set: (b: B) => (s: S) => T
+  ): PolyLens<S, T, A, B>
+} = <S, T, A, B>(
   get: (s: S) => A,
   set: (b: B) => (s: S) => T
 ): PolyLens<S, T, A, B> =>
@@ -307,7 +318,7 @@ export const key: {
 } = <S, Key extends keyof S, B>(
   key: Key
 ): PolyLens<S, any, S[Key], B> =>
-  polyLens((s) => s[key], (b) =>
+  lens<S, any, S[Key], B>((s) => s[key], (b) =>
     (s) => {
       if (Array.isArray(s)) {
         const out: any = s.slice()
@@ -316,17 +327,6 @@ export const key: {
       }
       return { ...s, [key]: b }
     })
-
-/**
- * @since 1.0.0
- */
-export interface Lens<in out S, in out A> extends PolyLens<S, S, A, A> {}
-
-/**
- * @category constructors
- * @since 1.0.0
- */
-export const lens: <S, A>(get: (s: S) => A, set: (a: A) => (s: S) => S) => Lens<S, A> = polyLens
 
 /**
  * @since 1.0.0
@@ -340,15 +340,9 @@ export interface PolyPrism<in S, out T, out A, in B>
  * @since 1.0.0
  */
 export const polyPrism = <S, T, A, B>(
-  decodeP: (s: S) => Either<readonly [Error, T], A>,
+  polyDecode: (s: S) => Either<readonly [Error, T], A>,
   encode: (b: B) => T
-): PolyPrism<S, T, A, B> => new OpticImpl("prism", decodeP, (b) => (_) => E.right(encode(b)))
-
-/**
- * @since 1.0.0
- */
-export const encode = <S, T, A, B>(optic: PolyPrism<S, T, A, B>) =>
-  (SetPiece: B): T => pipe(optic.setOptic(SetPiece)(undefined), E.getOrThrow(identity))
+): PolyPrism<S, T, A, B> => new OpticImpl("prism", polyDecode, (b) => (_) => E.right(encode(b)))
 
 /**
  * @since 1.0.0
@@ -359,10 +353,14 @@ export interface Prism<in out S, in out A> extends PolyPrism<S, S, A, A> {}
  * @category constructors
  * @since 1.0.0
  */
-export const prism = <S, A>(
-  decode: (s: S) => Either<Error, A>,
-  encode: (a: A) => S
-): Prism<S, A> => polyPrism((s) => pipe(decode(s), E.mapLeft((e) => [e, s])), encode)
+export const prism = <S, A>(decode: (s: S) => Either<Error, A>, encode: (a: A) => S): Prism<S, A> =>
+  polyPrism((s) => pipe(decode(s), E.mapLeft((e) => [e, s])), encode)
+
+/**
+ * @since 1.0.0
+ */
+export const encode = <S, T, A, B>(optic: PolyPrism<S, T, A, B>) =>
+  (SetPiece: B): T => pipe(optic.setOptic(SetPiece)(undefined), E.getOrThrow(identity))
 
 /**
  * An optic that accesses the `Cons` case of a `ReadonlyArray`.
@@ -387,8 +385,19 @@ export const cons: {
     (s) =>
       RA.isNonEmpty(s) ?
         E.right([s[0], s.slice(1)]) :
-        E.left([Error(`[] did not satisfy isCons`), RA.empty]),
+        E.left([new Error(`[] did not satisfy isCons`), RA.empty]),
     ([head, tail]): ReadonlyArray<B> => [head, ...tail]
+  )
+
+/**
+ * An optic that accesses the `NonNullable` case of a nullable type.
+ *
+ * @since 1.0.0
+ */
+export const nullable = <S>(): Prism<S, NonNullable<S>> =>
+  prism(
+    (s) => s == null ? E.left(new Error(`${s} did not satisfy isNonNullable`)) : E.right(s),
+    identity
   )
 
 /**
@@ -403,9 +412,9 @@ export interface PolyOptional<in S, out T, out A, in B>
  * @since 1.0.0
  */
 export const polyOptional = <S, T, A, B>(
-  decodeP: (s: S) => Either<readonly [Error, T], A>,
-  replaceEitherP: (b: B) => (s: S) => Either<readonly [Error, T], T>
-): PolyOptional<S, T, A, B> => new OpticImpl("lens", decodeP, replaceEitherP)
+  polyDecode: (s: S) => Either<readonly [Error, T], A>,
+  polyReplaceEither: (b: B) => (s: S) => Either<readonly [Error, T], T>
+): PolyOptional<S, T, A, B> => new OpticImpl("lens", polyDecode, polyReplaceEither)
 
 /**
  * @since 1.0.0
@@ -436,11 +445,11 @@ export interface Optional<in out S, in out A> extends PolyOptional<S, S, A, A> {
  */
 export const optional = <S, A>(
   decode: (s: S) => Either<Error, A>,
-  replace: (a: A) => (s: S) => Either<Error, S>
+  replaceEither: (a: A) => (s: S) => Either<Error, S>
 ): Optional<S, A> =>
   polyOptional(
     (s) => pipe(decode(s), E.mapLeft((e) => [e, s])),
-    (a) => (s) => pipe(replace(a)(s), E.mapLeft((e) => [e, s]))
+    (a) => (s) => pipe(replaceEither(a)(s), E.mapLeft((e) => [e, s]))
   )
 
 /**
@@ -451,7 +460,7 @@ export const at = <A>(n: number): Optional<ReadonlyArray<A>, A> =>
     (as) =>
       n >= 0 && n < as.length ?
         E.right(as[n]) :
-        E.left(Error(`[${as}] did not satisfy hasAt(${n})`)),
+        E.left(new Error(`[${as}] did not satisfy hasAt(${n})`)),
     (a) =>
       (as) => {
         if (n >= 0 && n < as.length) {
@@ -459,7 +468,7 @@ export const at = <A>(n: number): Optional<ReadonlyArray<A>, A> =>
           out[n] = a
           return E.right(out)
         }
-        return E.left(Error(`[${as}] did not satisfy hasAt(${n})`))
+        return E.left(new Error(`[${as}] did not satisfy hasAt(${n})`))
       }
   )
 
