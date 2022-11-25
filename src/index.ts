@@ -26,14 +26,14 @@ export interface Optic<
     SetPiece: SetPiece
   ) => (SetWholeBefore: SetWholeBefore) => Either<readonly [SetError, SetWholeAfter], SetWholeAfter>
 
-  compose<A, B, S>(this: Iso<S, A>, that: Iso<A, B>): Iso<S, B>
-  compose<A, B, S>(this: Iso<S, A>, that: Prism<A, B>): Prism<S, B>
-  compose<A, B, S>(this: Iso<S, A>, that: Lens<A, B>): Lens<S, B>
-  compose<A, B, S>(this: Lens<S, A>, that: Lens<A, B>): Lens<S, B>
-  compose<A, B, S>(this: Lens<S, A>, that: Optional<A, B>): Optional<S, B>
-  compose<A, B, S>(this: Prism<S, A>, that: Prism<A, B>): Prism<S, B>
-  compose<A, B, S>(this: Prism<S, A>, that: Optional<A, B>): Optional<S, B>
-  compose<A, B, S>(this: Optional<S, A>, that: Optional<A, B>): Optional<S, B>
+  compose<S, A, B>(this: Iso<S, A>, that: Iso<A, B>): Iso<S, B>
+  compose<S, A, B>(this: Iso<S, A>, that: Prism<A, B>): Prism<S, B>
+  compose<S, A, B>(this: Iso<S, A>, that: Lens<A, B>): Lens<S, B>
+  compose<S, A, B>(this: Lens<S, A>, that: Lens<A, B>): Lens<S, B>
+  compose<S, A, B>(this: Lens<S, A>, that: Optional<A, B>): Optional<S, B>
+  compose<S, A, B>(this: Prism<S, A>, that: Prism<A, B>): Prism<S, B>
+  compose<S, A, B>(this: Prism<S, A>, that: Optional<A, B>): Optional<S, B>
+  compose<S, A, B>(this: Optional<S, A>, that: Optional<A, B>): Optional<S, B>
 }
 
 class OpticImpl<GetWhole, SetWholeBefore, SetPiece, GetError, SetError, GetPiece, SetWholeAfter>
@@ -49,15 +49,7 @@ class OpticImpl<GetWhole, SetWholeBefore, SetPiece, GetError, SetError, GetPiece
     ) => Either<readonly [SetError, SetWholeAfter], SetWholeAfter>
   ) {}
 
-  compose<A, B, S>(this: Iso<S, A>, that: Iso<A, B>): Iso<S, B>
-  compose<A, B, S>(this: Iso<S, A>, that: Prism<A, B>): Prism<S, B>
-  compose<A, B, S>(this: Iso<S, A>, that: Lens<A, B>): Lens<S, B>
-  compose<A, B, S>(this: Lens<S, A>, that: Lens<A, B>): Lens<S, B>
-  compose<A, B, S>(this: Lens<S, A>, that: Optional<A, B>): Optional<S, B>
-  compose<A, B, S>(this: Prism<S, A>, that: Prism<A, B>): Prism<S, B>
-  compose<A, B, S>(this: Prism<S, A>, that: Optional<A, B>): Optional<S, B>
-  compose<A, B, S>(this: Optional<S, A>, that: Optional<A, B>): Optional<S, B>
-  compose(that: any) {
+  compose(that: any): any {
     return this.composition === "lens" || that.composition === "lens" ?
       lensComposition(that)(this as any) :
       prismComposition(that)(this as any)
@@ -221,7 +213,10 @@ export const iso: <S, A>(get: (s: S) => A, encode: (a: A) => S) => Iso<S, A> = i
  *
  * @since 1.0.0
  */
-export const id = <A>(): Iso<A, A> => iso(identity, identity)
+export const id: {
+  <S>(): Iso<S, S>
+  <S, T>(): IsoPoly<S, T, S, T>
+} = <S, T>(): IsoPoly<S, T, S, T> => isoPoly(identity, identity)
 
 /**
  * @since 1.0.0
