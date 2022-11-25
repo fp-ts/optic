@@ -5,7 +5,7 @@
 </h3>
 
 <p align="center">
-A porting of [zio-optics](https://github.com/zio/zio-optics) to TypeScript
+A porting of <a href="https://github.com/zio/zio-optics">zio-optics</a> to TypeScript
 </p>
 
 <p align="center">
