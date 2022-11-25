@@ -1,4 +1,4 @@
-import * as _ from "@fp-ts/optic"
+import * as Optic from "@fp-ts/optic"
 
 interface S {
   readonly a: string
@@ -19,22 +19,19 @@ type TT = readonly [boolean, number]
 //
 
 // $ExpectType Lens<S, string>
-_.id<S>().compose(_.key('a'))
+Optic.id<S>().compose(Optic.key('a'))
 
-// $ExpectType LensPoly<S, T, string, boolean>
-_.id<S, T>().compose(_.key<S, 'a', boolean>('a'))
+// $ExpectType PolyLens<S, T, string, boolean>
+Optic.id<S, T>().compose(Optic.key<S, 'a', boolean>('a'))
 
 // $ExpectType Lens<ST, string>
-_.id<ST>().compose(_.key('0'))
+Optic.id<ST>().compose(Optic.key('0'))
 
-// $ExpectType LensPoly<ST, TT, string, boolean>
-_.id<ST, TT>().compose(_.key<ST, '0', boolean>('0'))
+// $ExpectType PolyLens<ST, TT, string, boolean>
+Optic.id<ST, TT>().compose(Optic.key<ST, '0', boolean>('0'))
 
-// $ExpectType LensPoly<S, { readonly a: boolean; readonly b: number; }, string, boolean>
-_.key<S, 'a', boolean>('a')
+// $ExpectType PolyLens<S, { readonly a: boolean; readonly b: number; }, string, boolean>
+Optic.key<S, 'a', boolean>('a')
 
-// $ExpectType LensPoly<ST, readonly [boolean, number], string, boolean>
-_.key<ST, '0', boolean>('0')
-
-// $ExpectError
-_.key<ST, 100, boolean>(100)
+// $ExpectType PolyLens<ST, readonly [boolean, number], string, boolean>
+Optic.key<ST, '0', boolean>('0')
