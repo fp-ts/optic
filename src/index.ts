@@ -75,8 +75,17 @@ export interface Optic<
   ): PolyOptional<S, T, C, D>
 }
 
-class OpticImpl<GetWhole, SetWholeBefore, SetPiece, GetError, SetError, GetPiece, SetWholeAfter>
-  implements Optic<GetWhole, SetWholeBefore, SetPiece, GetError, SetError, GetPiece, SetWholeAfter>
+/** @internal */
+export class OpticImpl<
+  GetWhole,
+  SetWholeBefore,
+  SetPiece,
+  GetError,
+  SetError,
+  GetPiece,
+  SetWholeAfter
+> implements
+  Optic<GetWhole, SetWholeBefore, SetPiece, GetError, SetError, GetPiece, SetWholeAfter>
 {
   constructor(
     readonly composition: "prism" | "lens",
@@ -524,25 +533,3 @@ export interface Getter<in S, out A> extends Optic<S, never, never, Error, unkno
  */
 export const getOption = <S, A>(optic: Getter<S, A>) =>
   (s: S): Option<A> => E.getRight(optic.getOptic(s))
-
-// export interface PolyTraversal<in S, out T, out A, in B>
-//   extends OptionalP<S, T, ReadonlyArray<A>, ReadonlyArray<B>>
-// {}
-
-// export const polyTraversal = <S, T, A, B>(
-//   decode: (s: S) => Either<readonly [Error, T], ReadonlyArray<A>>,
-//   replace: (bs: ReadonlyArray<B>) => (s: S) => Either<readonly [Error, T], T>
-// ): PolyTraversal<S, T, A, B> => new OpticImpl("lens", decode, replace)
-
-// export interface Traversal<in out S, in out A> extends TraversalP<S, S, A, A> {}
-
-// export const traversal = <S, A>(
-//   decode: (s: S) => Either<Error, ReadonlyArray<A>>,
-//   replace: (as: ReadonlyArray<A>) => (s: S) => Either<Error, S>
-// ): Traversal<S, A> =>
-//   polyTraversal(
-//     (s) => pipe(decode(s), E.mapLeft((e) => [e, s])),
-//     (as) => (s) => pipe(replace(as)(s), E.mapLeft((e) => [e, s]))
-//   )
-
-// export interface Fold<in S, out A> extends Getter<S, ReadonlyArray<A>> {}

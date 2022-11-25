@@ -1,5 +1,30 @@
-import type { Lens, Optional } from "@fp-ts/optic"
-import { id, key, lens } from "@fp-ts/optic"
+import type { Either } from "@fp-ts/data/Either"
+import * as E from "@fp-ts/data/Either"
+import { pipe } from "@fp-ts/data/Function"
+import type { Getter, Lens, Optional, PolyOptional } from "@fp-ts/optic"
+import * as Optic from "@fp-ts/optic"
+
+export interface PolyTraversal<in S, out T, out A, in B>
+  extends PolyOptional<S, T, ReadonlyArray<A>, ReadonlyArray<B>>
+{}
+
+export const polyTraversal = <S, T, A, B>(
+  decode: (s: S) => Either<readonly [Error, T], ReadonlyArray<A>>,
+  replace: (bs: ReadonlyArray<B>) => (s: S) => Either<readonly [Error, T], T>
+): PolyTraversal<S, T, A, B> => new Optic.OpticImpl("lens", decode, replace)
+
+export interface Traversal<in out S, in out A> extends PolyTraversal<S, S, A, A> {}
+
+export const traversal = <S, A>(
+  decode: (s: S) => Either<Error, ReadonlyArray<A>>,
+  replace: (as: ReadonlyArray<A>) => (s: S) => Either<Error, S>
+): Traversal<S, A> =>
+  polyTraversal(
+    (s) => pipe(decode(s), E.mapLeft((e) => [e, s])),
+    (as) => (s) => pipe(replace(as)(s), E.mapLeft((e) => [e, s]))
+  )
+
+export interface Fold<in S, out A> extends Getter<S, ReadonlyArray<A>> {}
 
 /**
  * An optic that accesses a nested field of a struct.
@@ -33,9 +58,9 @@ export function path<S, K1 extends keyof S, K2 extends keyof S[K1]>(
 ): Lens<S, S[K1][K2]>
 export function path<S, K1 extends keyof S>(...path: [K1]): Lens<S, S[K1]>
 export function path<S>(...path: ReadonlyArray<string>): Lens<S, any> {
-  let out: Lens<S, any> = id<S>()
+  let out: Lens<S, any> = Optic.id<S>()
   for (const k of path) {
-    out = out.compose(key(k))
+    out = out.compose(Optic.key(k))
   }
   return out
 }
@@ -95,9 +120,9 @@ export const zoom: {
   <S, A>(f: (s: FocusInitial<S>) => FocusPrimitive<A>): Lens<S, A>
 } = (f: any): any => {
   const x = f(focus() as any)
-  let out: Lens<any, any> | Optional<any, any> = id()
+  let out: Lens<any, any> | Optional<any, any> = Optic.id()
   for (const k of (x[ZoomerTypeId] as unknown as Array<PropertyKey>)) {
-    out = out.compose(key(k as any))
+    out = out.compose(Optic.key(k as any))
   }
   return out
 }
@@ -110,7 +135,7 @@ export const zoom: {
 export const pick = <S, Keys extends readonly [keyof S, ...Array<keyof S>]>(
   ...keys: Keys
 ): Lens<S, { readonly [K in Keys[number]]: S[K] }> =>
-  lens((s) => {
+  Optic.lens((s) => {
     const out: any = {}
     for (const k of keys) {
       out[k] = s[k]
