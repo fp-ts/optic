@@ -4,10 +4,8 @@
 import type { Either } from "@fp-ts/data/Either"
 import * as E from "@fp-ts/data/Either"
 import { identity, pipe } from "@fp-ts/data/Function"
-import type { List } from "@fp-ts/data/List"
-import * as list from "@fp-ts/data/List"
 import type { Option } from "@fp-ts/data/Option"
-import * as O from "@fp-ts/data/Option"
+import * as RA from "@fp-ts/data/ReadonlyArray"
 
 /**
  * @since 1.0.0
@@ -288,17 +286,6 @@ export const set = <S, T, A, B>(optic: PolyLens<S, T, A, B>) =>
     (SetWholeBefore: S): T => pipe(optic.setOptic(SetPiece)(SetWholeBefore), E.getOrThrow(identity))
 
 /**
- * @since 1.0.0
- */
-export interface Lens<in out S, in out A> extends PolyLens<S, S, A, A> {}
-
-/**
- * @category constructors
- * @since 1.0.0
- */
-export const lens: <S, A>(get: (s: S) => A, set: (a: A) => (s: S) => S) => Lens<S, A> = polyLens
-
-/**
  * An optic that accesses a key of a struct or a tuple.
  *
  * @since 1.0.0
@@ -320,6 +307,17 @@ export const key: {
       }
       return { ...s, [key]: b }
     })
+
+/**
+ * @since 1.0.0
+ */
+export interface Lens<in out S, in out A> extends PolyLens<S, S, A, A> {}
+
+/**
+ * @category constructors
+ * @since 1.0.0
+ */
+export const lens: <S, A>(get: (s: S) => A, set: (a: A) => (s: S) => S) => Lens<S, A> = polyLens
 
 /**
  * @since 1.0.0
@@ -358,85 +356,30 @@ export const prism = <S, A>(
 ): Prism<S, A> => polyPrism((s) => pipe(decode(s), E.mapLeft((e) => [e, s])), encode)
 
 /**
- * An optic that accesses the `None` case of an `Option`.
- *
- * @since 1.0.0
- */
-export const none = <A>(): Prism<Option<A>, void> =>
-  prism(
-    O.match(
-      () => E.right<void>(undefined),
-      (a) => E.left(Error(`some(${a}) did not satisfy isNone`))
-    ),
-    (_): Option<A> => O.none
-  )
-
-/**
- * An optic that accesses the `Some` case of an `Option`.
- *
- * @since 1.0.0
- */
-export const some: {
-  <A>(): Prism<Option<A>, A>
-  <A, B>(): PolyPrism<Option<A>, Option<B>, A, B>
-} = <A, B>(): PolyPrism<Option<A>, Option<B>, A, B> =>
-  polyPrism(
-    O.match(
-      () => E.left([Error("none did not satisfy isSome"), O.none]),
-      (a) => E.right(a)
-    ),
-    (b) => O.some(b)
-  )
-
-/**
- * An optic that accesses the `Right` case of an `Either`.
- *
- * @since 1.0.0
- */
-export const right: {
-  <A, B>(): Prism<Either<A, B>, B>
-  <A, B, C>(): PolyPrism<Either<A, B>, Either<A, C>, B, C>
-} = <A, B, C>(): PolyPrism<Either<A, B>, Either<A, C>, B, C> =>
-  polyPrism(
-    E.match(
-      (a) => E.left([Error(`left(${a}) did not satisfy isRight`), E.left(a)]),
-      (b) => E.right(b)
-    ),
-    (c): Either<A, C> => E.right(c)
-  )
-
-/**
- * An optic that accesses the `Left` case of an `Either`.
- *
- * @since 1.0.0
- */
-export const left: {
-  <A, B>(): Prism<Either<A, B>, A>
-  <A, B, C>(): PolyPrism<Either<A, B>, Either<C, B>, A, C>
-} = <A, B, C>(): PolyPrism<Either<A, B>, Either<C, B>, A, C> =>
-  polyPrism(
-    E.match(
-      (a) => E.right(a),
-      (b) => E.left([Error(`right(${b}) did not satisfy isLeft`), E.right(b)])
-    ),
-    (c): Either<C, B> => E.left(c)
-  )
-
-/**
- * An optic that accesses the `Cons` case of a `List`.
+ * An optic that accesses the `Cons` case of a `ReadonlyArray`.
  *
  * @since 1.0.0
  */
 export const cons: {
-  <A>(): Prism<List<A>, readonly [A, List<A>]>
-  <A, B>(): PolyPrism<List<A>, List<B>, readonly [A, List<A>], readonly [B, List<B>]>
-} = <A, B>(): PolyPrism<List<A>, List<B>, readonly [A, List<A>], readonly [B, List<B>]> =>
+  <A>(): Prism<ReadonlyArray<A>, readonly [A, ReadonlyArray<A>]>
+  <A, B>(): PolyPrism<
+    ReadonlyArray<A>,
+    ReadonlyArray<B>,
+    readonly [A, ReadonlyArray<A>],
+    readonly [B, ReadonlyArray<B>]
+  >
+} = <A, B>(): PolyPrism<
+  ReadonlyArray<A>,
+  ReadonlyArray<B>,
+  readonly [A, ReadonlyArray<A>],
+  readonly [B, ReadonlyArray<B>]
+> =>
   polyPrism(
     (s) =>
-      list.isCons(s) ?
-        E.right([s.head, s.tail]) :
-        E.left([Error(`Nil did not satisfy isCons`), list.nil()]),
-    ([head, tail]): List<B> => list.cons(head, tail)
+      RA.isNonEmpty(s) ?
+        E.right([s[0], s.slice(1)]) :
+        E.left([Error(`[] did not satisfy isCons`), RA.empty]),
+    ([head, tail]): ReadonlyArray<B> => [head, ...tail]
   )
 
 /**
@@ -510,8 +453,6 @@ export const at = <A>(n: number): Optional<ReadonlyArray<A>, A> =>
         return E.left(Error(`[${as}] did not satisfy hasAt(${n})`))
       }
   )
-
-// TODO atChunk https://github.com/zio/zio-optics/blob/master/zio-optics/shared/src/main/scala/zio/optics/optic.scala#L133
 
 // TODO head https://github.com/zio/zio-optics/blob/master/zio-optics/shared/src/main/scala/zio/optics/optic.scala#L193
 

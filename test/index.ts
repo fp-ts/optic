@@ -1,36 +1,35 @@
 import * as E from "@fp-ts/data/Either"
 import { pipe } from "@fp-ts/data/Function"
-import type { List } from "@fp-ts/data/List"
-import * as list from "@fp-ts/data/List"
 import * as O from "@fp-ts/data/Option"
-import * as _ from "@fp-ts/optic"
+import * as Optic from "@fp-ts/optic"
+import * as OptionOptic from "@fp-ts/optic/data/Option"
 
 describe("index", () => {
   it("100% coverage", () => {
-    expect(_.polyIso).exist
-    expect(_.iso).exist
-    expect(_.polyLens).exist
-    expect(_.lens).exist
-    expect(_.polyPrism).exist
-    expect(_.prism).exist
-    expect(_.polyOptional).exist
-    expect(_.optional).exist
+    expect(Optic.polyIso).exist
+    expect(Optic.iso).exist
+    expect(Optic.polyLens).exist
+    expect(Optic.lens).exist
+    expect(Optic.polyPrism).exist
+    expect(Optic.prism).exist
+    expect(Optic.polyOptional).exist
+    expect(Optic.optional).exist
   })
 
   it("replaceOption", () => {
-    const _at1 = _.id<ReadonlyArray<number>>()
-      .compose(_.at(1))
+    const _at1 = Optic.id<ReadonlyArray<number>>()
+      .compose(Optic.at(1))
 
-    expect(pipe([1, 2, 3], _.replaceOption(_at1)(4))).toEqual(O.some([1, 4, 3]))
-    expect(pipe([1], _.replaceOption(_at1)(4))).toEqual(O.none)
+    expect(pipe([1, 2, 3], Optic.replaceOption(_at1)(4))).toEqual(O.some([1, 4, 3]))
+    expect(pipe([1], Optic.replaceOption(_at1)(4))).toEqual(O.none)
   })
 
   it("getOrModify", () => {
-    const _at1 = _.id<ReadonlyArray<number>>()
-      .compose(_.at(1))
+    const _at1 = Optic.id<ReadonlyArray<number>>()
+      .compose(Optic.at(1))
 
-    expect(pipe([1, 2, 3], _.getOrModify(_at1))).toEqual(E.right(2))
-    expect(pipe([1], _.getOrModify(_at1))).toEqual(E.left([1]))
+    expect(pipe([1, 2, 3], Optic.getOrModify(_at1))).toEqual(E.right(2))
+    expect(pipe([1], Optic.getOrModify(_at1))).toEqual(E.left([1]))
   })
 
   it("modify", () => {
@@ -42,8 +41,11 @@ describe("index", () => {
       readonly c: boolean
     }
 
-    const f = _.modify(
-      _.id<S>().compose(_.key("b")).compose(_.some()).compose(_.key("d")).compose(_.some())
+    const f = Optic.modify(
+      Optic.id<S>().compose(Optic.key("b")).compose(OptionOptic.some()).compose(Optic.key("d"))
+        .compose(
+          OptionOptic.some()
+        )
     )((
       n
     ) => n * 2)
@@ -60,92 +62,54 @@ describe("index", () => {
     expect(f({ a: "a", b: O.none, c: true })).toEqual({ a: "a", b: O.none, c: true })
   })
 
-  describe("lenses", () => {
-    describe("key", () => {
-      it("struct", () => {
-        type S = {
-          readonly a: string
-          readonly b: number
-          readonly c: boolean
-        }
+  describe("key", () => {
+    it("struct", () => {
+      type S = {
+        readonly a: string
+        readonly b: number
+        readonly c: boolean
+      }
 
-        const _a = _.id<S>()
-          .compose(_.key("a"))
+      const _a = Optic.id<S>()
+        .compose(Optic.key("a"))
 
-        expect(pipe({ a: "a", b: 1, c: true }, _.get(_a))).toEqual("a")
-        expect(pipe({ a: "a", b: 1, c: true }, _.set(_a)("a2"))).toEqual({ a: "a2", b: 1, c: true })
+      expect(pipe({ a: "a", b: 1, c: true }, Optic.get(_a))).toEqual("a")
+      expect(pipe({ a: "a", b: 1, c: true }, Optic.set(_a)("a2"))).toEqual({
+        a: "a2",
+        b: 1,
+        c: true
       })
+    })
 
-      it("tuple", () => {
-        const _0 = _.id<readonly [string, number]>()
-          .compose(_.key("0"))
+    it("tuple", () => {
+      const _0 = Optic.id<readonly [string, number]>()
+        .compose(Optic.key("0"))
 
-        expect(pipe(["a", 1], _.get(_0))).toEqual("a")
-        expect(pipe(["b", 2], _.set(_0)("a"))).toEqual(["a", 2])
-      })
+      expect(pipe(["a", 1], Optic.get(_0))).toEqual("a")
+      expect(pipe(["b", 2], Optic.set(_0)("a"))).toEqual(["a", 2])
     })
   })
 
-  describe("prisms", () => {
-    it("none", () => {
-      const _none = _.id<O.Option<string>>()
-        .compose(_.none())
+  it("cons", () => {
+    const _cons = Optic.id<ReadonlyArray<number>>()
+      .compose(Optic.cons())
 
-      expect(pipe(O.none, _.getOption(_none))).toEqual(O.some(undefined))
-      expect(pipe(O.some("a"), _.getOption(_none))).toEqual(O.none)
-      expect(pipe(undefined, _.encode(_none))).toEqual(O.none)
-    })
-
-    it("some", () => {
-      const _some = _.id<O.Option<string>>()
-        .compose(_.some())
-
-      expect(pipe(O.none, _.getOption(_some))).toEqual(O.none)
-      expect(pipe(O.some("a"), _.getOption(_some))).toEqual(O.some("a"))
-      expect(pipe("a", _.encode(_some))).toEqual(O.some("a"))
-    })
-
-    it("right", () => {
-      const _right = _.id<E.Either<string, number>>()
-        .compose(_.right())
-
-      expect(pipe(E.right(1), _.getOption(_right))).toEqual(O.some(1))
-      expect(pipe(E.left("e"), _.getOption(_right))).toEqual(O.none)
-      expect(pipe(2, _.encode(_right))).toEqual(E.right(2))
-    })
-
-    it("left", () => {
-      const _left = _.id<E.Either<string, number>>()
-        .compose(_.left())
-
-      expect(pipe(E.right(1), _.getOption(_left))).toEqual(O.none)
-      expect(pipe(E.left("e"), _.getOption(_left))).toEqual(O.some("e"))
-      expect(pipe("e", _.encode(_left))).toEqual(E.left("e"))
-    })
-
-    it("cons", () => {
-      const _cons = _.id<List<number>>()
-        .compose(_.cons())
-
-      expect(pipe(list.fromIterable([1, 2, 3]), _.getOption(_cons))).toEqual(
-        O.some([1, list.fromIterable([2, 3])])
-      )
-      expect(pipe(list.nil(), _.getOption(_cons))).toEqual(O.none)
-      expect(pipe([1, list.fromIterable([2, 3])], _.encode(_cons))).toEqual(
-        list.fromIterable([1, 2, 3])
-      )
-    })
+    expect(pipe([1, 2, 3], Optic.getOption(_cons))).toEqual(
+      O.some([1, [2, 3]])
+    )
+    expect(pipe([], Optic.getOption(_cons))).toEqual(O.none)
+    expect(pipe([1, [2, 3]], Optic.encode(_cons))).toEqual(
+      [1, 2, 3]
+    )
   })
 
-  describe("optionals", () => {
-    it("at", () => {
-      const _at1 = _.id<ReadonlyArray<number>>()
-        .compose(_.at(1))
+  it("at", () => {
+    const _at1 = Optic.id<ReadonlyArray<number>>()
+      .compose(Optic.at(1))
 
-      expect(pipe([1, 2, 3], _.getOption(_at1))).toEqual(O.some(2))
-      expect(pipe([1], _.getOption(_at1))).toEqual(O.none)
-      expect(pipe([1, 2, 3], _.replace(_at1)(4))).toEqual([1, 4, 3])
-      expect(pipe([1], _.replace(_at1)(4))).toEqual([1])
-    })
+    expect(pipe([1, 2, 3], Optic.getOption(_at1))).toEqual(O.some(2))
+    expect(pipe([1], Optic.getOption(_at1))).toEqual(O.none)
+    expect(pipe([1, 2, 3], Optic.replace(_at1)(4))).toEqual([1, 4, 3])
+    expect(pipe([1], Optic.replace(_at1)(4))).toEqual([1])
   })
 })
