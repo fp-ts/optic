@@ -7,13 +7,13 @@ import * as _ from "@fp-ts/optic"
 
 describe("index", () => {
   it("100% coverage", () => {
-    expect(_.isoPoly).exist
+    expect(_.polyIso).exist
     expect(_.iso).exist
-    expect(_.lensPoly).exist
+    expect(_.polyLens).exist
     expect(_.lens).exist
-    expect(_.prismPoly).exist
+    expect(_.polyPrism).exist
     expect(_.prism).exist
-    expect(_.optionalPoly).exist
+    expect(_.polyOptional).exist
     expect(_.optional).exist
   })
 
