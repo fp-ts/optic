@@ -26,14 +26,55 @@ export interface Optic<
     SetPiece: SetPiece
   ) => (SetWholeBefore: SetWholeBefore) => Either<readonly [SetError, SetWholeAfter], SetWholeAfter>
 
+  // Iso
   compose<S, A, B>(this: Iso<S, A>, that: Iso<A, B>): Iso<S, B>
+  compose<S, T, A, B, C, D>(
+    this: IsoPoly<S, T, A, B>,
+    that: IsoPoly<A, B, C, D>
+  ): IsoPoly<S, T, C, D>
   compose<S, A, B>(this: Iso<S, A>, that: Prism<A, B>): Prism<S, B>
+  compose<S, T, A, B, C, D>(
+    this: IsoPoly<S, T, A, B>,
+    that: PrismPoly<A, B, C, D>
+  ): PrismPoly<S, T, C, D>
   compose<S, A, B>(this: Iso<S, A>, that: Lens<A, B>): Lens<S, B>
+  compose<S, T, A, B, C, D>(
+    this: IsoPoly<S, T, A, B>,
+    that: LensPoly<A, B, C, D>
+  ): LensPoly<S, T, C, D>
+  compose<S, A, B>(this: Iso<S, A>, that: Optional<A, B>): Optional<S, B>
+  compose<S, T, A, B, C, D>(
+    this: IsoPoly<S, T, A, B>,
+    that: OptionalPoly<A, B, C, D>
+  ): OptionalPoly<S, T, C, D>
+  // Lens
   compose<S, A, B>(this: Lens<S, A>, that: Lens<A, B>): Lens<S, B>
+  compose<S, T, A, B, C, D>(
+    this: LensPoly<S, T, A, B>,
+    that: LensPoly<A, B, C, D>
+  ): LensPoly<S, T, C, D>
   compose<S, A, B>(this: Lens<S, A>, that: Optional<A, B>): Optional<S, B>
+  compose<S, T, A, B, C, D>(
+    this: LensPoly<S, T, A, B>,
+    that: OptionalPoly<A, B, C, D>
+  ): OptionalPoly<S, T, C, D>
+  // Prism
   compose<S, A, B>(this: Prism<S, A>, that: Prism<A, B>): Prism<S, B>
+  compose<S, T, A, B, C, D>(
+    this: PrismPoly<S, T, A, B>,
+    that: PrismPoly<A, B, C, D>
+  ): PrismPoly<S, T, C, D>
   compose<S, A, B>(this: Prism<S, A>, that: Optional<A, B>): Optional<S, B>
+  compose<S, T, A, B, C, D>(
+    this: PrismPoly<S, T, A, B>,
+    that: OptionalPoly<A, B, C, D>
+  ): OptionalPoly<S, T, C, D>
+  // Optional
   compose<S, A, B>(this: Optional<S, A>, that: Optional<A, B>): Optional<S, B>
+  compose<S, T, A, B, C, D>(
+    this: OptionalPoly<S, T, A, B>,
+    that: OptionalPoly<A, B, C, D>
+  ): OptionalPoly<S, T, C, D>
 }
 
 class OpticImpl<GetWhole, SetWholeBefore, SetPiece, GetError, SetError, GetPiece, SetWholeAfter>
@@ -262,17 +303,22 @@ export const lens: <S, A>(get: (s: S) => A, set: (a: A) => (s: S) => S) => Lens<
  *
  * @since 1.0.0
  */
-export const key = <S, Key extends keyof S & (string | symbol)>(
+export const key: {
+  <S, Key extends keyof S & (string | symbol)>(key: Key): Lens<S, S[Key]>
+  <S, Key extends keyof S & (string | symbol), B>(
+    key: Key
+  ): LensPoly<S, { readonly [P in keyof S]: P extends Key ? B : S[P] }, S[Key], B>
+} = <S, Key extends keyof S, B>(
   key: Key
-): Lens<S, S[Key]> =>
-  lens((s) => s[key], (a) =>
+): LensPoly<S, any, S[Key], B> =>
+  lensPoly((s) => s[key], (b) =>
     (s) => {
       if (Array.isArray(s)) {
         const out: any = s.slice()
-        out[key] = a
+        out[key] = b
         return out
       }
-      return { ...s, [key]: a }
+      return { ...s, [key]: b }
     })
 
 /**
