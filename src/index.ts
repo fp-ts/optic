@@ -474,28 +474,6 @@ export const head = <A>(): Optional<ReadonlyArray<A>, A> => cons<A>().compose(ke
 export const tail = <A>(): Optional<ReadonlyArray<A>, ReadonlyArray<A>> =>
   cons<A>().compose(key("1"))
 
-// TODO https://github.com/zio/zio-optics/blob/master/zio-optics/shared/src/main/scala/zio/optics/optic.scala#L159
-// /**
-//  * An optic that accesses a filtered subset of a ReadonlArray.
-//  *
-//  * @since 1.0.0
-//  */
-// export const filter = <A>(f: (a: A) => boolean): Traversal<ReadonlyArray<A>, A> =>
-//   traversal(
-
-//   )
-
-// TODO https://github.com/zio/zio-optics/blob/master/zio-optics/shared/src/main/scala/zio/optics/optic.scala#L266
-// /**
-//  * An optic that accesses a filtered subset of a ReadonlArray.
-//  *
-//  * @since 1.0.0
-//  */
-// export const slice = <A>(from: number, to: number): Traversal<ReadonlyArray<A>, A> =>
-//   traversal(
-
-//   )
-
 /**
  * @since 1.0.0
  */
