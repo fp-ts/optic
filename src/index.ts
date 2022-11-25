@@ -454,11 +454,16 @@ export const at = <A>(n: number): Optional<ReadonlyArray<A>, A> =>
       }
   )
 
-// TODO head https://github.com/zio/zio-optics/blob/master/zio-optics/shared/src/main/scala/zio/optics/optic.scala#L193
+/**
+ * @since 1.0.0
+ */
+export const head = <A>(): Optional<ReadonlyArray<A>, A> => cons<A>().compose(key("0"))
 
-// TODO tail https://github.com/zio/zio-optics/blob/master/zio-optics/shared/src/main/scala/zio/optics/optic.scala#L287
-
-// TODO key https://github.com/zio/zio-optics/blob/master/zio-optics/shared/src/main/scala/zio/optics/optic.scala#L205
+/**
+ * @since 1.0.0
+ */
+export const tail = <A>(): Optional<ReadonlyArray<A>, ReadonlyArray<A>> =>
+  cons<A>().compose(key("1"))
 
 // TODO https://github.com/zio/zio-optics/blob/master/zio-optics/shared/src/main/scala/zio/optics/optic.scala#L159
 // /**

@@ -112,4 +112,36 @@ describe("index", () => {
     expect(pipe([1, 2, 3], Optic.replace(_at1)(4))).toEqual([1, 4, 3])
     expect(pipe([1], Optic.replace(_at1)(4))).toEqual([1])
   })
+
+  it("head", () => {
+    const _head = Optic.id<ReadonlyArray<number>>()
+      .compose(Optic.head())
+
+    expect(pipe([1, 2, 3], Optic.getOption(_head))).toEqual(
+      O.some(1)
+    )
+    expect(pipe([], Optic.getOption(_head))).toEqual(O.none)
+    expect(pipe([1, 2, 3], Optic.replace(_head)(4))).toEqual(
+      [4, 2, 3]
+    )
+    expect(pipe([], Optic.replace(_head)(4))).toEqual(
+      []
+    )
+  })
+
+  it("tail", () => {
+    const _tail = Optic.id<ReadonlyArray<number>>()
+      .compose(Optic.tail())
+
+    expect(pipe([1, 2, 3], Optic.getOption(_tail))).toEqual(
+      O.some([2, 3])
+    )
+    expect(pipe([], Optic.getOption(_tail))).toEqual(O.none)
+    expect(pipe([1, 2, 3], Optic.replace(_tail)([4]))).toEqual(
+      [1, 4]
+    )
+    expect(pipe([], Optic.replace(_tail)([4]))).toEqual(
+      []
+    )
+  })
 })
