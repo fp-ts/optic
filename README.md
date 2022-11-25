@@ -1,16 +1,16 @@
 <h3 align="center">
-  <a href="https://fp-ts.github.io/codec/">
+  <a href="https://fp-ts.github.io/optic/">
     <img src="./docs/fp-ts-logo.png">
   </a>
 </h3>
 
 <p align="center">
-Access and transform immutable data
+A porting of [zio-optics](https://github.com/zio/zio-optics) to TypeScript
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/@fp-ts/codec">
-    <img src="https://img.shields.io/npm/dm/@fp-ts/codec.svg" alt="npm downloads" height="20">
+  <a href="https://www.npmjs.com/package/@fp-ts/optic">
+    <img src="https://img.shields.io/npm/dm/@fp-ts/optic.svg" alt="npm downloads" height="20">
   </a>
 </p>
 
@@ -109,7 +109,7 @@ npm install @fp-ts/optic
 
 # Documentation
 
-- [API Reference](https://fp-ts.github.io/codec/)
+- [API Reference](https://fp-ts.github.io/optic/)
 
 # License
 
