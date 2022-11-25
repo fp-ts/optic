@@ -1,20 +1,35 @@
+/**
+ * @since 1.0.0
+ */
 import type { Either } from "@fp-ts/data/Either"
 import * as E from "@fp-ts/data/Either"
 import { pipe } from "@fp-ts/data/Function"
 import type { Getter, Lens, Optional, PolyOptional } from "@fp-ts/optic"
 import * as Optic from "@fp-ts/optic"
 
+/**
+ * @since 1.0.0
+ */
 export interface PolyTraversal<in S, out T, out A, in B>
   extends PolyOptional<S, T, ReadonlyArray<A>, ReadonlyArray<B>>
 {}
 
+/**
+ * @since 1.0.0
+ */
 export const polyTraversal = <S, T, A, B>(
   decode: (s: S) => Either<readonly [Error, T], ReadonlyArray<A>>,
   replace: (bs: ReadonlyArray<B>) => (s: S) => Either<readonly [Error, T], T>
 ): PolyTraversal<S, T, A, B> => new Optic.OpticImpl("lens", decode, replace)
 
+/**
+ * @since 1.0.0
+ */
 export interface Traversal<in out S, in out A> extends PolyTraversal<S, S, A, A> {}
 
+/**
+ * @since 1.0.0
+ */
 export const traversal = <S, A>(
   decode: (s: S) => Either<Error, ReadonlyArray<A>>,
   replace: (as: ReadonlyArray<A>) => (s: S) => Either<Error, S>
@@ -24,6 +39,9 @@ export const traversal = <S, A>(
     (as) => (s) => pipe(replace(as)(s), E.mapLeft((e) => [e, s]))
   )
 
+/**
+ * @since 1.0.0
+ */
 export interface Fold<in S, out A> extends Getter<S, ReadonlyArray<A>> {}
 
 /**
