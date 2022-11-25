@@ -322,22 +322,6 @@ export const key: {
     })
 
 /**
- * An optic that accesses the first element of a tuple.
- *
- * @since 1.0.0
- */
-export const first = <A, B, C>(): PolyLens<readonly [A, B], readonly [C, B], A, C> =>
-  polyLens(([a, _]) => a, (c) => ([_, b]) => [c, b])
-
-/**
- * An optic that accesses the second element of a tuple.
- *
- * @since 1.0.0
- */
-export const second = <A, B, C>(): PolyLens<readonly [A, B], readonly [A, C], B, C> =>
-  polyLens(([_, b]) => b, (c) => ([a, _]) => [a, c])
-
-/**
  * @since 1.0.0
  */
 export interface PolyPrism<in S, out T, out A, in B>
