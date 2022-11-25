@@ -14,6 +14,10 @@ A porting of <a href="https://github.com/zio/zio-optics">zio-optics</a> to TypeS
   </a>
 </p>
 
+# Features
+
+- **Unified Representation Of Optics**. All optics compose the same way because they are all instances of the same data type (`Optic`)
+
 # Optics
 
 ```mermaid
