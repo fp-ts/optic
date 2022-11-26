@@ -143,13 +143,13 @@ describe("index", () => {
     )
   })
 
-  it("nullable", () => {
-    const _nullable = Optic.id<string | undefined | null>()
-      .compose(Optic.nullable())
+  it("nonNullable", () => {
+    const _nonNullable = Optic.id<string | undefined | null>()
+      .compose(Optic.nonNullable())
 
-    expect(pipe(null, Optic.getOption(_nullable))).toEqual(O.none)
-    expect(pipe(undefined, Optic.getOption(_nullable))).toEqual(O.none)
-    expect(pipe("a", Optic.getOption(_nullable))).toEqual(O.some("a"))
-    expect(pipe("a", Optic.encode(_nullable))).toEqual("a")
+    expect(pipe(null, Optic.getOption(_nonNullable))).toEqual(O.none)
+    expect(pipe(undefined, Optic.getOption(_nonNullable))).toEqual(O.none)
+    expect(pipe("a", Optic.getOption(_nonNullable))).toEqual(O.some("a"))
+    expect(pipe("a", Optic.encode(_nonNullable))).toEqual("a")
   })
 })
