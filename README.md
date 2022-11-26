@@ -34,9 +34,11 @@ flowchart TD
 # Example
 
 ```ts
+import * as O from "@fp-ts/data/Option";
+
 interface Street {
   num: number;
-  name: string;
+  name: O.Option<string>;
 }
 interface Address {
   city: string;
@@ -52,10 +54,10 @@ interface Employee {
 }
 ```
 
-Let's say we have an employee and we need to upper case the first character of his company street name. Here is how we could write it in vanilla TypeScript
+Let's say we have an employee and we need to upper case the first character of his company street name.
 
 ```ts
-const employee: Employee = {
+const from: Employee = {
   name: "john",
   company: {
     name: "awesome inc",
@@ -63,44 +65,47 @@ const employee: Employee = {
       city: "london",
       street: {
         num: 23,
-        name: "high street",
+        name: O.some("high street"),
       },
     },
   },
 };
 
-const capitalize = (s: string): string =>
-  s.substring(0, 1).toUpperCase() + s.substring(1);
-
-const employeeCapitalized = {
-  ...employee,
+const to: Employee = {
+  name: "john",
   company: {
-    ...employee.company,
+    name: "awesome inc",
     address: {
-      ...employee.company.address,
+      city: "london",
       street: {
-        ...employee.company.address.street,
-        name: capitalize(employee.company.address.street.name),
+        num: 23,
+        name: O.some("High street"),
       },
     },
   },
 };
 ```
 
-As we can see copy is not convenient to update nested objects because we need to repeat ourselves. Let's see what could we do with `@fp-ts/optic`
+Let's see what could we do with `@fp-ts/optic`
 
 ```ts
 import * as Optic from "@fp-ts/optic";
+import * as OptionOptic from "@fp-ts/optic/data/Option";
+import * as StringOptic from "@fp-ts/optic/data/string";
 
-const _name = Optic.id<Employee>()
-  .compose(Optic.key("company"))
-  .compose(Optic.key("address"))
-  .compose(Optic.key("street"))
-  .compose(Optic.key("name"));
+const _name: Optic.Optional<Employee, string> = Optic.id<Employee>()
+  .compose(Optic.key("company")) // Lens<Employee, Company>
+  .compose(Optic.key("address")) // Lens<Employee, Company>
+  .compose(Optic.key("street")) // Lens<<Employee, Company>
+  .compose(Optic.key("name")) // Lens<Street, O.Option<string>>
+  .compose(OptionOptic.some()) // Prism<O.Option<string>, string>
+  .compose(StringOptic.index(0)); // Optional<string, string>
+
+const capitalize = (s: string): string => s.toUpperCase();
 
 const capitalizeName = Optic.modify(_name)(capitalize);
 
-expect(capitalizeName(employee)).toEqual(employeeCapitalized);
+expect(capitalizeName(from)).toEqual(to);
 ```
 
 # Installation
