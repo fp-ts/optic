@@ -181,4 +181,17 @@ describe("index", () => {
 
     expect(pipe([true, "a"], Optic.encode(_A))).toEqual([true, "a"])
   })
+
+  it("findFirst", () => {
+    const isString = (u: unknown): u is string => typeof u === "string"
+    const _firstString = Optic.id<ReadonlyArray<string | number>>()
+      .compose(Optic.findFirst(isString))
+    expect(pipe([1, 2, "a", 3, "b"], Optic.getOption(_firstString))).toEqual(O.some("a"))
+    expect(pipe([1, 2, 3], Optic.getOption(_firstString))).toEqual(O.none)
+
+    expect(pipe([1, 2, "a", 3, "b"], Optic.replaceOption(_firstString)("c"))).toEqual(
+      O.some([1, 2, "c", 3, "b"])
+    )
+    expect(pipe([1, 2, 3], Optic.replaceOption(_firstString)("c"))).toEqual(O.none)
+  })
 })

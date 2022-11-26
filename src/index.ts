@@ -509,6 +509,36 @@ export const tail = <A>(): Optional<ReadonlyArray<A>, ReadonlyArray<A>> =>
   cons<A>().compose(at("1"))
 
 /**
+ * An optic that accesses the first case specified by a predicate.
+ *
+ * @since 1.0.0
+ */
+export const findFirst: {
+  <C extends A, B extends A, A = C>(refinement: Refinement<A, B>): Optional<ReadonlyArray<C>, B>
+  <B extends A, A = B>(predicate: Predicate<A>): Optional<ReadonlyArray<B>, B>
+} = <A>(predicate: Predicate<A>): Optional<ReadonlyArray<A>, A> =>
+  optional(
+    (as) =>
+      pipe(
+        as,
+        RA.findFirst(predicate),
+        E.fromOption(() => new Error(`[${as}] did not satisfy the specified predicate`))
+      ),
+    (a) =>
+      (as) =>
+        pipe(
+          as,
+          RA.findFirstIndex(predicate),
+          E.fromOption(() => new Error(`[${as}] did not satisfy the specified predicate`)),
+          E.map((index) => {
+            const out = as.slice()
+            out[index] = a
+            return out
+          })
+        )
+  )
+
+/**
  * @since 1.0.0
  */
 export interface PolySetter<in S, out T, in A>
