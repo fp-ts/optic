@@ -78,7 +78,7 @@ export function path<S, K1 extends keyof S>(...path: [K1]): Lens<S, S[K1]>
 export function path<S>(...path: ReadonlyArray<string>): Lens<S, any> {
   let out: Lens<S, any> = Optic.id<S>()
   for (const k of path) {
-    out = out.compose(Optic.key(k))
+    out = out.compose(Optic.at(k))
   }
   return out
 }
@@ -140,7 +140,7 @@ export const zoom: {
   const x = f(focus() as any)
   let out: Lens<any, any> | Optional<any, any> = Optic.id()
   for (const k of (x[ZoomerTypeId] as unknown as Array<PropertyKey>)) {
-    out = out.compose(Optic.key(k as any))
+    out = out.compose(Optic.at(k as any))
   }
   return out
 }
