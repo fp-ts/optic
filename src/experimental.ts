@@ -1,9 +1,11 @@
 /**
  * @since 1.0.0
  */
+import type { Kind, TypeLambda } from "@fp-ts/core/HKT"
+import type { Applicative } from "@fp-ts/core/typeclass/Applicative"
 import type { Either } from "@fp-ts/data/Either"
 import * as E from "@fp-ts/data/Either"
-import { pipe } from "@fp-ts/data/Function"
+import { identity, pipe } from "@fp-ts/data/Function"
 import type { Getter, Lens, Optional, PolyOptional } from "@fp-ts/optic"
 import * as Optic from "@fp-ts/optic"
 
@@ -43,6 +45,22 @@ export const traversal = <S, A>(
  * @since 1.0.0
  */
 export interface Fold<in S, out A> extends Getter<S, ReadonlyArray<A>> {}
+
+/**
+ * @since 1.0.0
+ */
+export const modifyApplicative = <F extends TypeLambda>(F: Applicative<F>) =>
+  <S, T, A, B>(optic: PolyOptional<S, T, A, B>) =>
+    <R, E, O>(f: (a: A) => Kind<F, R, E, O, B>) =>
+      (s: S): Kind<F, R, E, O, T> =>
+        pipe(
+          optic.getOptic(s),
+          E.match(
+            ([_, t]) => F.of(t),
+            (a) =>
+              pipe(f(a), F.map((b) => pipe(optic.setOptic(b)(s), E.match(([_, t]) => t, identity))))
+          )
+        )
 
 /**
  * An optic that accesses a nested field of a struct.

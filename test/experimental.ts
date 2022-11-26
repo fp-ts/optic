@@ -1,7 +1,7 @@
 import { pipe } from "@fp-ts/data/Function"
-import * as Option from "@fp-ts/data/Option"
+import * as O from "@fp-ts/data/Option"
 import * as Optic from "@fp-ts/optic"
-import * as Experimental from "@fp-ts/optic/experimental"
+import * as ExperimentalOptic from "@fp-ts/optic/experimental"
 
 interface Street {
   num: number
@@ -53,9 +53,19 @@ const employeeCapitalized = {
 }
 
 describe("experimental", () => {
+  it("modifyapplicative", () => {
+    const _0 = Optic.id<ReadonlyArray<number>>().compose(Optic.index(0))
+    const f = ExperimentalOptic.modifyApplicative(O.Applicative)(_0)((
+      n
+    ) => (n > 0 ? O.some(n * 2) : O.none))
+    expect(f([])).toEqual(O.some([]))
+    expect(f([1, 2, 3])).toEqual(O.some([2, 2, 3]))
+    expect(f([-1, 2, 3])).toEqual(O.none)
+  })
+
   it("path", () => {
     const _name = Optic.id<Employee>().compose(
-      Experimental.path("company", "address", "street", "name")
+      ExperimentalOptic.path("company", "address", "street", "name")
     )
 
     const capitalizeName = Optic.modify(_name)(capitalize)
@@ -65,18 +75,18 @@ describe("experimental", () => {
 
   it("zoom", () => {
     const _name = Optic.id<Employee>()
-      .compose(Experimental.zoom((_) => _.company.address.street.name))
+      .compose(ExperimentalOptic.zoom((_) => _.company.address.street.name))
 
     const capitalizeName = Optic.modify(_name)(capitalize)
 
     expect(capitalizeName(employee)).toEqual(employeeCapitalized)
 
     const firstOwner = Optic.id<Employee>()
-      .compose(Experimental.zoom((_) => _.company.owners))
+      .compose(ExperimentalOptic.zoom((_) => _.company.owners))
       .compose(Optic.index(0))
 
     expect(pipe(employeeCapitalized, Optic.getOption(firstOwner))).toEqual(
-      Option.some("mike")
+      O.some("mike")
     )
   })
 
@@ -88,7 +98,7 @@ describe("experimental", () => {
     }
 
     const _pick = Optic.id<S>()
-      .compose(Experimental.pick("a", "b"))
+      .compose(ExperimentalOptic.pick("a", "b"))
 
     expect(pipe({ a: "a", b: 1, c: true }, Optic.get(_pick))).toEqual({ a: "a", b: 1 })
     expect(pipe({ a: "a1", b: 1, c: true }, Optic.set(_pick)({ a: "a2", b: 2 }))).toEqual({
