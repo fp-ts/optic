@@ -49,3 +49,13 @@ declare const predicate: (u: string | number | boolean) => boolean
 
 // $ExpectType Prism<string | number, string | number>
 Optic.id<string | number>().compose(Optic.filter(predicate))
+
+//
+// findFirst
+//
+
+// $ExpectType Optional<readonly (string | number)[], string>
+Optic.id<ReadonlyArray<string | number>>().compose(Optic.findFirst(isString))
+
+// $ExpectType Optional<readonly (string | number)[], string | number>
+Optic.id<ReadonlyArray<string | number>>().compose(Optic.findFirst(predicate))
