@@ -60,7 +60,7 @@ describe("index", () => {
     expect(f({ a: "a", b: O.none, c: true })).toEqual({ a: "a", b: O.none, c: true })
   })
 
-  describe("key", () => {
+  describe("at", () => {
     it("struct", () => {
       type S = {
         readonly a: string
@@ -76,6 +76,23 @@ describe("index", () => {
         a: "a2",
         b: 1,
         c: true
+      })
+    })
+
+    it("symbol", () => {
+      const b = Symbol.for("b")
+      type S = {
+        readonly a: string
+        readonly [b]: number
+      }
+
+      const _b = Optic.id<S>()
+        .compose(Optic.at(b))
+
+      expect(pipe({ a: "a", [b]: 1 }, Optic.get(_b))).toEqual(1)
+      expect(pipe({ a: "a", [b]: 1 }, Optic.set(_b)(2))).toEqual({
+        a: "a",
+        [b]: 2
       })
     })
 
