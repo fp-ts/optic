@@ -1,7 +1,7 @@
 import { pipe } from "@fp-ts/data/Function"
 import * as O from "@fp-ts/data/Option"
 import * as Optic from "@fp-ts/optic"
-import * as StringOptic from "@fp-ts/optic/data/a"
+import * as StringOptic from "@fp-ts/optic/data/String"
 
 describe("string", () => {
   it("index", () => {

@@ -1,7 +1,7 @@
 import * as O from "@fp-ts/data/Option"
 import * as Optic from "@fp-ts/optic"
-import * as StringOptic from "@fp-ts/optic/data/a"
 import * as OptionOptic from "@fp-ts/optic/data/Option"
+import * as StringOptic from "@fp-ts/optic/data/String"
 
 describe("examples", () => {
   it("README", () => {
