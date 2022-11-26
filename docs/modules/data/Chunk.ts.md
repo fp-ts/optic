@@ -1,10 +1,10 @@
 ---
-title: data/List.ts
-nav_order: 4
+title: data/Chunk.ts
+nav_order: 2
 parent: Modules
 ---
 
-## List overview
+## Chunk overview
 
 Added in v1.0.0
 
@@ -21,7 +21,7 @@ Added in v1.0.0
 
 ## cons
 
-An optic that accesses the `Cons` case of a `List`.
+An optic that accesses the `Cons` case of a `Chunk`.
 
 **Signature**
 

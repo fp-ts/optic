@@ -1,6 +1,6 @@
 ---
 title: index.ts
-nav_order: 5
+nav_order: 8
 parent: Modules
 ---
 
@@ -36,14 +36,16 @@ Added in v1.0.0
   - [at](#at)
   - [cons](#cons)
   - [encode](#encode)
+  - [filter](#filter)
+  - [findFirst](#findfirst)
   - [get](#get)
   - [getOption](#getoption)
   - [getOrModify](#getormodify)
   - [head](#head)
   - [id](#id)
-  - [key](#key)
+  - [index](#index)
   - [modify](#modify)
-  - [nullable](#nullable)
+  - [nonNullable](#nonnullable)
   - [replace](#replace)
   - [replaceOption](#replaceoption)
   - [set](#set)
@@ -270,10 +272,15 @@ Added in v1.0.0
 
 ## at
 
+An optic that accesses the specified key of a struct or a tuple.
+
 **Signature**
 
 ```ts
-export declare const at: <A>(n: number) => any
+export declare const at: {
+  <S, Key extends (keyof S & string) | (keyof S & symbol)>(key: Key): any
+  <S, Key extends (keyof S & string) | (keyof S & symbol), B>(key: Key): any
+}
 ```
 
 Added in v1.0.0
@@ -296,6 +303,36 @@ Added in v1.0.0
 
 ```ts
 export declare const encode: <S, T, A, B>(optic: any) => (SetPiece: B) => T
+```
+
+Added in v1.0.0
+
+## filter
+
+An optic that accesses the case specified by a predicate.
+
+**Signature**
+
+```ts
+export declare const filter: {
+  <S extends A, B extends A, A = S>(refinement: Refinement<A, B>): any
+  <S extends A, A = S>(predicate: Predicate<A>): any
+}
+```
+
+Added in v1.0.0
+
+## findFirst
+
+An optic that accesses the first case specified by a predicate.
+
+**Signature**
+
+```ts
+export declare const findFirst: {
+  <C extends A, B extends A, A = C>(refinement: Refinement<A, B>): any
+  <B extends A, A = B>(predicate: Predicate<A>): any
+}
 ```
 
 Added in v1.0.0
@@ -352,17 +389,14 @@ export declare const id: { <S>(): any; <S, T>(): any }
 
 Added in v1.0.0
 
-## key
+## index
 
-An optic that accesses a key of a struct or a tuple.
+An optic that accesses the specified index of a `ReadonlyArray`.
 
 **Signature**
 
 ```ts
-export declare const key: {
-  <S, Key extends (keyof S & string) | (keyof S & symbol)>(key: Key): any
-  <S, Key extends (keyof S & string) | (keyof S & symbol), B>(key: Key): any
-}
+export declare const index: <A>(n: number) => any
 ```
 
 Added in v1.0.0
@@ -377,14 +411,14 @@ export declare const modify: <S, T, A, B>(optic: any) => (f: (a: A) => B) => (s:
 
 Added in v1.0.0
 
-## nullable
+## nonNullable
 
 An optic that accesses the `NonNullable` case of a nullable type.
 
 **Signature**
 
 ```ts
-export declare const nullable: <S>() => any
+export declare const nonNullable: <S>() => any
 ```
 
 Added in v1.0.0
