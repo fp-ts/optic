@@ -401,7 +401,7 @@ export const cons: {
  *
  * @since 1.0.0
  */
-export const nullable = <S>(): Prism<S, NonNullable<S>> =>
+export const nonNullable = <S>(): Prism<S, NonNullable<S>> =>
   prism(
     (s) => s == null ? E.left(new Error(`${s} did not satisfy isNonNullable`)) : E.right(s),
     identity
