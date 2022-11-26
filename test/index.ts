@@ -169,4 +169,16 @@ describe("index", () => {
     expect(pipe("a", Optic.getOption(_nonNullable))).toEqual(O.some("a"))
     expect(pipe("a", Optic.encode(_nonNullable))).toEqual("a")
   })
+
+  it("filter", () => {
+    type A = [true, string]
+    type B = [false, number]
+    type S = A | B
+    const _A = Optic.id<S>()
+      .compose(Optic.filter((s): s is A => s[0] === true))
+    expect(pipe([true, "a"], Optic.getOption(_A))).toEqual(O.some([true, "a"]))
+    expect(pipe([false, 1], Optic.getOption(_A))).toEqual(O.none)
+
+    expect(pipe([true, "a"], Optic.encode(_A))).toEqual([true, "a"])
+  })
 })

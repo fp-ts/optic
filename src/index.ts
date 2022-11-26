@@ -5,6 +5,7 @@ import type { Either } from "@fp-ts/data/Either"
 import * as E from "@fp-ts/data/Either"
 import { identity, pipe } from "@fp-ts/data/Function"
 import type { Option } from "@fp-ts/data/Option"
+import type { Predicate, Refinement } from "@fp-ts/data/Predicate"
 import * as RA from "@fp-ts/data/ReadonlyArray"
 
 /**
@@ -404,6 +405,21 @@ export const cons: {
 export const nonNullable = <S>(): Prism<S, NonNullable<S>> =>
   prism(
     (s) => s == null ? E.left(new Error(`${s} did not satisfy isNonNullable`)) : E.right(s),
+    identity
+  )
+
+/**
+ * An optic that accesses the case specified by a predicate.
+ *
+ * @since 1.0.0
+ */
+export const filter: {
+  <S, A extends S>(refinement: Refinement<S, A>): Prism<S, A>
+  <S>(predicate: Predicate<S>): Prism<S, S>
+} = <S>(predicate: Predicate<S>): Prism<S, S> =>
+  prism(
+    (s) =>
+      predicate(s) ? E.right(s) : E.left(new Error(`${s} did not satisfy the specified predicate`)),
     identity
   )
 
