@@ -404,7 +404,7 @@ export const cons: {
  */
 export const nonNullable = <S>(): Prism<S, NonNullable<S>> =>
   prism(
-    (s) => s == null ? E.left(new Error(`${s} did not satisfy isNonNullable`)) : E.right(s),
+    (s) => s == null ? E.left(new Error(`${s} did not satisfy isNonNullable`)) : E.right(s as any),
     identity
   )
 
@@ -414,8 +414,8 @@ export const nonNullable = <S>(): Prism<S, NonNullable<S>> =>
  * @since 1.0.0
  */
 export const filter: {
-  <S, A extends S>(refinement: Refinement<S, A>): Prism<S, A>
-  <S>(predicate: Predicate<S>): Prism<S, S>
+  <S extends A, B extends A, A = S>(refinement: Refinement<A, B>): Prism<S, B>
+  <S extends A, A = S>(predicate: Predicate<A>): Prism<S, S>
 } = <S>(predicate: Predicate<S>): Prism<S, S> =>
   prism(
     (s) =>

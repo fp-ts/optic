@@ -15,23 +15,37 @@ type ST = readonly [string, number]
 type TT = readonly [boolean, number]
 
 //
-// key
+// at
 //
 
 // $ExpectType Lens<S, string>
-Optic.id<S>().compose(Optic.key('a'))
+Optic.id<S>().compose(Optic.at('a'))
 
 // $ExpectType PolyLens<S, T, string, boolean>
-Optic.id<S, T>().compose(Optic.key<S, 'a', boolean>('a'))
+Optic.id<S, T>().compose(Optic.at<S, 'a', boolean>('a'))
 
 // $ExpectType Lens<ST, string>
-Optic.id<ST>().compose(Optic.key('0'))
+Optic.id<ST>().compose(Optic.at('0'))
 
 // $ExpectType PolyLens<ST, TT, string, boolean>
-Optic.id<ST, TT>().compose(Optic.key<ST, '0', boolean>('0'))
+Optic.id<ST, TT>().compose(Optic.at<ST, '0', boolean>('0'))
 
 // $ExpectType PolyLens<S, { readonly a: boolean; readonly b: number; }, string, boolean>
-Optic.key<S, 'a', boolean>('a')
+Optic.at<S, 'a', boolean>('a')
 
 // $ExpectType PolyLens<ST, readonly [boolean, number], string, boolean>
-Optic.key<ST, '0', boolean>('0')
+Optic.at<ST, '0', boolean>('0')
+
+//
+// filter
+//
+
+declare const isString: (u: unknown) => u is string
+
+// $ExpectType Prism<string | number, string>
+Optic.id<string | number>().compose(Optic.filter(isString))
+
+declare const predicate: (u: string | number | boolean) => boolean
+
+// $ExpectType Prism<string | number, string | number>
+Optic.id<string | number>().compose(Optic.filter(predicate))
