@@ -6,7 +6,7 @@ import * as Optic from "@fp-ts/optic"
 import * as ListOptic from "@fp-ts/optic/data/List"
 
 describe("List", () => {
-  it("consList", () => {
+  it("cons", () => {
     const _cons = Optic.id<List<number>>()
       .compose(ListOptic.cons())
 
