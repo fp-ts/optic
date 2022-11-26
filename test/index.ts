@@ -16,7 +16,7 @@ describe("index", () => {
 
   it("replaceOption", () => {
     const _at1 = Optic.id<ReadonlyArray<number>>()
-      .compose(Optic.at(1))
+      .compose(Optic.index(1))
 
     expect(pipe([1, 2, 3], Optic.replaceOption(_at1)(4))).toEqual(O.some([1, 4, 3]))
     expect(pipe([1], Optic.replaceOption(_at1)(4))).toEqual(O.none)
@@ -24,7 +24,7 @@ describe("index", () => {
 
   it("getOrModify", () => {
     const _at1 = Optic.id<ReadonlyArray<number>>()
-      .compose(Optic.at(1))
+      .compose(Optic.index(1))
 
     expect(pipe([1, 2, 3], Optic.getOrModify(_at1))).toEqual(E.right(2))
     expect(pipe([1], Optic.getOrModify(_at1))).toEqual(E.left([1]))
@@ -101,14 +101,14 @@ describe("index", () => {
     )
   })
 
-  it("at", () => {
-    const _at1 = Optic.id<ReadonlyArray<number>>()
-      .compose(Optic.at(1))
+  it("index", () => {
+    const _index1 = Optic.id<ReadonlyArray<number>>()
+      .compose(Optic.index(1))
 
-    expect(pipe([1, 2, 3], Optic.getOption(_at1))).toEqual(O.some(2))
-    expect(pipe([1], Optic.getOption(_at1))).toEqual(O.none)
-    expect(pipe([1, 2, 3], Optic.replace(_at1)(4))).toEqual([1, 4, 3])
-    expect(pipe([1], Optic.replace(_at1)(4))).toEqual([1])
+    expect(pipe([1, 2, 3], Optic.getOption(_index1))).toEqual(O.some(2))
+    expect(pipe([1], Optic.getOption(_index1))).toEqual(O.none)
+    expect(pipe([1, 2, 3], Optic.replace(_index1)(4))).toEqual([1, 4, 3])
+    expect(pipe([1], Optic.replace(_index1)(4))).toEqual([1])
   })
 
   it("head", () => {

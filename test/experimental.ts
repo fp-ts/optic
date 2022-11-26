@@ -73,7 +73,7 @@ describe("experimental", () => {
 
     const firstOwner = Optic.id<Employee>()
       .compose(Experimental.zoom((_) => _.company.owners))
-      .compose(Optic.at(0))
+      .compose(Optic.index(0))
 
     expect(pipe(employeeCapitalized, Optic.getOption(firstOwner))).toEqual(
       Option.some("mike")
