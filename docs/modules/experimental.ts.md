@@ -1,6 +1,6 @@
 ---
 title: experimental.ts
-nav_order: 4
+nav_order: 7
 parent: Modules
 ---
 
@@ -21,6 +21,7 @@ Added in v1.0.0
   - [Traversal (interface)](#traversal-interface)
   - [ZoomerTypeId](#zoomertypeid)
   - [ZoomerTypeId (type alias)](#zoomertypeid-type-alias)
+  - [modifyApplicative](#modifyapplicative)
   - [path](#path)
   - [pick](#pick)
   - [polyTraversal](#polytraversal)
@@ -117,6 +118,18 @@ Added in v1.0.0
 
 ```ts
 export type ZoomerTypeId = typeof ZoomerTypeId
+```
+
+Added in v1.0.0
+
+## modifyApplicative
+
+**Signature**
+
+```ts
+export declare const modifyApplicative: <F extends TypeLambda>(
+  F: Applicative<F>
+) => <S, T, A, B>(optic: any) => <R, E, O>(f: (a: A) => Kind<F, R, E, O, B>) => (s: S) => Kind<F, R, E, O, T>
 ```
 
 Added in v1.0.0
