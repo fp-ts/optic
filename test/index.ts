@@ -40,7 +40,7 @@ describe("index", () => {
     }
 
     const f = Optic.modify(
-      Optic.id<S>().compose(Optic.key("b")).compose(OptionOptic.some()).compose(Optic.key("d"))
+      Optic.id<S>().compose(Optic.at("b")).compose(OptionOptic.some()).compose(Optic.at("d"))
         .compose(
           OptionOptic.some()
         )
@@ -69,7 +69,7 @@ describe("index", () => {
       }
 
       const _a = Optic.id<S>()
-        .compose(Optic.key("a"))
+        .compose(Optic.at("a"))
 
       expect(pipe({ a: "a", b: 1, c: true }, Optic.get(_a))).toEqual("a")
       expect(pipe({ a: "a", b: 1, c: true }, Optic.set(_a)("a2"))).toEqual({
@@ -81,7 +81,7 @@ describe("index", () => {
 
     it("tuple", () => {
       const _0 = Optic.id<readonly [string, number]>()
-        .compose(Optic.key("0"))
+        .compose(Optic.at("0"))
 
       expect(pipe(["a", 1], Optic.get(_0))).toEqual("a")
       expect(pipe(["b", 2], Optic.set(_0)("a"))).toEqual(["a", 2])

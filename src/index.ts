@@ -313,11 +313,11 @@ export const set = <S, T, A, B>(optic: PolyLens<S, T, A, B>) =>
     (SetWholeBefore: S): T => pipe(optic.setOptic(SetPiece)(SetWholeBefore), E.getOrThrow(identity))
 
 /**
- * An optic that accesses a key of a struct or a tuple.
+ * An optic that accesses the specified key of a struct or a tuple.
  *
  * @since 1.0.0
  */
-export const key: {
+export const at: {
   <S, Key extends keyof S & (string | symbol)>(key: Key): Lens<S, S[Key]>
   <S, Key extends keyof S & (string | symbol), B>(
     key: Key
@@ -484,13 +484,13 @@ export const index = <A>(n: number): Optional<ReadonlyArray<A>, A> =>
 /**
  * @since 1.0.0
  */
-export const head = <A>(): Optional<ReadonlyArray<A>, A> => cons<A>().compose(key("0"))
+export const head = <A>(): Optional<ReadonlyArray<A>, A> => cons<A>().compose(at("0"))
 
 /**
  * @since 1.0.0
  */
 export const tail = <A>(): Optional<ReadonlyArray<A>, ReadonlyArray<A>> =>
-  cons<A>().compose(key("1"))
+  cons<A>().compose(at("1"))
 
 /**
  * @since 1.0.0
