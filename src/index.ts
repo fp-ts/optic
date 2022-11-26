@@ -460,9 +460,11 @@ export const optional = <S, A>(
   )
 
 /**
+ * An optic that accesses the specified index of a `ReadonlyArray`.
+ *
  * @since 1.0.0
  */
-export const at = <A>(n: number): Optional<ReadonlyArray<A>, A> =>
+export const index = <A>(n: number): Optional<ReadonlyArray<A>, A> =>
   optional(
     (as) =>
       n >= 0 && n < as.length ?
