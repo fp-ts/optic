@@ -53,9 +53,9 @@ const employeeCapitalized = {
 }
 
 describe("experimental", () => {
-  it("modifyapplicative", () => {
+  it("modifyApplicative", () => {
     const _0 = Optic.id<ReadonlyArray<number>>().compose(Optic.index(0))
-    const f = ExperimentalOptic.modifyApplicative(O.Applicative)(_0)((
+    const f = ExperimentalOptic.modifyApplicative(_0)(O.Applicative)((
       n
     ) => (n > 0 ? O.some(n * 2) : O.none))
     expect(f([])).toEqual(O.some([]))

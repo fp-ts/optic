@@ -49,8 +49,8 @@ export interface Fold<in S, out A> extends Getter<S, ReadonlyArray<A>> {}
 /**
  * @since 1.0.0
  */
-export const modifyApplicative = <F extends TypeLambda>(F: Applicative<F>) =>
-  <S, T, A, B>(optic: PolyOptional<S, T, A, B>) =>
+export const modifyApplicative = <S, T, A, B>(optic: PolyOptional<S, T, A, B>) =>
+  <F extends TypeLambda>(F: Applicative<F>) =>
     <R, E, O>(f: (a: A) => Kind<F, R, E, O, B>) =>
       (s: S): Kind<F, R, E, O, T> =>
         pipe(
