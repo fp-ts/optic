@@ -1,13 +1,11 @@
-import * as O from "@fp-ts/data/Option"
 import * as Optic from "@fp-ts/optic"
-import * as OptionOptic from "@fp-ts/optic/data/Option"
 import * as StringOptic from "@fp-ts/optic/data/String"
 
 describe("examples", () => {
   it("README", () => {
     interface Street {
       num: number
-      name: O.Option<string>
+      name: string | null
     }
     interface Address {
       city: string
@@ -30,7 +28,7 @@ describe("examples", () => {
           city: "london",
           street: {
             num: 23,
-            name: O.some("high street")
+            name: "high street"
           }
         }
       }
@@ -44,19 +42,19 @@ describe("examples", () => {
           city: "london",
           street: {
             num: 23,
-            name: O.some("High street")
+            name: "High street"
           }
         }
       }
     }
 
     const _name: Optic.Optional<Employee, string> = Optic.id<Employee>()
-      .at("company") // Lens<Employee, Company>
-      .at("address") // Lens<Employee, Company>
-      .at("street") // Lens<<Employee, Company>
-      .at("name") // Lens<Street, O.Option<string>>
-      .compose(OptionOptic.some()) // Prism<O.Option<string>, string>
-      .compose(StringOptic.index(0)) // Optional<string, string>
+      .at("company")
+      .at("address")
+      .at("street")
+      .at("name")
+      .nonNullable()
+      .compose(StringOptic.index(0))
 
     const capitalize = (s: string): string => s.toUpperCase()
 

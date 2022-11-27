@@ -94,6 +94,9 @@ export interface Optic<
     key: Key
   ): Optional<S, A[Key]>
 
+  nonNullable<S, A>(this: Prism<S, A>): Prism<S, NonNullable<A>>
+  nonNullable<S, A>(this: Optional<S, A>): Optional<S, NonNullable<A>>
+
   get<S, T, A, B>(this: PolyLens<S, T, A, B>, s: S): A
 
   getOption<S, A>(this: Getter<S, A>, s: S): Option<A>
@@ -138,6 +141,10 @@ class Builder<
 
   at(key: any): any {
     return this.compose(at<any, any>(key))
+  }
+
+  nonNullable(): any {
+    return this.compose(nonNullable())
   }
 
   get<S, T, A, B>(this: PolyLens<S, T, A, B>, s: S): A {
@@ -434,17 +441,6 @@ export const cons: {
   )
 
 /**
- * An optic that accesses the `NonNullable` case of a nullable type.
- *
- * @since 1.0.0
- */
-export const nonNullable = <S>(): Prism<S, NonNullable<S>> =>
-  prism(
-    (s) => s == null ? E.left(new Error(`${s} did not satisfy isNonNullable`)) : E.right(s as any),
-    identity
-  )
-
-/**
  * An optic that accesses the case specified by a predicate.
  *
  * @since 1.0.0
@@ -454,10 +450,18 @@ export const filter: {
   <S extends A, A = S>(predicate: Predicate<A>): Prism<S, S>
 } = <S>(predicate: Predicate<S>): Prism<S, S> =>
   prism(
-    (s) =>
-      predicate(s) ? E.right(s) : E.left(new Error(`${s} did not satisfy the specified predicate`)),
+    (s) => predicate(s) ? E.right(s) : E.left(new Error(`${s} did not satisfy ${predicate.name}`)),
     identity
   )
+
+const isNonNullable = <S>(s: S): s is NonNullable<S> => s != null
+
+/**
+ * An optic that accesses the `NonNullable` case of a nullable type.
+ *
+ * @since 1.0.0
+ */
+export const nonNullable = <S>(): Prism<S, NonNullable<S>> => filter(isNonNullable)
 
 /**
  * @since 1.0.0
