@@ -97,7 +97,7 @@ import * as Optic from "@fp-ts/optic";
 import * as StringOptic from "@fp-ts/optic/data/String";
 import * as String from "@fp-ts/data/String";
 
-const _name: Optic.Optional<Employee, string> = Optic.id<Employee>()
+const _firstChar: Optic.Optional<Employee, string> = Optic.id<Employee>()
   .at("company")
   .at("address")
   .at("street")
@@ -105,7 +105,7 @@ const _name: Optic.Optional<Employee, string> = Optic.id<Employee>()
   .some()
   .compose(StringOptic.index(0));
 
-const capitalizeName = _name.modify(String.toUpperCase);
+const capitalizeName = Optic.modify(_firstChar)(String.toUpperCase);
 
 expect(capitalizeName(from)).toEqual(to);
 ```

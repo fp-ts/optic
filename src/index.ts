@@ -129,20 +129,6 @@ export interface Optic<
    * @since 1.0.0
    */
   index<S, A>(this: Optional<S, ReadonlyArray<A>>, n: number): Optional<S, A>
-
-  get<S, T, A, B>(this: PolyLens<S, T, A, B>, s: S): A
-
-  getOption<S, A>(this: Getter<S, A>, s: S): Option<A>
-
-  getOrModify<S, T, A, B>(this: PolyOptional<S, T, A, B>, s: S): Either<T, A>
-
-  encode<S, T, A, B>(this: PolyPrism<S, T, A, B>, SetPiece: B): T
-
-  replace<S, T, A>(this: PolySetter<S, T, A>, a: A): (s: S) => T
-
-  replaceOption<S, T, A>(this: PolySetter<S, T, A>, a: A): (s: S) => Option<T>
-
-  modify<S, T, A, B>(this: PolyOptional<S, T, A, B>, f: (a: A) => B): (s: S) => T
 }
 
 class Builder<
@@ -190,39 +176,6 @@ class Builder<
 
   index(n: number) {
     return this.compose(index(n))
-  }
-
-  get<S, T, A, B>(this: PolyLens<S, T, A, B>, s: S): A {
-    return pipe(this.getOptic(s), E.getOrThrow(identity))
-  }
-
-  getOption<S, A>(this: Getter<S, A>, s: S): Option<A> {
-    return E.getRight(this.getOptic(s))
-  }
-
-  getOrModify<S, T, A, B>(this: PolyOptional<S, T, A, B>, s: S): Either<T, A> {
-    return pipe(this.getOptic(s), E.mapLeft(([_, t]) => t))
-  }
-
-  encode<S, T, A, B>(this: PolyPrism<S, T, A, B>, SetPiece: B): T {
-    return pipe(this.setOptic(SetPiece)(undefined), E.getOrThrow(identity))
-  }
-
-  replace<S, T, A>(this: PolySetter<S, T, A>, a: A): (s: S) => T {
-    return (s) => pipe(this.setOptic(a)(s), E.match(([_, t]) => t, identity))
-  }
-
-  replaceOption<S, T, A>(this: PolySetter<S, T, A>, a: A): (s: S) => Option<T> {
-    return (s) => E.getRight(this.setOptic(a)(s))
-  }
-
-  modify<S, T, A, B>(this: PolyOptional<S, T, A, B>, f: (a: A) => B): (s: S) => T {
-    return (s) =>
-      pipe(
-        this.getOptic(s),
-        E.flatMap((a) => this.setOptic(f(a))(s)),
-        E.match(([_, t]) => t, identity)
-      )
   }
 }
 
@@ -678,39 +631,47 @@ export interface Fold<in S, out A> extends Getter<S, ReadonlyArray<A>> {}
 /**
  * @since 1.0.0
  */
-export const get = <S, T, A, B>(optic: PolyLens<S, T, A, B>) => (s: S): A => optic.get(s)
+export const get = <S, T, A, B>(optic: PolyLens<S, T, A, B>) =>
+  (s: S): A => pipe(optic.getOptic(s), E.getOrThrow(identity))
 
 /**
  * @since 1.0.0
  */
-export const getOption = <S, A>(optic: Getter<S, A>) => (s: S): Option<A> => optic.getOption(s)
+export const getOption = <S, A>(optic: Getter<S, A>) =>
+  (s: S): Option<A> => E.getRight(optic.getOptic(s))
 
 /**
  * @since 1.0.0
  */
 export const getOrModify = <S, T, A, B>(optic: PolyOptional<S, T, A, B>) =>
-  (s: S): Either<T, A> => optic.getOrModify(s)
+  (s: S): Either<T, A> => pipe(optic.getOptic(s), E.mapLeft(([_, t]) => t))
 
 /**
  * @since 1.0.0
  */
 export const encode = <S, T, A, B>(optic: PolyPrism<S, T, A, B>) =>
-  (SetPiece: B): T => optic.encode(SetPiece)
+  (SetPiece: B): T => pipe(optic.setOptic(SetPiece)(undefined), E.getOrThrow(identity))
 
 /**
  * @since 1.0.0
  */
 export const replace = <S, T, A>(optic: PolySetter<S, T, A>) =>
-  (a: A) => (s: S): T => optic.replace(a)(s)
+  (a: A) => (s: S): T => pipe(optic.setOptic(a)(s), E.match(([_, t]) => t, identity))
 
 /**
  * @since 1.0.0
  */
 export const replaceOption = <S, T, A>(optic: PolySetter<S, T, A>) =>
-  (a: A) => (s: S): Option<T> => optic.replaceOption(a)(s)
+  (a: A) => (s: S): Option<T> => E.getRight(optic.setOptic(a)(s))
 
 /**
  * @since 1.0.0
  */
 export const modify = <S, T, A, B>(optic: PolyOptional<S, T, A, B>) =>
-  (f: (a: A) => B): (s: S) => T => optic.modify(f)
+  (f: (a: A) => B) =>
+    (s: S): T =>
+      pipe(
+        optic.getOptic(s),
+        E.flatMap((a) => optic.setOptic(f(a))(s)),
+        E.match(([_, t]) => t, identity)
+      )
