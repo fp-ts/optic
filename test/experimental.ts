@@ -54,7 +54,7 @@ const employeeCapitalized = {
 
 describe("experimental", () => {
   it("modifyApplicative", () => {
-    const _0 = Optic.id<ReadonlyArray<number>>().compose(Optic.index(0))
+    const _0 = Optic.id<ReadonlyArray<number>>().index(0)
     const f = ExperimentalOptic.modifyApplicative(_0)(O.Applicative)((
       n
     ) => (n > 0 ? O.some(n * 2) : O.none))
@@ -83,7 +83,7 @@ describe("experimental", () => {
 
     const firstOwner = Optic.id<Employee>()
       .compose(ExperimentalOptic.zoom((_) => _.company.owners))
-      .compose(Optic.index(0))
+      .index(0)
 
     expect(firstOwner.getOption(employeeCapitalized)).toEqual(
       O.some("mike")

@@ -29,7 +29,6 @@ export interface Optic<
   /**
    * @since 1.0.0
    */
-  // Iso
   compose<S, A, B>(this: Iso<S, A>, that: Iso<A, B>): Iso<S, B>
   compose<S, T, A, B, C, D>(
     this: PolyIso<S, T, A, B>,
@@ -50,7 +49,6 @@ export interface Optic<
     this: PolyIso<S, T, A, B>,
     that: PolyOptional<A, B, C, D>
   ): PolyOptional<S, T, C, D>
-  // Lens
   compose<S, A, B>(this: Lens<S, A>, that: Lens<A, B>): Lens<S, B>
   compose<S, T, A, B, C, D>(
     this: PolyLens<S, T, A, B>,
@@ -61,7 +59,6 @@ export interface Optic<
     this: PolyLens<S, T, A, B>,
     that: PolyOptional<A, B, C, D>
   ): PolyOptional<S, T, C, D>
-  // Prism
   compose<S, A, B>(this: Prism<S, A>, that: Prism<A, B>): Prism<S, B>
   compose<S, T, A, B, C, D>(
     this: PolyPrism<S, T, A, B>,
@@ -72,7 +69,6 @@ export interface Optic<
     this: PolyPrism<S, T, A, B>,
     that: PolyOptional<A, B, C, D>
   ): PolyOptional<S, T, C, D>
-  // Optional
   compose<S, A, B>(this: Optional<S, A>, that: Optional<A, B>): Optional<S, B>
   compose<S, T, A, B, C, D>(
     this: PolyOptional<S, T, A, B>,
@@ -110,6 +106,13 @@ export interface Optic<
    */
   some<S, A>(this: Prism<S, Option<A>>): Prism<S, A>
   some<S, A>(this: Optional<S, Option<A>>): Optional<S, A>
+
+  /**
+   * An optic that accesses the specified index of a `ReadonlyArray`.
+   *
+   * @since 1.0.0
+   */
+  index<S, A>(this: Optional<S, ReadonlyArray<A>>, n: number): Optional<S, A>
 
   get<S, T, A, B>(this: PolyLens<S, T, A, B>, s: S): A
 
@@ -153,16 +156,20 @@ class Builder<
       prismComposition(that)(this as any)
   }
 
-  at(key: any): any {
+  at(key: string) {
     return this.compose(at<any, any>(key))
   }
 
-  nonNullable(): any {
+  nonNullable() {
     return this.compose(nonNullable())
   }
 
-  some(): any {
+  some() {
     return this.compose(some())
+  }
+
+  index(n: number) {
+    return this.compose(index(n))
   }
 
   get<S, T, A, B>(this: PolyLens<S, T, A, B>, s: S): A {

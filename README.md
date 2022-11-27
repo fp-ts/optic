@@ -42,9 +42,11 @@ flowchart TD
 Let's say we have an employee and we need to upper case the first character of his company street name.
 
 ```ts
+import * as O from "@fp-ts/data/Option";
+
 interface Street {
   num: number;
-  name: string | null;
+  name: O.Option<string>;
 }
 interface Address {
   city: string;
@@ -67,7 +69,7 @@ const from: Employee = {
       city: "london",
       street: {
         num: 23,
-        name: "high street",
+        name: O.some("high street"),
       },
     },
   },
@@ -81,7 +83,7 @@ const to: Employee = {
       city: "london",
       street: {
         num: 23,
-        name: "High street",
+        name: O.some("High street"),
       },
     },
   },
@@ -93,18 +95,17 @@ Let's see what could we do with `@fp-ts/optic`
 ```ts
 import * as Optic from "@fp-ts/optic";
 import * as StringOptic from "@fp-ts/optic/data/String";
+import * as String from "@fp-ts/data/String";
 
 const _name: Optic.Optional<Employee, string> = Optic.id<Employee>()
   .at("company")
   .at("address")
   .at("street")
   .at("name")
-  .nonNullable()
+  .some()
   .compose(StringOptic.index(0));
 
-const capitalize = (s: string): string => s.toUpperCase();
-
-const capitalizeName = _name.modify(capitalize);
+const capitalizeName = _name.modify(String.toUpperCase);
 
 expect(capitalizeName(from)).toEqual(to);
 ```
