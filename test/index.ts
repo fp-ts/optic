@@ -15,19 +15,19 @@ describe("index", () => {
   })
 
   it("replaceOption", () => {
-    const _at1 = Optic.id<ReadonlyArray<number>>()
+    const _index1 = Optic.id<ReadonlyArray<number>>()
       .compose(Optic.index(1))
 
-    expect(pipe([1, 2, 3], Optic.replaceOption(_at1)(4))).toEqual(O.some([1, 4, 3]))
-    expect(pipe([1], Optic.replaceOption(_at1)(4))).toEqual(O.none)
+    expect(pipe([1, 2, 3], Optic.replaceOption(_index1)(4))).toEqual(O.some([1, 4, 3]))
+    expect(pipe([1], Optic.replaceOption(_index1)(4))).toEqual(O.none)
   })
 
   it("getOrModify", () => {
-    const _at1 = Optic.id<ReadonlyArray<number>>()
+    const _index1 = Optic.id<ReadonlyArray<number>>()
       .compose(Optic.index(1))
 
-    expect(pipe([1, 2, 3], Optic.getOrModify(_at1))).toEqual(E.right(2))
-    expect(pipe([1], Optic.getOrModify(_at1))).toEqual(E.left([1]))
+    expect(pipe([1, 2, 3], Optic.getOrModify(_index1))).toEqual(E.right(2))
+    expect(pipe([1], Optic.getOrModify(_index1))).toEqual(E.left([1]))
   })
 
   it("modify", () => {
@@ -40,10 +40,11 @@ describe("index", () => {
     }
 
     const f = Optic.modify(
-      Optic.id<S>().compose(Optic.at("b")).compose(OptionOptic.some()).compose(Optic.at("d"))
-        .compose(
-          OptionOptic.some()
-        )
+      Optic.id<S>()
+        .at("b")
+        .compose(OptionOptic.some())
+        .at("d")
+        .compose(OptionOptic.some())
     )((
       n
     ) => n * 2)
@@ -68,8 +69,7 @@ describe("index", () => {
         readonly c: boolean
       }
 
-      const _a = Optic.id<S>()
-        .compose(Optic.at("a"))
+      const _a = Optic.id<S>().at("a")
 
       expect(pipe({ a: "a", b: 1, c: true }, Optic.get(_a))).toEqual("a")
       expect(pipe({ a: "a", b: 1, c: true }, Optic.set(_a)("a2"))).toEqual({
@@ -86,8 +86,7 @@ describe("index", () => {
         readonly [b]: number
       }
 
-      const _b = Optic.id<S>()
-        .compose(Optic.at(b))
+      const _b = Optic.id<S>().at(b)
 
       expect(pipe({ a: "a", [b]: 1 }, Optic.get(_b))).toEqual(1)
       expect(pipe({ a: "a", [b]: 1 }, Optic.set(_b)(2))).toEqual({
@@ -97,8 +96,8 @@ describe("index", () => {
     })
 
     it("tuple", () => {
-      const _0 = Optic.id<readonly [string, number]>()
-        .compose(Optic.at("0"))
+      type S = readonly [string, number]
+      const _0 = Optic.id<S>().at("0")
 
       expect(pipe(["a", 1], Optic.get(_0))).toEqual("a")
       expect(pipe(["b", 2], Optic.set(_0)("a"))).toEqual(["a", 2])

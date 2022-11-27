@@ -25,6 +25,9 @@ export interface Optic<
     SetPiece: SetPiece
   ) => (SetWholeBefore: SetWholeBefore) => Either<readonly [SetError, SetWholeAfter], SetWholeAfter>
 
+  /**
+   * @since 1.0.0
+   */
   // Iso
   compose<S, A, B>(this: Iso<S, A>, that: Iso<A, B>): Iso<S, B>
   compose<S, T, A, B, C, D>(
@@ -74,13 +77,25 @@ export interface Optic<
     this: PolyOptional<S, T, A, B>,
     that: PolyOptional<A, B, C, D>
   ): PolyOptional<S, T, C, D>
+
+  /**
+   * An optic that accesses the specified key of a struct or a tuple.
+   *
+   * @since 1.0.0
+   */
+  at<S, A, Key extends keyof A & (string | symbol)>(this: Iso<S, A>, key: Key): Lens<S, A[Key]>
+  at<S, A, Key extends keyof A & (string | symbol)>(this: Lens<S, A>, key: Key): Lens<S, A[Key]>
+  at<S, A, Key extends keyof A & (string | symbol)>(
+    this: Prism<S, A>,
+    key: Key
+  ): Optional<S, A[Key]>
+  at<S, A, Key extends keyof A & (string | symbol)>(
+    this: Optional<S, A>,
+    key: Key
+  ): Optional<S, A[Key]>
 }
 
-/**
- * @since 1.0.0
- * @internal
- */
-export class OpticImpl<
+class Builder<
   GetWhole,
   SetWholeBefore,
   SetPiece,
@@ -101,14 +116,14 @@ export class OpticImpl<
     ) => Either<readonly [SetError, SetWholeAfter], SetWholeAfter>
   ) {}
 
-  /**
-   * @since 1.0.0
-   * @internal
-   */
   compose(that: any): any {
     return this.composition === "lens" || that.composition === "lens" ?
       lensComposition(that)(this as any) :
       prismComposition(that)(this as any)
+  }
+
+  at(key: any): any {
+    return this.compose(at<any, any>(key))
   }
 }
 
@@ -129,7 +144,7 @@ const prismComposition = <GetPiece, SetPiece1, GetError1, SetError1, GetPiece1, 
   >(
     self: Optic<GetWhole, SetWholeBefore, SetPiece, GetError, SetError, GetPiece, SetWholeAfter>
   ): Optic<GetWhole, SetWholeBefore, SetPiece1, GetError1, SetError1, GetPiece1, SetWholeAfter> =>
-    new OpticImpl(
+    new Builder(
       "prism",
       (getWhole) =>
         pipe(
@@ -192,7 +207,7 @@ const lensComposition = <
   >(
     self: Optic<GetWhole, SetWholeBefore, SetPiece, GetError, SetError, GetPiece, SetWholeAfter>
   ): Optic<GetWhole, GetWhole, SetPiece1, GetError1, SetError1, GetPiece1, SetWholeAfter> =>
-    new OpticImpl(
+    new Builder(
       "lens",
       (s) =>
         pipe(
@@ -262,7 +277,7 @@ export const iso: {
   get: (s: S) => A,
   encode: (b: B) => T
 ): PolyIso<S, T, A, B> =>
-  new OpticImpl("prism", (s) => E.right(get(s)), (a) => () => E.right(encode(a)))
+  new Builder("prism", (s) => E.right(get(s)), (a) => () => E.right(encode(a)))
 
 /**
  * The identity optic.
@@ -298,7 +313,7 @@ export const lens: {
   get: (s: S) => A,
   set: (b: B) => (s: S) => T
 ): PolyLens<S, T, A, B> =>
-  new OpticImpl("lens", (s) => E.right(get(s)), (b) => (s) => E.right(set(b)(s)))
+  new Builder("lens", (s) => E.right(get(s)), (b) => (s) => E.right(set(b)(s)))
 
 /**
  * @since 1.0.0
@@ -318,15 +333,8 @@ export const set = <S, T, A, B>(optic: PolyLens<S, T, A, B>) =>
  *
  * @since 1.0.0
  */
-export const at: {
-  <S, Key extends keyof S & (string | symbol)>(key: Key): Lens<S, S[Key]>
-  <S, Key extends keyof S & (string | symbol), B>(
-    key: Key
-  ): PolyLens<S, { readonly [P in keyof S]: P extends Key ? B : S[P] }, S[Key], B>
-} = <S, Key extends keyof S, B>(
-  key: Key
-): PolyLens<S, any, S[Key], B> =>
-  lens<S, any, S[Key], B>((s) => s[key], (b) =>
+export const at = <S, Key extends keyof S & (string | symbol)>(key: Key): Lens<S, S[Key]> =>
+  lens((s) => s[key], (b) =>
     (s) => {
       if (Array.isArray(s)) {
         const out: any = s.slice()
@@ -350,7 +358,7 @@ export interface PolyPrism<in S, out T, out A, in B>
 export const polyPrism = <S, T, A, B>(
   polyDecode: (s: S) => Either<readonly [Error, T], A>,
   encode: (b: B) => T
-): PolyPrism<S, T, A, B> => new OpticImpl("prism", polyDecode, (b) => (_) => E.right(encode(b)))
+): PolyPrism<S, T, A, B> => new Builder("prism", polyDecode, (b) => (_) => E.right(encode(b)))
 
 /**
  * @since 1.0.0
@@ -437,7 +445,7 @@ export interface PolyOptional<in S, out T, out A, in B>
 export const polyOptional = <S, T, A, B>(
   polyDecode: (s: S) => Either<readonly [Error, T], A>,
   polyReplaceEither: (b: B) => (s: S) => Either<readonly [Error, T], T>
-): PolyOptional<S, T, A, B> => new OpticImpl("lens", polyDecode, polyReplaceEither)
+): PolyOptional<S, T, A, B> => new Builder("lens", polyDecode, polyReplaceEither)
 
 /**
  * @since 1.0.0
@@ -500,13 +508,12 @@ export const index = <A>(n: number): Optional<ReadonlyArray<A>, A> =>
 /**
  * @since 1.0.0
  */
-export const head = <A>(): Optional<ReadonlyArray<A>, A> => cons<A>().compose(at("0"))
+export const head = <A>(): Optional<ReadonlyArray<A>, A> => cons<A>().at("0")
 
 /**
  * @since 1.0.0
  */
-export const tail = <A>(): Optional<ReadonlyArray<A>, ReadonlyArray<A>> =>
-  cons<A>().compose(at("1"))
+export const tail = <A>(): Optional<ReadonlyArray<A>, ReadonlyArray<A>> => cons<A>().at("1")
 
 /**
  * An optic that accesses the first case specified by a predicate.
@@ -575,3 +582,40 @@ export interface Getter<in S, out A> extends Optic<S, never, never, Error, unkno
  */
 export const getOption = <S, A>(optic: Getter<S, A>) =>
   (s: S): Option<A> => E.getRight(optic.getOptic(s))
+
+/**
+ * @since 1.0.0
+ */
+export interface PolyTraversal<in S, out T, out A, in B>
+  extends PolyOptional<S, T, ReadonlyArray<A>, ReadonlyArray<B>>
+{}
+
+/**
+ * @since 1.0.0
+ */
+export const polyTraversal = <S, T, A, B>(
+  decode: (s: S) => Either<readonly [Error, T], ReadonlyArray<A>>,
+  replace: (bs: ReadonlyArray<B>) => (s: S) => Either<readonly [Error, T], T>
+): PolyTraversal<S, T, A, B> => new Builder("lens", decode, replace)
+
+/**
+ * @since 1.0.0
+ */
+export interface Traversal<in out S, in out A> extends PolyTraversal<S, S, A, A> {}
+
+/**
+ * @since 1.0.0
+ */
+export const traversal = <S, A>(
+  decode: (s: S) => Either<Error, ReadonlyArray<A>>,
+  replace: (as: ReadonlyArray<A>) => (s: S) => Either<Error, S>
+): Traversal<S, A> =>
+  polyTraversal(
+    (s) => pipe(decode(s), E.mapLeft((e) => [e, s])),
+    (as) => (s) => pipe(replace(as)(s), E.mapLeft((e) => [e, s]))
+  )
+
+/**
+ * @since 1.0.0
+ */
+export interface Fold<in S, out A> extends Getter<S, ReadonlyArray<A>> {}

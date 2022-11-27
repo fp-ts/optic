@@ -51,10 +51,10 @@ describe("examples", () => {
     }
 
     const _name: Optic.Optional<Employee, string> = Optic.id<Employee>()
-      .compose(Optic.at("company")) // Lens<Employee, Company>
-      .compose(Optic.at("address")) // Lens<Employee, Company>
-      .compose(Optic.at("street")) // Lens<<Employee, Company>
-      .compose(Optic.at("name")) // Lens<Street, O.Option<string>>
+      .at("company") // Lens<Employee, Company>
+      .at("address") // Lens<Employee, Company>
+      .at("street") // Lens<<Employee, Company>
+      .at("name") // Lens<Street, O.Option<string>>
       .compose(OptionOptic.some()) // Prism<O.Option<string>, string>
       .compose(StringOptic.index(0)) // Optional<string, string>
 
