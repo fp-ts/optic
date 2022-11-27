@@ -8,7 +8,7 @@ describe("Boolean", () => {
         readonly b: boolean
       }
     }
-    const _b = Optic.id<S>().compose(Optic.at("a")).compose(Optic.at("b"))
+    const _b = Optic.id<S>().at("a").at("b")
     const toggle = BooleanOptic.toggle(_b)
     expect(toggle({ a: { b: true } })).toEqual({ a: { b: false } })
   })
