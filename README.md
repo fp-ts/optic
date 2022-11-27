@@ -210,6 +210,43 @@ Again this conforms exactly to our description. A prism is an optic where we mig
 
 There are also more polymorphic versions of each optic that allow the types of the data structure and part before and after to differ. For example, a `PolyPrism` could allow us to access the right case of an `Either<A, B>` and set a `C` value to return an `Either<A, C>`.
 
+# Cheatsheet
+
+## Optic constructors
+
+| Optic    | Name         | Given                                                           | To                         |
+| -------- | ------------ | --------------------------------------------------------------- | -------------------------- |
+| Iso      | iso          | `S => A`, `A => S`                                              | `Iso<S, A>`                |
+|          | id           |                                                                 | `Iso<S, S>`                |
+| Lens     | lens         | `S => A`, `A => S => S`                                         | `Lens<S, A>`               |
+|          | at           | `Key`                                                           | `Iso<S, S[Key]>`           |
+| Prism    | prism        | `S => Either<Error, A>`, `A => S`                               | `Prism<S, A>`              |
+|          | polyPrism    | `S => Either<[Error, T], A>`, `B => T`                          | `PolyPrism<S, T, A, B>`    |
+|          | cons         |                                                                 | `Prism<A[], [A, A[]]>`     |
+|          | nonNullable  |                                                                 | `Prism<S, NonNullable<S>>` |
+|          | filter       | `Predicate<S>`                                                  | `Prism<S, S>`              |
+|          | filter       | `Refinement<S, A>`                                              | `Prism<S, A>`              |
+| Optional | optional     | `S => Either<Error, A>`, `A => S => Either<Error, S>`           | `Optional<S, A>`           |
+|          | polyOptional | `S => Either<[Error, T], A>`, `B => S => Either<[Error, T], T>` | `PolyOptional<S, T, A, B>` |
+|          | index        | `number`                                                        | `Optional<A[], A>`         |
+|          | head         |                                                                 | `Optional<A[], A>`         |
+|          | tail         |                                                                 | `Optional<A[], A[]>`       |
+|          | findFirst    | `Predicate<A>`                                                  | `Optional<A[], A>`         |
+|          | findFirst    | `Refinement<A, B>`                                              | `Optional<A[], B>`         |
+
+## Getter / Setter APIs
+
+| Name          | Given                           | To             |
+| ------------- | ------------------------------- | -------------- |
+| get           | `Lens<S, A>`, `S`               | `A`            |
+| set           | `Lens<S, A>`, `A`, `S`          | `S`            |
+| encode        | `Prism<S, A>`, `A`              | `S`            |
+| getOrModify   | `PolyOptional<S, T, A, B>`, `S` | `Either<T, A>` |
+| modify        | `Optional<S, A>`, `A => A`      | `S => S`       |
+| replace       | `Setter<S, A>`, `A`, `S`        | `S`            |
+| replaceOption | `Setter<S, A>`, `A`, `S`        | `Option<S>`    |
+| getOption     | `Getter<S, A>`, `S`             | `Option<A>`    |
+
 # Installation
 
 To install the **alpha** version:
