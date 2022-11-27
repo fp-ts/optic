@@ -239,7 +239,6 @@ There are also more polymorphic versions of each optic that allow the types of t
 | Name          | Given                           | To             |
 | ------------- | ------------------------------- | -------------- |
 | get           | `Lens<S, A>`, `S`               | `A`            |
-| set           | `Lens<S, A>`, `A`, `S`          | `S`            |
 | encode        | `Prism<S, A>`, `A`              | `S`            |
 | getOrModify   | `PolyOptional<S, T, A, B>`, `S` | `Either<T, A>` |
 | modify        | `Optional<S, A>`, `A => A`      | `S => S`       |

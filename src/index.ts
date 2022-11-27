@@ -322,13 +322,6 @@ export const get = <S, T, A, B>(optic: PolyLens<S, T, A, B>) =>
   (GetWhole: S): A => pipe(optic.getOptic(GetWhole), E.getOrThrow(identity))
 
 /**
- * @since 1.0.0
- */
-export const set = <S, T, A, B>(optic: PolyLens<S, T, A, B>) =>
-  (SetPiece: B) =>
-    (SetWholeBefore: S): T => pipe(optic.setOptic(SetPiece)(SetWholeBefore), E.getOrThrow(identity))
-
-/**
  * An optic that accesses the specified key of a struct or a tuple.
  *
  * @since 1.0.0

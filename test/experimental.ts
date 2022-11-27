@@ -101,7 +101,7 @@ describe("experimental", () => {
       .compose(ExperimentalOptic.pick("a", "b"))
 
     expect(pipe({ a: "a", b: 1, c: true }, Optic.get(_pick))).toEqual({ a: "a", b: 1 })
-    expect(pipe({ a: "a1", b: 1, c: true }, Optic.set(_pick)({ a: "a2", b: 2 }))).toEqual({
+    expect(pipe({ a: "a1", b: 1, c: true }, Optic.replace(_pick)({ a: "a2", b: 2 }))).toEqual({
       a: "a2",
       b: 2,
       c: true

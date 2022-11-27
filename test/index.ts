@@ -72,7 +72,7 @@ describe("index", () => {
       const _a = Optic.id<S>().at("a")
 
       expect(pipe({ a: "a", b: 1, c: true }, Optic.get(_a))).toEqual("a")
-      expect(pipe({ a: "a", b: 1, c: true }, Optic.set(_a)("a2"))).toEqual({
+      expect(pipe({ a: "a", b: 1, c: true }, Optic.replace(_a)("a2"))).toEqual({
         a: "a2",
         b: 1,
         c: true
@@ -89,7 +89,7 @@ describe("index", () => {
       const _b = Optic.id<S>().at(b)
 
       expect(pipe({ a: "a", [b]: 1 }, Optic.get(_b))).toEqual(1)
-      expect(pipe({ a: "a", [b]: 1 }, Optic.set(_b)(2))).toEqual({
+      expect(pipe({ a: "a", [b]: 1 }, Optic.replace(_b)(2))).toEqual({
         a: "a",
         [b]: 2
       })
@@ -100,7 +100,7 @@ describe("index", () => {
       const _0 = Optic.id<S>().at("0")
 
       expect(pipe(["a", 1], Optic.get(_0))).toEqual("a")
-      expect(pipe(["b", 2], Optic.set(_0)("a"))).toEqual(["a", 2])
+      expect(pipe(["b", 2], Optic.replace(_0)("a"))).toEqual(["a", 2])
     })
   })
 
