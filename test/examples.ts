@@ -52,7 +52,7 @@ describe("examples", () => {
       }
     }
 
-    const _name: Optic.Optional<Employee, string> = Optic.id<Employee>()
+    const _firstChar: Optic.Optional<Employee, string> = Optic.id<Employee>()
       .at("company")
       .at("address")
       .at("street")
@@ -60,7 +60,7 @@ describe("examples", () => {
       .some()
       .compose(StringOptic.index(0))
 
-    const capitalizeName = _name.modify(String.toUpperCase)
+    const capitalizeName = Optic.modify(_firstChar)(String.toUpperCase)
 
     expect(capitalizeName(from)).toEqual(to)
   })
@@ -103,7 +103,7 @@ describe("examples", () => {
       }
     }
 
-    expect(pipe(s, _c_1.modify(String.toUpperCase))).toEqual({
+    expect(pipe(s, Optic.modify(_c_1)(String.toUpperCase))).toEqual({
       a: {
         b: O.some({
           c: [O.none, O.some("Aaa"), O.some("bbb")]
