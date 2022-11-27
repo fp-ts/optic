@@ -2,7 +2,6 @@ import * as E from "@fp-ts/data/Either"
 import { pipe } from "@fp-ts/data/Function"
 import * as O from "@fp-ts/data/Option"
 import * as Optic from "@fp-ts/optic"
-import * as OptionOptic from "@fp-ts/optic/data/Option"
 
 describe("index", () => {
   it("100% coverage", () => {
@@ -41,9 +40,9 @@ describe("index", () => {
 
     const f = Optic.id<S>()
       .at("b")
-      .compose(OptionOptic.some())
+      .some()
       .at("d")
-      .compose(OptionOptic.some())
+      .some()
       .modify((n) => n * 2)
 
     expect(f({ a: "a", b: O.some({ d: O.some(1) }), c: true })).toEqual({
@@ -165,6 +164,14 @@ describe("index", () => {
     expect(_nonNullable.getOption(undefined)).toEqual(O.none)
     expect(_nonNullable.getOption("a")).toEqual(O.some("a"))
     expect(_nonNullable.encode("a")).toEqual("a")
+  })
+
+  it("some", () => {
+    const _some = Optic.id<O.Option<string>>().some()
+
+    expect(_some.getOption(O.none)).toEqual(O.none)
+    expect(_some.getOption(O.some("a"))).toEqual(O.some("a"))
+    expect(_some.encode("a")).toEqual(O.some("a"))
   })
 
   it("filter", () => {

@@ -4,6 +4,7 @@
 import type { Either } from "@fp-ts/data/Either"
 import * as E from "@fp-ts/data/Either"
 import { identity, pipe } from "@fp-ts/data/Function"
+import * as O from "@fp-ts/data/Option"
 import type { Option } from "@fp-ts/data/Option"
 import type { Predicate, Refinement } from "@fp-ts/data/Predicate"
 import * as RA from "@fp-ts/data/ReadonlyArray"
@@ -94,8 +95,21 @@ export interface Optic<
     key: Key
   ): Optional<S, A[Key]>
 
+  /**
+   * An optic that accesses the `NonNullable` case of a nullable type.
+   *
+   * @since 1.0.0
+   */
   nonNullable<S, A>(this: Prism<S, A>): Prism<S, NonNullable<A>>
   nonNullable<S, A>(this: Optional<S, A>): Optional<S, NonNullable<A>>
+
+  /**
+   * An optic that accesses the `Some` case of an `Option`.
+   *
+   * @since 1.0.0
+   */
+  some<S, A>(this: Prism<S, Option<A>>): Prism<S, A>
+  some<S, A>(this: Optional<S, Option<A>>): Optional<S, A>
 
   get<S, T, A, B>(this: PolyLens<S, T, A, B>, s: S): A
 
@@ -145,6 +159,10 @@ class Builder<
 
   nonNullable(): any {
     return this.compose(nonNullable())
+  }
+
+  some(): any {
+    return this.compose(some())
   }
 
   get<S, T, A, B>(this: PolyLens<S, T, A, B>, s: S): A {
@@ -462,6 +480,23 @@ const isNonNullable = <S>(s: S): s is NonNullable<S> => s != null
  * @since 1.0.0
  */
 export const nonNullable = <S>(): Prism<S, NonNullable<S>> => filter(isNonNullable)
+
+/**
+ * An optic that accesses the `Some` case of an `Option`.
+ *
+ * @since 1.0.0
+ */
+export const some: {
+  <A>(): Prism<Option<A>, A>
+  <A, B>(): PolyPrism<Option<A>, Option<B>, A, B>
+} = <A, B>(): PolyPrism<Option<A>, Option<B>, A, B> =>
+  polyPrism(
+    O.match(
+      () => E.left([Error("none did not satisfy isSome"), O.none]),
+      (a) => E.right(a)
+    ),
+    O.some
+  )
 
 /**
  * @since 1.0.0
