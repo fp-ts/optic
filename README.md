@@ -92,7 +92,7 @@ Let's see what could we do with `@fp-ts/optic`
 
 ```ts
 import * as Optic from "@fp-ts/optic";
-import * as StringOptic from "@fp-ts/optic/data/string";
+import * as StringOptic from "@fp-ts/optic/data/String";
 
 const _name: Optic.Optional<Employee, string> = Optic.id<Employee>()
   .at("company")
