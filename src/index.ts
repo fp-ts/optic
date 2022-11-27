@@ -92,6 +92,22 @@ export interface Optic<
   ): Optional<S, A[Key]>
 
   /**
+   * An optic that accesses the case specified by a predicate.
+   *
+   * @since 1.0.0
+   */
+  filter<S, A extends B, C extends B, B = A>(
+    this: Prism<S, A>,
+    refinement: Refinement<B, C>
+  ): Prism<S, C>
+  filter<S, A extends B, B = A>(this: Prism<S, A>, predicate: Predicate<B>): Prism<S, A>
+  filter<S, A extends B, C extends B, B = A>(
+    this: Optional<S, A>,
+    refinement: Refinement<B, C>
+  ): Optional<S, C>
+  filter<S, A extends B, B = A>(this: Optional<S, A>, predicate: Predicate<B>): Optional<S, A>
+
+  /**
    * An optic that accesses the `NonNullable` case of a nullable type.
    *
    * @since 1.0.0
@@ -158,6 +174,10 @@ class Builder<
 
   at(key: string) {
     return this.compose(at<any, any>(key))
+  }
+
+  filter(predicate: Predicate<any>) {
+    return this.compose(filter(predicate))
   }
 
   nonNullable() {
@@ -500,7 +520,7 @@ export const some: {
   polyPrism(
     O.match(
       () => E.left([Error("none did not satisfy isSome"), O.none]),
-      (a) => E.right(a)
+      E.right
     ),
     O.some
   )

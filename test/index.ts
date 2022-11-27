@@ -175,8 +175,11 @@ describe("index", () => {
     type A = [true, string]
     type B = [false, number]
     type S = A | B
-    const _A = Optic.id<S>()
-      .compose(Optic.filter((s): s is A => s[0] === true))
+
+    const isA = (s: S): s is A => s[0] === true
+
+    const _A = Optic.id<S>().filter(isA)
+
     expect(_A.getOption([true, "a"])).toEqual(O.some([true, "a"]))
     expect(_A.getOption([false, 1])).toEqual(O.none)
 
