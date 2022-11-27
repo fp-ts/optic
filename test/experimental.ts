@@ -68,7 +68,7 @@ describe("experimental", () => {
       ExperimentalOptic.path("company", "address", "street", "name")
     )
 
-    const capitalizeName = Optic.modify(_name)(capitalize)
+    const capitalizeName = _name.modify(capitalize)
 
     expect(capitalizeName(employee)).toEqual(employeeCapitalized)
   })
@@ -77,7 +77,7 @@ describe("experimental", () => {
     const _name = Optic.id<Employee>()
       .compose(ExperimentalOptic.zoom((_) => _.company.address.street.name))
 
-    const capitalizeName = Optic.modify(_name)(capitalize)
+    const capitalizeName = _name.modify(capitalize)
 
     expect(capitalizeName(employee)).toEqual(employeeCapitalized)
 
@@ -85,7 +85,7 @@ describe("experimental", () => {
       .compose(ExperimentalOptic.zoom((_) => _.company.owners))
       .compose(Optic.index(0))
 
-    expect(pipe(employeeCapitalized, Optic.getOption(firstOwner))).toEqual(
+    expect(firstOwner.getOption(employeeCapitalized)).toEqual(
       O.some("mike")
     )
   })
@@ -100,8 +100,8 @@ describe("experimental", () => {
     const _pick = Optic.id<S>()
       .compose(ExperimentalOptic.pick("a", "b"))
 
-    expect(pipe({ a: "a", b: 1, c: true }, Optic.get(_pick))).toEqual({ a: "a", b: 1 })
-    expect(pipe({ a: "a1", b: 1, c: true }, Optic.replace(_pick)({ a: "a2", b: 2 }))).toEqual({
+    expect(_pick.get({ a: "a", b: 1, c: true })).toEqual({ a: "a", b: 1 })
+    expect(pipe({ a: "a1", b: 1, c: true }, _pick.replace({ a: "a2", b: 2 }))).toEqual({
       a: "a2",
       b: 2,
       c: true
