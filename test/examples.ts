@@ -1,6 +1,7 @@
 import { pipe } from "@fp-ts/data/Function"
 import * as O from "@fp-ts/data/Option"
-import * as S from "@fp-ts/data/String"
+import type { Option } from "@fp-ts/data/Option"
+import * as String from "@fp-ts/data/String"
 import * as Optic from "@fp-ts/optic"
 import * as StringOptic from "@fp-ts/optic/data/String"
 
@@ -8,7 +9,7 @@ describe("examples", () => {
   it("README", () => {
     interface Street {
       num: number
-      name: string | null
+      name: O.Option<string>
     }
     interface Address {
       city: string
@@ -31,7 +32,7 @@ describe("examples", () => {
           city: "london",
           street: {
             num: 23,
-            name: "high street"
+            name: O.some("high street")
           }
         }
       }
@@ -45,7 +46,7 @@ describe("examples", () => {
           city: "london",
           street: {
             num: 23,
-            name: "High street"
+            name: O.some("High street")
           }
         }
       }
@@ -56,25 +57,25 @@ describe("examples", () => {
       .at("address")
       .at("street")
       .at("name")
-      .nonNullable()
+      .some()
       .compose(StringOptic.index(0))
 
-    const capitalize = (s: string): string => s.toUpperCase()
-
-    const capitalizeName = _name.modify(capitalize)
+    const capitalizeName = _name.modify(String.toUpperCase)
 
     expect(capitalizeName(from)).toEqual(to)
   })
 
   it("fluent APIs", () => {
+    // let's say we need to upper case the first character of the second element of `c`
     interface S {
       readonly a: {
-        readonly b: O.Option<{
-          readonly c: ReadonlyArray<O.Option<string>>
+        readonly b: Option<{
+          readonly c: ReadonlyArray<Option<string>>
         }>
       }
     }
 
+    // with compose
     // const _c_1 = Optic.id<S>()
     //   .compose(Optic.at("a"))
     //   .compose(Optic.at("b"))
@@ -84,12 +85,13 @@ describe("examples", () => {
     //   .compose(OptionOptic.some())
     //   .compose(StringOptic.index(0))
 
+    // with fluent APIs
     const _c_1 = Optic.id<S>()
       .at("a")
       .at("b")
       .some()
       .at("c")
-      .compose(Optic.index(1))
+      .index(1)
       .some()
       .compose(StringOptic.index(0))
 
@@ -101,12 +103,27 @@ describe("examples", () => {
       }
     }
 
-    expect(pipe(s, _c_1.modify(S.toUpperCase))).toEqual({
+    expect(pipe(s, _c_1.modify(String.toUpperCase))).toEqual({
       a: {
         b: O.some({
           c: [O.none, O.some("Aaa"), O.some("bbb")]
         })
       }
     })
+
+    // with immer
+    /*
+    import produce from 'immer'
+
+    const output = produce(s, (draft) => {
+      const b = draft.a.b
+      if (O.isSome(b)) {
+        if (b.value.c.length >= 1 && O.isSome(b.value.c[1])) {
+          const s = b.value.c[1].value
+          b.value.c[1] = O.some(toUpperCase(s.charAt(0)) + s.substring(1))
+        }
+      }
+    })
+    */
   })
 })

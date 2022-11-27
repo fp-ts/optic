@@ -14,16 +14,14 @@ describe("index", () => {
   })
 
   it("replaceOption", () => {
-    const _index1 = Optic.id<ReadonlyArray<number>>()
-      .compose(Optic.index(1))
+    const _index1 = Optic.id<ReadonlyArray<number>>().index(1)
 
     expect(pipe([1, 2, 3], _index1.replaceOption(4))).toEqual(O.some([1, 4, 3]))
     expect(pipe([1], _index1.replaceOption(4))).toEqual(O.none)
   })
 
   it("getOrModify", () => {
-    const _index1 = Optic.id<ReadonlyArray<number>>()
-      .compose(Optic.index(1))
+    const _index1 = Optic.id<ReadonlyArray<number>>().index(1)
 
     expect(_index1.getOrModify([1, 2, 3])).toEqual(E.right(2))
     expect(_index1.getOrModify([1])).toEqual(E.left([1]))
@@ -115,8 +113,7 @@ describe("index", () => {
   })
 
   it("index", () => {
-    const _index1 = Optic.id<ReadonlyArray<number>>()
-      .compose(Optic.index(1))
+    const _index1 = Optic.id<ReadonlyArray<number>>().index(1)
 
     expect(_index1.getOption([1, 2, 3])).toEqual(O.some(2))
     expect(_index1.getOption([1])).toEqual(O.none)
