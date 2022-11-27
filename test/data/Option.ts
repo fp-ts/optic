@@ -11,13 +11,4 @@ describe("Option", () => {
     expect(_none.getOption(O.some("a"))).toEqual(O.none)
     expect(_none.encode(undefined)).toEqual(O.none)
   })
-
-  it("some", () => {
-    const _some = Optic.id<O.Option<string>>()
-      .compose(OptionOptic.some())
-
-    expect(_some.getOption(O.none)).toEqual(O.none)
-    expect(_some.getOption(O.some("a"))).toEqual(O.some("a"))
-    expect(_some.encode("a")).toEqual(O.some("a"))
-  })
 })
