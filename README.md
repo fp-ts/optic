@@ -42,11 +42,9 @@ flowchart TD
 Let's say we have an employee and we need to upper case the first character of his company street name.
 
 ```ts
-import * as O from "@fp-ts/data/Option";
-
 interface Street {
   num: number;
-  name: O.Option<string>;
+  name: string | null;
 }
 interface Address {
   city: string;
@@ -69,7 +67,7 @@ const from: Employee = {
       city: "london",
       street: {
         num: 23,
-        name: O.some("high street"),
+        name: "high street",
       },
     },
   },
@@ -83,7 +81,7 @@ const to: Employee = {
       city: "london",
       street: {
         num: 23,
-        name: O.some("High street"),
+        name: "High street",
       },
     },
   },
@@ -94,16 +92,15 @@ Let's see what could we do with `@fp-ts/optic`
 
 ```ts
 import * as Optic from "@fp-ts/optic";
-import * as OptionOptic from "@fp-ts/optic/data/Option";
 import * as StringOptic from "@fp-ts/optic/data/string";
 
 const _name: Optic.Optional<Employee, string> = Optic.id<Employee>()
-  .at("company") // Lens<Employee, Company>
-  .at("address") // Lens<Employee, Company>
-  .at("street") // Lens<<Employee, Company>
-  .at("name") // Lens<Street, O.Option<string>>
-  .compose(OptionOptic.some()) // Prism<O.Option<string>, string>
-  .compose(StringOptic.index(0)); // Optional<string, string>
+  .at("company")
+  .at("address")
+  .at("street")
+  .at("name")
+  .nonNullable()
+  .compose(StringOptic.index(0));
 
 const capitalize = (s: string): string => s.toUpperCase();
 

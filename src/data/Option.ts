@@ -18,7 +18,7 @@ export const none = <A>(): Prism<Option<A>, void> =>
       () => E.right<void>(undefined),
       (a) => E.left(Error(`some(${a}) did not satisfy isNone`))
     ),
-    (_): Option<A> => O.none
+    (): Option<A> => O.none
   )
 
 /**
@@ -35,5 +35,5 @@ export const some: {
       () => E.left([Error("none did not satisfy isSome"), O.none]),
       (a) => E.right(a)
     ),
-    (b) => O.some(b)
+    O.some
   )
