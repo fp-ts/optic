@@ -60,7 +60,7 @@ describe("examples", () => {
 
     const capitalize = (s: string): string => s.toUpperCase()
 
-    const capitalizeName = Optic.modify(_name)(capitalize)
+    const capitalizeName = _name.modify(capitalize)
 
     expect(capitalizeName(from)).toEqual(to)
   })
