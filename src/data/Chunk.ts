@@ -6,12 +6,13 @@ import * as C from "@fp-ts/data/Chunk"
 import * as E from "@fp-ts/data/Either"
 import { pipe } from "@fp-ts/data/Function"
 import * as O from "@fp-ts/data/Option"
-import type { PolyPrism, Prism } from "@fp-ts/optic"
+import type { Optional, PolyPrism, Prism } from "@fp-ts/optic"
 import * as Optic from "@fp-ts/optic"
 
 /**
  * An optic that accesses the `Cons` case of a `Chunk`.
  *
+ * @category constructors
  * @since 1.0.0
  */
 export const cons: {
@@ -29,3 +30,15 @@ export const cons: {
       ),
     ([head, tail]) => C.prepend(head)(tail)
   )
+
+/**
+ * @category constructors
+ * @since 1.0.0
+ */
+export const head = <A>(): Optional<Chunk<A>, A> => cons<A>().at("0")
+
+/**
+ * @category constructors
+ * @since 1.0.0
+ */
+export const tail = <A>(): Optional<Chunk<A>, Chunk<A>> => cons<A>().at("1")
