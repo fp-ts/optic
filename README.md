@@ -234,15 +234,16 @@ There are also more polymorphic versions of each optic that allow the types of t
 
 ## Getter / Setter APIs
 
-| Name          | Given                           | To             |
-| ------------- | ------------------------------- | -------------- |
-| get           | `Lens<S, A>`, `S`               | `A`            |
-| encode        | `Prism<S, A>`, `A`              | `S`            |
-| getOrModify   | `PolyOptional<S, T, A, B>`, `S` | `Either<T, A>` |
-| modify        | `Optional<S, A>`, `A => A`      | `S => S`       |
-| replace       | `Setter<S, A>`, `A`, `S`        | `S`            |
-| replaceOption | `Setter<S, A>`, `A`, `S`        | `Option<S>`    |
-| getOption     | `Getter<S, A>`, `S`             | `Option<A>`    |
+| Name          | Given                           | To                 |
+| ------------- | ------------------------------- | ------------------ |
+| get           | `Lens<S, A>`, `S`               | `A`                |
+| decode        | `Prism<S, A>`, `S`              | `Either<Error, A>` |
+| encode        | `Prism<S, A>`, `A`              | `S`                |
+| getOrModify   | `PolyOptional<S, T, A, B>`, `S` | `Either<T, A>`     |
+| modify        | `Optional<S, A>`, `A => A`      | `S => S`           |
+| replace       | `Setter<S, A>`, `A`, `S`        | `S`                |
+| replaceOption | `Setter<S, A>`, `A`, `S`        | `Option<S>`        |
+| getOption     | `Getter<S, A>`, `S`             | `Option<A>`        |
 
 # Installation
 

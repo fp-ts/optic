@@ -4,10 +4,26 @@
 import * as E from "@fp-ts/data/Either"
 import type { List } from "@fp-ts/data/List"
 import * as L from "@fp-ts/data/List"
+// import type { Option } from "@fp-ts/data/Option"
 import type { PolyPrism, Prism } from "@fp-ts/optic"
 import * as Optic from "@fp-ts/optic"
+// import type { At } from "@fp-ts/optic/typeclass/At"
 
-// TODO: getIndex
+// /**
+//  * @since 1.0.0
+//  */
+// export const getAt = <A>(): At<List<A>, number, Option<A>> => ({
+//   at: (i) =>
+//     Optic.lens(L.get(i), (oa) =>
+//       (s) =>
+//         pipe(
+//           oa,
+//           O.match(
+//             () => pipe(s, L.remove(i)),
+//             (a) => pipe(s, L.update(i, a))
+//           )
+//         ))
+// })
 
 /**
  * An optic that accesses the `Cons` case of a `List`.

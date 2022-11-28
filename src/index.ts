@@ -504,20 +504,25 @@ export const optional = <S, A>(
  * @category constructors
  * @since 1.0.0
  */
-export const index = <A>(n: number): Optional<ReadonlyArray<A>, A> =>
+export const index = <A>(i: number): Optional<ReadonlyArray<A>, A> =>
   optional(
     (s) =>
-      n >= 0 && n < s.length ?
-        E.right(s[n]) :
-        E.left(new Error(`hasIndex(${n})`)),
+      pipe(
+        s,
+        RA.get(i),
+        O.match(
+          () => E.left(new Error(`hasIndex(${i})`)),
+          E.right
+        )
+      ),
     (a) =>
       (s) => {
-        if (n >= 0 && n < s.length) {
+        if (i >= 0 && i < s.length) {
           const out = s.slice()
-          out[n] = a
+          out[i] = a
           return E.right(out)
         }
-        return E.left(new Error(`hasIndex(${n})`))
+        return E.left(new Error(`hasIndex(${i})`))
       }
   )
 
@@ -637,6 +642,12 @@ export const getOption = <S, A>(optic: Getter<S, A>) =>
  */
 export const getOrModify = <S, T, A, B>(optic: PolyOptional<S, T, A, B>) =>
   (s: S): Either<T, A> => pipe(optic.getOptic(s), E.mapLeft(([_, t]) => t))
+
+/**
+ * @since 1.0.0
+ */
+export const decode = <S, T, A, B>(optic: PolyPrism<S, T, A, B>) =>
+  (GetWhole: S): Either<Error, A> => pipe(optic.getOptic(GetWhole), E.mapLeft(([e, _]) => e))
 
 /**
  * @since 1.0.0
