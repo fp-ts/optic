@@ -7,6 +7,8 @@ import * as L from "@fp-ts/data/List"
 import type { PolyPrism, Prism } from "@fp-ts/optic"
 import * as Optic from "@fp-ts/optic"
 
+// TODO: getIndex
+
 /**
  * An optic that accesses the `Cons` case of a `List`.
  *
