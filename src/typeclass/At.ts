@@ -12,7 +12,7 @@ import * as Optic from "@fp-ts/optic"
  *
  * @since 1.0.0
  */
-export interface At<in out S, in I, A> {
+export interface At<in out S, in I, in out A> {
   readonly at: (i: I) => Lens<S, A>
 }
 

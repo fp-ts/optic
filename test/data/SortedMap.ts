@@ -1,6 +1,8 @@
 import { pipe } from "@fp-ts/data/Function"
+import * as O from "@fp-ts/data/Option"
 import * as SortedMap from "@fp-ts/data/SortedMap"
 import * as String from "@fp-ts/data/String"
+import * as Optic from "@fp-ts/optic"
 import * as SortedMapOptic from "@fp-ts/optic/data/SortedMap"
 import * as AtOptic from "@fp-ts/optic/typeclass/At"
 
@@ -13,5 +15,15 @@ describe("SortedMap", () => {
     expect(pipe(empty, remove("a"))).toEqual(empty)
     expect(pipe(make(["b", 2]), remove("a"))).toEqual(make(["b", 2]))
     expect(pipe(make(["a", 1], ["b", 2]), remove("a"))).toEqual(make(["b", 2]))
+  })
+
+  it("getIndex", () => {
+    const Index = SortedMapOptic.getIndex<string, number>()
+    const _a = Index.index("a")
+    const empty = SortedMap.empty(String.Order)
+    const make = SortedMap.make(String.Order)
+    expect(pipe(empty, Optic.getOption(_a))).toEqual(O.none)
+    expect(pipe(make(["b", 2]), Optic.getOption(_a))).toEqual(O.none)
+    expect(pipe(make(["a", 1], ["b", 2]), Optic.getOption(_a))).toEqual(O.some(1))
   })
 })
