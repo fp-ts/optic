@@ -1,3 +1,4 @@
+import * as E from "@fp-ts/data/Either"
 import { pipe } from "@fp-ts/data/Function"
 import * as HashMap from "@fp-ts/data/HashMap"
 import * as O from "@fp-ts/data/Option"
@@ -19,6 +20,13 @@ describe("HaskMap", () => {
     const _a = Index.index("a")
     expect(pipe(HashMap.empty(), Optic.getOption(_a))).toEqual(O.none)
     expect(pipe(HashMap.make(["b", 2]), Optic.getOption(_a))).toEqual(O.none)
+    expect(pipe(HashMap.make(["b", 2]), _a.getOptic)).toEqual(
+      E.left([new Error("hasIndex(a)"), HashMap.make(["b", 2])])
+    )
     expect(pipe(HashMap.make(["a", 1], ["b", 2]), Optic.getOption(_a))).toEqual(O.some(1))
+
+    expect(pipe(HashMap.make(["b", 2]), _a.setOptic(1))).toEqual(
+      E.right(HashMap.make(["a", 1], ["b", 2]))
+    )
   })
 })
