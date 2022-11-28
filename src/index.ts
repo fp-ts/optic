@@ -516,14 +516,14 @@ export const index = <A>(i: number): Optional<ReadonlyArray<A>, A> =>
         )
       ),
     (a) =>
-      (s) => {
-        if (i >= 0 && i < s.length) {
-          const out = s.slice()
-          out[i] = a
-          return E.right(out)
-        }
-        return E.left(new Error(`hasIndex(${i})`))
-      }
+      (s) =>
+        pipe(
+          RA.updateAt(i, a)(s),
+          O.match(
+            () => E.left(new Error(`hasIndex(${i})`)),
+            E.right
+          )
+        )
   )
 
 /**
