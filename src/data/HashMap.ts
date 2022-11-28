@@ -9,6 +9,8 @@ import type { Option } from "@fp-ts/data/Option"
 import * as O from "@fp-ts/data/Option"
 import * as Optic from "@fp-ts/optic"
 import type { At } from "@fp-ts/optic/typeclass/At"
+import type { Index } from "@fp-ts/optic/typeclass/Index"
+import { fromAt } from "@fp-ts/optic/typeclass/Index"
 
 /**
  * @since 1.0.0
@@ -25,3 +27,8 @@ export const getAt = <K, A>(): At<HashMap<K, A>, K, Option<A>> => ({
           )
         ))
 })
+
+/**
+ * @since 1.0.0
+ */
+export const getIndex = <K, A>(): Index<HashMap<K, A>, K, A> => fromAt(getAt())
