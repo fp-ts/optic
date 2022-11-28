@@ -12,4 +12,10 @@ describe("ReadonlyArray", () => {
     expect(pipe([], _0.getOptic)).toEqual(E.left([new Error("hasIndex(0)"), []]))
     expect(pipe([1, 2, 3], Optic.getOption(_0))).toEqual(O.some(1))
   })
+
+  it("consNonEmpty", () => {
+    const iso = ReadonlyArrayOptic.consNonEmpty<number>()
+    expect(pipe([1], Optic.get(iso))).toEqual([1, []])
+    expect(pipe([1, [2, 3]], Optic.encode(iso))).toEqual([1, 2, 3])
+  })
 })
