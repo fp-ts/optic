@@ -7,7 +7,7 @@ import * as E from "@fp-ts/data/Either"
 import { pipe } from "@fp-ts/data/Function"
 import * as O from "@fp-ts/data/Option"
 import type { PolyPrism, Prism } from "@fp-ts/optic"
-import { polyPrism } from "@fp-ts/optic"
+import * as Optic from "@fp-ts/optic"
 
 /**
  * An optic that accesses the `Cons` case of a `Chunk`.
@@ -17,15 +17,15 @@ import { polyPrism } from "@fp-ts/optic"
 export const cons: {
   <A>(): Prism<Chunk<A>, readonly [A, Chunk<A>]>
   <A, B>(): PolyPrism<Chunk<A>, Chunk<B>, readonly [A, Chunk<A>], readonly [B, Chunk<B>]>
-} = <A, B>(): PolyPrism<Chunk<A>, Chunk<B>, readonly [A, Chunk<A>], readonly [B, Chunk<B>]> =>
-  polyPrism(
+} = <A>() =>
+  Optic.prism<Chunk<A>, readonly [A, Chunk<A>]>(
     (s) =>
       pipe(
         C.tail(s),
         O.match(
-          () => E.left([Error(`Nil did not satisfy isCons`), C.empty]),
+          () => E.left(Error("isCons")),
           (tail) => E.right([C.unsafeHead(s), tail])
         )
       ),
-    ([head, tail]): Chunk<B> => C.prepend(head)(tail)
+    ([head, tail]) => C.prepend(head)(tail)
   )

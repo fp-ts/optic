@@ -4,7 +4,7 @@
 import type { Either } from "@fp-ts/data/Either"
 import * as E from "@fp-ts/data/Either"
 import type { PolyPrism, Prism } from "@fp-ts/optic"
-import { polyPrism } from "@fp-ts/optic"
+import * as Optic from "@fp-ts/optic"
 
 /**
  * An optic that accesses the `Right` case of an `Either`.
@@ -12,15 +12,12 @@ import { polyPrism } from "@fp-ts/optic"
  * @since 1.0.0
  */
 export const right: {
-  <A, B>(): Prism<Either<A, B>, B>
-  <A, B, C>(): PolyPrism<Either<A, B>, Either<A, C>, B, C>
-} = <A, B, C>(): PolyPrism<Either<A, B>, Either<A, C>, B, C> =>
-  polyPrism(
-    E.match(
-      (a) => E.left([Error(`left(${a}) did not satisfy isRight`), E.left(a)]),
-      (b) => E.right(b)
-    ),
-    (c): Either<A, C> => E.right(c)
+  <E, A>(): Prism<Either<E, A>, A>
+  <E, A, B>(): PolyPrism<Either<E, A>, Either<E, B>, A, B>
+} = <E, A>() =>
+  Optic.prism<Either<E, A>, A>(
+    E.mapLeft(() => Error("isRight")),
+    E.right
   )
 
 /**
@@ -29,13 +26,13 @@ export const right: {
  * @since 1.0.0
  */
 export const left: {
-  <A, B>(): Prism<Either<A, B>, A>
-  <A, B, C>(): PolyPrism<Either<A, B>, Either<C, B>, A, C>
-} = <A, B, C>(): PolyPrism<Either<A, B>, Either<C, B>, A, C> =>
-  polyPrism(
+  <E, A>(): Prism<Either<E, A>, E>
+  <E, A, B>(): PolyPrism<Either<E, A>, Either<B, A>, E, B>
+} = <E, A>() =>
+  Optic.prism<Either<E, A>, E>(
     E.match(
-      (a) => E.right(a),
-      (b) => E.left([Error(`right(${b}) did not satisfy isLeft`), E.right(b)])
+      E.right,
+      () => E.left(Error("isLeft"))
     ),
-    (c): Either<C, B> => E.left(c)
+    E.left
   )

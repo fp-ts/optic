@@ -1,5 +1,6 @@
 import type { Chunk } from "@fp-ts/data/Chunk"
 import * as C from "@fp-ts/data/Chunk"
+import * as E from "@fp-ts/data/Either"
 import { pipe } from "@fp-ts/data/Function"
 import * as O from "@fp-ts/data/Option"
 import * as Optic from "@fp-ts/optic"
@@ -14,6 +15,7 @@ describe("Chunk", () => {
       O.some([1, C.fromIterable([2, 3])])
     )
     expect(pipe(C.empty, Optic.getOption(_cons))).toEqual(O.none)
+    expect(pipe(C.empty, _cons.getOptic)).toEqual(E.left([new Error("isCons"), C.empty]))
     expect(pipe([1, C.fromIterable([2, 3])], Optic.encode(_cons))).toEqual(
       C.fromIterable([1, 2, 3])
     )

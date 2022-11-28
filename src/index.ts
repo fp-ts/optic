@@ -321,25 +321,20 @@ export interface Iso<in out S, in out A> extends PolyIso<S, S, A, A> {}
  */
 export const iso: {
   <S, A>(get: (s: S) => A, encode: (a: A) => S): Iso<S, A>
-  <S, T, A, B>(
-    get: (s: S) => A,
-    encode: (b: B) => T
-  ): PolyIso<S, T, A, B>
-} = <S, T, A, B>(
-  get: (s: S) => A,
-  encode: (b: B) => T
-): PolyIso<S, T, A, B> =>
+  <S, T, A, B>(get: (s: S) => A, encode: (b: B) => T): PolyIso<S, T, A, B>
+} = <S, A>(get: (s: S) => A, encode: (a: A) => S): Iso<S, A> =>
   new Builder("prism", (s) => E.right(get(s)), (a) => () => E.right(encode(a)))
 
 /**
  * The identity optic.
  *
+ * @category constructors
  * @since 1.0.0
  */
 export const id: {
   <S>(): Iso<S, S>
   <S, T>(): PolyIso<S, T, S, T>
-} = <S, T>(): PolyIso<S, T, S, T> => iso<S, T, S, T>(identity, identity)
+} = () => iso(identity, identity)
 
 /**
  * @since 1.0.0
@@ -357,19 +352,14 @@ export interface Lens<in out S, in out A> extends PolyLens<S, S, A, A> {}
  */
 export const lens: {
   <S, A>(get: (s: S) => A, set: (a: A) => (s: S) => S): Lens<S, A>
-  <S, T, A, B>(
-    get: (s: S) => A,
-    set: (b: B) => (s: S) => T
-  ): PolyLens<S, T, A, B>
-} = <S, T, A, B>(
-  get: (s: S) => A,
-  set: (b: B) => (s: S) => T
-): PolyLens<S, T, A, B> =>
+  <S, T, A, B>(get: (s: S) => A, set: (b: B) => (s: S) => T): PolyLens<S, T, A, B>
+} = <S, A>(get: (s: S) => A, set: (a: A) => (s: S) => S): Lens<S, A> =>
   new Builder("lens", (s) => E.right(get(s)), (b) => (s) => E.right(set(b)(s)))
 
 /**
  * An optic that accesses the specified key of a struct or a tuple.
  *
+ * @category constructors
  * @since 1.0.0
  */
 export const at = <S, Key extends keyof S & (string | symbol)>(key: Key): Lens<S, S[Key]> =>
@@ -414,6 +404,7 @@ export const prism = <S, A>(decode: (s: S) => Either<Error, A>, encode: (a: A) =
 /**
  * An optic that accesses the `Cons` case of a `ReadonlyArray`.
  *
+ * @category constructors
  * @since 1.0.0
  */
 export const cons: {
@@ -424,23 +415,19 @@ export const cons: {
     readonly [A, ReadonlyArray<A>],
     readonly [B, ReadonlyArray<B>]
   >
-} = <A, B>(): PolyPrism<
-  ReadonlyArray<A>,
-  ReadonlyArray<B>,
-  readonly [A, ReadonlyArray<A>],
-  readonly [B, ReadonlyArray<B>]
-> =>
-  polyPrism(
+} = <A>() =>
+  prism<ReadonlyArray<A>, readonly [A, ReadonlyArray<A>]>(
     (s) =>
       RA.isNonEmpty(s) ?
         E.right([s[0], s.slice(1)]) :
-        E.left([new Error(`[] did not satisfy isCons`), RA.empty]),
-    ([head, tail]): ReadonlyArray<B> => [head, ...tail]
+        E.left(new Error("isNonEmpty")),
+    ([head, tail]) => [head, ...tail]
   )
 
 /**
  * An optic that accesses the case specified by a predicate.
  *
+ * @category constructors
  * @since 1.0.0
  */
 export const filter: {
@@ -448,35 +435,34 @@ export const filter: {
   <S extends A, A = S>(predicate: Predicate<A>): Prism<S, S>
 } = <S>(predicate: Predicate<S>): Prism<S, S> =>
   prism(
-    (s) => predicate(s) ? E.right(s) : E.left(new Error(`${s} did not satisfy ${predicate.name}`)),
+    (s) =>
+      predicate(s) ?
+        E.right(s) :
+        E.left(new Error(predicate.name)),
     identity
   )
-
-const isNonNullable = <S>(s: S): s is NonNullable<S> => s != null
 
 /**
  * An optic that accesses the `NonNullable` case of a nullable type.
  *
+ * @category constructors
  * @since 1.0.0
  */
-export const nonNullable = <S>(): Prism<S, NonNullable<S>> => filter(isNonNullable)
+export const nonNullable = <S>(): Prism<S, NonNullable<S>> =>
+  filter(function isNonNullable<S>(s: S): s is NonNullable<S> {
+    return s != null
+  })
 
 /**
  * An optic that accesses the `Some` case of an `Option`.
  *
+ * @category constructors
  * @since 1.0.0
  */
 export const some: {
   <A>(): Prism<Option<A>, A>
   <A, B>(): PolyPrism<Option<A>, Option<B>, A, B>
-} = <A, B>(): PolyPrism<Option<A>, Option<B>, A, B> =>
-  polyPrism(
-    O.match(
-      () => E.left([Error("none did not satisfy isSome"), O.none]),
-      E.right
-    ),
-    O.some
-  )
+} = <A>(): Prism<Option<A>, A> => prism(O.match(() => E.left(new Error("isSome")), E.right), O.some)
 
 /**
  * @since 1.0.0
@@ -515,31 +501,34 @@ export const optional = <S, A>(
 /**
  * An optic that accesses the specified index of a `ReadonlyArray`.
  *
+ * @category constructors
  * @since 1.0.0
  */
 export const index = <A>(n: number): Optional<ReadonlyArray<A>, A> =>
   optional(
-    (as) =>
-      n >= 0 && n < as.length ?
-        E.right(as[n]) :
-        E.left(new Error(`[${as}] did not satisfy hasAt(${n})`)),
+    (s) =>
+      n >= 0 && n < s.length ?
+        E.right(s[n]) :
+        E.left(new Error(`hasIndex(${n})`)),
     (a) =>
-      (as) => {
-        if (n >= 0 && n < as.length) {
-          const out = as.slice()
+      (s) => {
+        if (n >= 0 && n < s.length) {
+          const out = s.slice()
           out[n] = a
           return E.right(out)
         }
-        return E.left(new Error(`[${as}] did not satisfy hasAt(${n})`))
+        return E.left(new Error(`hasIndex(${n})`))
       }
   )
 
 /**
+ * @category constructors
  * @since 1.0.0
  */
 export const head = <A>(): Optional<ReadonlyArray<A>, A> => cons<A>().at("0")
 
 /**
+ * @category constructors
  * @since 1.0.0
  */
 export const tail = <A>(): Optional<ReadonlyArray<A>, ReadonlyArray<A>> => cons<A>().at("1")
@@ -547,6 +536,7 @@ export const tail = <A>(): Optional<ReadonlyArray<A>, ReadonlyArray<A>> => cons<
 /**
  * An optic that accesses the first case specified by a predicate.
  *
+ * @category constructors
  * @since 1.0.0
  */
 export const findFirst: {
@@ -554,20 +544,20 @@ export const findFirst: {
   <B extends A, A = B>(predicate: Predicate<A>): Optional<ReadonlyArray<B>, B>
 } = <A>(predicate: Predicate<A>): Optional<ReadonlyArray<A>, A> =>
   optional(
-    (as) =>
+    (s) =>
       pipe(
-        as,
+        s,
         RA.findFirst(predicate),
-        E.fromOption(() => new Error(`[${as}] did not satisfy the specified predicate`))
+        E.fromOption(() => new Error(predicate.name))
       ),
     (a) =>
-      (as) =>
+      (s) =>
         pipe(
-          as,
+          s,
           RA.findFirstIndex(predicate),
-          E.fromOption(() => new Error(`[${as}] did not satisfy the specified predicate`)),
+          E.fromOption(() => new Error(predicate.name)),
           E.map((index) => {
-            const out = as.slice()
+            const out = s.slice()
             out[index] = a
             return out
           })
@@ -599,6 +589,7 @@ export interface PolyTraversal<in S, out T, out A, in B>
 {}
 
 /**
+ * @category constructors
  * @since 1.0.0
  */
 export const polyTraversal = <S, T, A, B>(
@@ -612,6 +603,7 @@ export const polyTraversal = <S, T, A, B>(
 export interface Traversal<in out S, in out A> extends PolyTraversal<S, S, A, A> {}
 
 /**
+ * @category constructors
  * @since 1.0.0
  */
 export const traversal = <S, A>(
