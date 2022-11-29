@@ -29,7 +29,8 @@ A porting of <a href="https://github.com/zio/zio-optics">zio-optics</a> to TypeS
 flowchart TD
   Iso --> Lens
   Iso --> Prism
-  Lens --> Optional
+  Lens --> ReversedPrism
+  ReversedPrism --> Optional
   Prism --> Optional
   Optional --> Getter
   Optional --> Setter
