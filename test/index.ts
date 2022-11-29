@@ -1,5 +1,5 @@
 import * as E from "@fp-ts/data/Either"
-import { pipe } from "@fp-ts/data/Function"
+import { identity, pipe, unsafeCoerce } from "@fp-ts/data/Function"
 import * as O from "@fp-ts/data/Option"
 import * as Optic from "@fp-ts/optic"
 
@@ -187,6 +187,32 @@ describe("index", () => {
     expect(pipe([false, 1], _A.getOptic)).toEqual(E.left([new Error("isA"), [false, 1]]))
 
     expect(pipe([true, "a"], Optic.encode(_A))).toEqual([true, "a"])
+  })
+
+  it("reversedFilter", () => {
+    type Int = number & { __brand: "Int" }
+
+    const isInt = (n: number): n is Int => Number.isInteger(n)
+
+    const Unsafe: Optic.Iso<Int, number> = Optic.iso<Int, number>(identity, unsafeCoerce)
+    const Safe: Optic.ReversedPrism<Int, number> = Optic.reversedFilter(isInt)
+
+    type S = {
+      readonly a: Int
+    }
+
+    const _a = Optic.id<S>().at("a").compose(Safe)
+
+    const s: S = {
+      a: pipe(1, Optic.encode(Unsafe))
+    }
+
+    expect(pipe(s, Optic.get(_a))).toEqual(1)
+    expect(pipe(s, Optic.replace(_a)(2))).toEqual({ a: 2 })
+    expect(pipe(s, Optic.replace(_a)(2.1))).toEqual({ a: 1 })
+
+    expect(Optic.modify(_a)((n) => n * 2)(s)).toEqual({ a: 2 })
+    expect(Optic.modify(_a)((n) => n / 2)(s)).toEqual({ a: 1 })
   })
 
   it("findFirst", () => {

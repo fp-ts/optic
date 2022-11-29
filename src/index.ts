@@ -34,41 +34,21 @@ export interface Optic<
     this: PolyIso<S, T, A, B>,
     that: PolyIso<A, B, C, D>
   ): PolyIso<S, T, C, D>
-  compose<S, A, B>(this: Iso<S, A>, that: Prism<A, B>): Prism<S, B>
-  compose<S, T, A, B, C, D>(
-    this: PolyIso<S, T, A, B>,
-    that: PolyPrism<A, B, C, D>
-  ): PolyPrism<S, T, C, D>
-  compose<S, A, B>(this: Iso<S, A>, that: Lens<A, B>): Lens<S, B>
-  compose<S, T, A, B, C, D>(
-    this: PolyIso<S, T, A, B>,
-    that: PolyLens<A, B, C, D>
-  ): PolyLens<S, T, C, D>
-  compose<S, A, B>(this: Iso<S, A>, that: Optional<A, B>): Optional<S, B>
-  compose<S, T, A, B, C, D>(
-    this: PolyIso<S, T, A, B>,
-    that: PolyOptional<A, B, C, D>
-  ): PolyOptional<S, T, C, D>
   compose<S, A, B>(this: Lens<S, A>, that: Lens<A, B>): Lens<S, B>
   compose<S, T, A, B, C, D>(
     this: PolyLens<S, T, A, B>,
     that: PolyLens<A, B, C, D>
   ): PolyLens<S, T, C, D>
-  compose<S, A, B>(this: Lens<S, A>, that: Optional<A, B>): Optional<S, B>
+  compose<S, A, B>(this: ReversedPrism<S, A>, that: ReversedPrism<A, B>): ReversedPrism<S, B>
   compose<S, T, A, B, C, D>(
-    this: PolyLens<S, T, A, B>,
-    that: PolyOptional<A, B, C, D>
-  ): PolyOptional<S, T, C, D>
+    this: PolyReversedPrism<S, T, A, B>,
+    that: PolyReversedPrism<A, B, C, D>
+  ): PolyReversedPrism<S, T, C, D>
   compose<S, A, B>(this: Prism<S, A>, that: Prism<A, B>): Prism<S, B>
   compose<S, T, A, B, C, D>(
     this: PolyPrism<S, T, A, B>,
     that: PolyPrism<A, B, C, D>
   ): PolyPrism<S, T, C, D>
-  compose<S, A, B>(this: Prism<S, A>, that: Optional<A, B>): Optional<S, B>
-  compose<S, T, A, B, C, D>(
-    this: PolyPrism<S, T, A, B>,
-    that: PolyOptional<A, B, C, D>
-  ): PolyOptional<S, T, C, D>
   compose<S, A, B>(this: Optional<S, A>, that: Optional<A, B>): Optional<S, B>
   compose<S, T, A, B, C, D>(
     this: PolyOptional<S, T, A, B>,
@@ -80,12 +60,7 @@ export interface Optic<
    *
    * @since 1.0.0
    */
-  at<S, A, Key extends keyof A & (string | symbol)>(this: Iso<S, A>, key: Key): Lens<S, A[Key]>
   at<S, A, Key extends keyof A & (string | symbol)>(this: Lens<S, A>, key: Key): Lens<S, A[Key]>
-  at<S, A, Key extends keyof A & (string | symbol)>(
-    this: Prism<S, A>,
-    key: Key
-  ): Optional<S, A[Key]>
   at<S, A, Key extends keyof A & (string | symbol)>(
     this: Optional<S, A>,
     key: Key
@@ -467,6 +442,50 @@ export const some: {
 /**
  * @since 1.0.0
  */
+export interface PolyReversedPrism<in S, out T, out A, in B>
+  extends Optic<S, S, B, never, Error, A, T>
+{}
+
+/**
+ * @since 1.0.0
+ */
+export const polyReversedPrism = <S, T, A, B>(
+  get: (s: S) => A,
+  polyReplaceEither: (b: B) => (s: S) => Either<readonly [Error, T], T>
+): PolyReversedPrism<S, T, A, B> => new Builder("prism", (s) => E.right(get(s)), polyReplaceEither)
+
+/**
+ * @since 1.0.0
+ */
+export interface ReversedPrism<in out S, in out A> extends PolyReversedPrism<S, S, A, A> {}
+
+/**
+ * @since 1.0.0
+ */
+export const reversedPrism = <S, A>(
+  get: (s: S) => A,
+  replaceEither: (a: A) => Either<Error, S>
+): ReversedPrism<S, A> =>
+  polyReversedPrism(get, (a) => (s) => pipe(replaceEither(a), E.mapLeft((e) => [e, s])))
+
+/**
+ * An optic that accesses the input case specified by a predicate.
+ *
+ * @category constructors
+ * @since 1.0.0
+ */
+export const reversedFilter: {
+  <A, S extends A>(refinement: Refinement<A, S>): ReversedPrism<S, A>
+  <S>(predicate: Predicate<S>): ReversedPrism<S, S>
+} = <S>(predicate: Predicate<S>): ReversedPrism<S, S> =>
+  reversedPrism<S, S>(identity, (s) =>
+    predicate(s) ?
+      E.right(s) :
+      E.left(new Error(predicate.name)))
+
+/**
+ * @since 1.0.0
+ */
 export interface PolyOptional<in S, out T, out A, in B>
   extends Optic<S, S, B, Error, Error, A, T>
 {}
@@ -628,7 +647,7 @@ export interface Fold<in S, out A> extends Getter<S, ReadonlyArray<A>> {}
 /**
  * @since 1.0.0
  */
-export const get = <S, T, A, B>(optic: PolyLens<S, T, A, B>) =>
+export const get = <S, T, A, B>(optic: PolyReversedPrism<S, T, A, B>) =>
   (s: S): A => pipe(optic.getOptic(s), E.getOrThrow(identity))
 
 /**
