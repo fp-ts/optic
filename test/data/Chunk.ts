@@ -7,6 +7,21 @@ import * as Optic from "@fp-ts/optic"
 import * as ChunkOptic from "@fp-ts/optic/data/Chunk"
 
 describe("Chunk", () => {
+  it("index", () => {
+    const _index1 = Optic.id<Chunk<number>>().compose(ChunkOptic.index(1))
+
+    expect(pipe(C.fromIterable([1, 2, 3]), Optic.getOption(_index1))).toEqual(O.some(2))
+    expect(pipe(C.fromIterable([1]), Optic.getOption(_index1))).toEqual(O.none)
+    expect(pipe(C.fromIterable([1]), _index1.getOptic)).toEqual(
+      E.left([new Error("hasIndex(1)"), C.fromIterable([1])])
+    )
+
+    expect(pipe(C.fromIterable([1, 2, 3]), Optic.replace(_index1)(4))).toEqual(
+      C.fromIterable([1, 4, 3])
+    )
+    expect(pipe(C.fromIterable([1]), Optic.replace(_index1)(4))).toEqual(C.fromIterable([1]))
+  })
+
   it("cons", () => {
     const _cons = Optic.id<Chunk<number>>()
       .compose(ChunkOptic.cons())

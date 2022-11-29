@@ -6,14 +6,6 @@ import type { NonEmptyReadonlyArray } from "@fp-ts/data/ReadonlyArray"
 import * as RA from "@fp-ts/data/ReadonlyArray"
 import type { Iso, PolyIso } from "@fp-ts/optic"
 import * as Optic from "@fp-ts/optic"
-import type { Index } from "@fp-ts/optic/typeclass/Index"
-
-/**
- * @since 1.0.0
- */
-export const getIndex = <A>(): Index<ReadonlyArray<A>, number, A> => ({
-  index: Optic.index
-})
 
 /**
  * An optic that accesses the `Cons` case of a `NonEmptyReadonlyArray`.

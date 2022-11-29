@@ -10,6 +10,34 @@ import type { Optional, PolyPrism, Prism } from "@fp-ts/optic"
 import * as Optic from "@fp-ts/optic"
 
 /**
+ * An optic that accesses the specified index of a `Chunk`.
+ *
+ * @category constructors
+ * @since 1.0.0
+ */
+export const index = <A>(i: number): Optional<Chunk<A>, A> =>
+  Optic.optional(
+    (s) =>
+      pipe(
+        s,
+        C.get(i),
+        O.match(
+          () => E.left(new Error(`hasIndex(${i})`)),
+          E.right
+        )
+      ),
+    (a) =>
+      (s) =>
+        pipe(
+          C.replaceOption(i, a)(s),
+          O.match(
+            () => E.left(new Error(`hasIndex(${i})`)),
+            E.right
+          )
+        )
+  )
+
+/**
  * An optic that accesses the `Cons` case of a `Chunk`.
  *
  * @category constructors
