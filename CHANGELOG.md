@@ -1,5 +1,43 @@
 # @fp-ts/optic
 
+## 0.0.4
+
+### Patch Changes
+
+- [#16](https://github.com/fp-ts/optic/pull/16) [`c68081f`](https://github.com/fp-ts/optic/commit/c68081f36f35eec63251383d7669ad00360493d9) Thanks [@gcanti](https://github.com/gcanti)! - Optic: add filter
+
+- [#16](https://github.com/fp-ts/optic/pull/16) [`74b4163`](https://github.com/fp-ts/optic/commit/74b416374095a7d207362d71128f7e6d5c4e1d11) Thanks [@gcanti](https://github.com/gcanti)! - refactor optic errors
+
+- [#16](https://github.com/fp-ts/optic/pull/16) [`d427e26`](https://github.com/fp-ts/optic/commit/d427e26dbd9a27417d617dbca4a4d956e8d222e7) Thanks [@gcanti](https://github.com/gcanti)! - upgrade to latest deps
+
+- [#16](https://github.com/fp-ts/optic/pull/16) [`f14b7af`](https://github.com/fp-ts/optic/commit/f14b7af3b998a59a59883a68a784a2c1d3270d25) Thanks [@gcanti](https://github.com/gcanti)! - Optic: add some
+
+- [#16](https://github.com/fp-ts/optic/pull/16) [`c5f3a6d`](https://github.com/fp-ts/optic/commit/c5f3a6d8d323b117925c5ce3167a49b33023da40) Thanks [@gcanti](https://github.com/gcanti)! - rename OpticImpl to Builder and add at
+
+- [#16](https://github.com/fp-ts/optic/pull/16) [`93d4ae1`](https://github.com/fp-ts/optic/commit/93d4ae1ab16ddd5c6f7ca86e6b316da4ce8ca7d0) Thanks [@gcanti](https://github.com/gcanti)! - Optic: add index
+
+- [#16](https://github.com/fp-ts/optic/pull/16) [`66ecb2f`](https://github.com/fp-ts/optic/commit/66ecb2f41f438de7b06faaa26a5ab75d98bc760c) Thanks [@gcanti](https://github.com/gcanti)! - upgrade to latest @fp-ts/data
+
+- [#16](https://github.com/fp-ts/optic/pull/16) [`7a4a6ba`](https://github.com/fp-ts/optic/commit/7a4a6ba1ee72b9f1a8a9433b779f8ec25504b561) Thanks [@gcanti](https://github.com/gcanti)! - remove set in favour of replace
+
+- [#16](https://github.com/fp-ts/optic/pull/16) [`10284d6`](https://github.com/fp-ts/optic/commit/10284d61c4f0ce5c2c01e69fb65c7d4148a7fb9b) Thanks [@gcanti](https://github.com/gcanti)! - add At typeclass
+
+- [#16](https://github.com/fp-ts/optic/pull/16) [`36393bb`](https://github.com/fp-ts/optic/commit/36393bbdc26ff677412e634aa4ebe6637ad7c016) Thanks [@gcanti](https://github.com/gcanti)! - add ReversedPrism
+
+- [#16](https://github.com/fp-ts/optic/pull/16) [`5e61552`](https://github.com/fp-ts/optic/commit/5e615525ee864f27dd05bfa538cd0b924563f88c) Thanks [@gcanti](https://github.com/gcanti)! - add Index typeclass
+
+- [#16](https://github.com/fp-ts/optic/pull/16) [`61d93bc`](https://github.com/fp-ts/optic/commit/61d93bc9b46b75b2cef24e567a732f64ce7ec526) Thanks [@gcanti](https://github.com/gcanti)! - /data/Chunk: add index
+
+- [#16](https://github.com/fp-ts/optic/pull/16) [`3574534`](https://github.com/fp-ts/optic/commit/3574534dbf685a862aae75f1bb094cbf4c6054b8) Thanks [@gcanti](https://github.com/gcanti)! - Chunk, List: add head, tail
+
+- [#16](https://github.com/fp-ts/optic/pull/16) [`b93a944`](https://github.com/fp-ts/optic/commit/b93a9441fa86d327d4bb194e2bd39c963de27eff) Thanks [@gcanti](https://github.com/gcanti)! - modifyApplicative: swap arguments
+
+- [#16](https://github.com/fp-ts/optic/pull/16) [`d402495`](https://github.com/fp-ts/optic/commit/d402495324a35d685ffc3273196f7f2d368da195) Thanks [@gcanti](https://github.com/gcanti)! - Optic: add nonNullable
+
+- [#16](https://github.com/fp-ts/optic/pull/16) [`ed8af7c`](https://github.com/fp-ts/optic/commit/ed8af7cfc15598df84540d6d8e2657b30d8a6bcf) Thanks [@gcanti](https://github.com/gcanti)! - /data/ReadonlyArray: add consNonEmpty
+
+- [#16](https://github.com/fp-ts/optic/pull/16) [`30f9022`](https://github.com/fp-ts/optic/commit/30f902280ee9b59ec21708530796153bddea9141) Thanks [@gcanti](https://github.com/gcanti)! - /data/List: add index
+
 ## 0.0.3
 
 ### Patch Changes
