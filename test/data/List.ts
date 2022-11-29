@@ -7,6 +7,21 @@ import * as Optic from "@fp-ts/optic"
 import * as ListOptic from "@fp-ts/optic/data/List"
 
 describe("List", () => {
+  it("index", () => {
+    const _index1 = Optic.id<List<number>>().compose(ListOptic.index(1))
+
+    expect(pipe(L.fromIterable([1, 2, 3]), Optic.getOption(_index1))).toEqual(O.some(2))
+    expect(pipe(L.fromIterable([1]), Optic.getOption(_index1))).toEqual(O.none)
+    expect(pipe(L.fromIterable([1]), _index1.getOptic)).toEqual(
+      E.left([new Error("hasIndex(1)"), L.fromIterable([1])])
+    )
+
+    expect(pipe(L.fromIterable([1, 2, 3]), Optic.replace(_index1)(4))).toEqual(
+      L.fromIterable([1, 4, 3])
+    )
+    expect(pipe(L.fromIterable([1]), Optic.replace(_index1)(4))).toEqual(L.fromIterable([1]))
+  })
+
   it("cons", () => {
     const _cons = Optic.id<List<number>>()
       .compose(ListOptic.cons())
