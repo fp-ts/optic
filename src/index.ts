@@ -537,7 +537,7 @@ export const index = <A>(i: number): Optional<ReadonlyArray<A>, A> =>
     (a) =>
       (s) =>
         pipe(
-          RA.updateAt(i, a)(s),
+          RA.replaceOption(i, a)(s),
           O.match(
             () => E.left(new Error(`hasIndex(${i})`)),
             E.right
