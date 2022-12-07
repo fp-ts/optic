@@ -1,5 +1,11 @@
 # @fp-ts/optic
 
+## 0.0.5
+
+### Patch Changes
+
+- [#18](https://github.com/fp-ts/optic/pull/18) [`8c88e06`](https://github.com/fp-ts/optic/commit/8c88e06c88095907ce7114ce7a645f01b7393a29) Thanks [@mikearnaldi](https://github.com/mikearnaldi)! - Improve dependency semver ranges
+
 ## 0.0.4
 
 ### Patch Changes
