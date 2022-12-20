@@ -27,7 +27,7 @@ An optic that accesses the `Left` case of an `Either`.
 **Signature**
 
 ```ts
-export declare const left: { <A, B>(): any; <A, B, C>(): any }
+export declare const left: { <E, A>(): any; <E, A, B>(): any }
 ```
 
 Added in v1.0.0
@@ -39,7 +39,7 @@ An optic that accesses the `Right` case of an `Either`.
 **Signature**
 
 ```ts
-export declare const right: { <A, B>(): any; <A, B, C>(): any }
+export declare const right: { <E, A>(): any; <E, A, B>(): any }
 ```
 
 Added in v1.0.0

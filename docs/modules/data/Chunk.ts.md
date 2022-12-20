@@ -12,12 +12,15 @@ Added in v1.0.0
 
 <h2 class="text-delta">Table of contents</h2>
 
-- [utils](#utils)
+- [constructors](#constructors)
   - [cons](#cons)
+  - [head](#head)
+  - [index](#index)
+  - [tail](#tail)
 
 ---
 
-# utils
+# constructors
 
 ## cons
 
@@ -27,6 +30,38 @@ An optic that accesses the `Cons` case of a `Chunk`.
 
 ```ts
 export declare const cons: { <A>(): any; <A, B>(): any }
+```
+
+Added in v1.0.0
+
+## head
+
+**Signature**
+
+```ts
+export declare const head: <A>() => any
+```
+
+Added in v1.0.0
+
+## index
+
+An optic that accesses the specified index of a `Chunk`.
+
+**Signature**
+
+```ts
+export declare const index: <A>(i: number) => any
+```
+
+Added in v1.0.0
+
+## tail
+
+**Signature**
+
+```ts
+export declare const tail: <A>() => any
 ```
 
 Added in v1.0.0
