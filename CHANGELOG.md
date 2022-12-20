@@ -1,5 +1,11 @@
 # @fp-ts/optic
 
+## 0.0.6
+
+### Patch Changes
+
+- [#20](https://github.com/fp-ts/optic/pull/20) [`aa0537f`](https://github.com/fp-ts/optic/commit/aa0537f8d7c204d26fa98f821450a5d137da72ea) Thanks [@gcanti](https://github.com/gcanti)! - upgrade to latest /core, /data
+
 ## 0.0.5
 
 ### Patch Changes
