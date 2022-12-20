@@ -1,6 +1,6 @@
 ---
 title: experimental.ts
-nav_order: 7
+nav_order: 9
 parent: Modules
 ---
 
@@ -16,16 +16,11 @@ Added in v1.0.0
   - [FocusInitial (type alias)](#focusinitial-type-alias)
   - [FocusPrimitive (type alias)](#focusprimitive-type-alias)
   - [FocusStructure (type alias)](#focusstructure-type-alias)
-  - [Fold (interface)](#fold-interface)
-  - [PolyTraversal (interface)](#polytraversal-interface)
-  - [Traversal (interface)](#traversal-interface)
   - [ZoomerTypeId](#zoomertypeid)
   - [ZoomerTypeId (type alias)](#zoomertypeid-type-alias)
   - [modifyApplicative](#modifyapplicative)
   - [path](#path)
   - [pick](#pick)
-  - [polyTraversal](#polytraversal)
-  - [traversal](#traversal)
   - [zoom](#zoom)
 
 ---
@@ -72,36 +67,6 @@ export type FocusStructure<S> = {
 
 Added in v1.0.0
 
-## Fold (interface)
-
-**Signature**
-
-```ts
-export interface Fold<
-```
-
-Added in v1.0.0
-
-## PolyTraversal (interface)
-
-**Signature**
-
-```ts
-export interface PolyTraversal<
-```
-
-Added in v1.0.0
-
-## Traversal (interface)
-
-**Signature**
-
-```ts
-export interface Traversal<
-```
-
-Added in v1.0.0
-
 ## ZoomerTypeId
 
 **Signature**
@@ -127,9 +92,11 @@ Added in v1.0.0
 **Signature**
 
 ```ts
-export declare const modifyApplicative: <F extends TypeLambda>(
+export declare const modifyApplicative: <S, T, A, B>(
+  optic: any
+) => <F extends TypeLambda>(
   F: Applicative<F>
-) => <S, T, A, B>(optic: any) => <R, E, O>(f: (a: A) => Kind<F, R, E, O, B>) => (s: S) => Kind<F, R, E, O, T>
+) => <R, E, O>(f: (a: A) => Kind<F, R, E, O, B>) => (s: S) => Kind<F, R, E, O, T>
 ```
 
 Added in v1.0.0
@@ -173,32 +140,6 @@ An optic that accesses a group of keys of a struct.
 
 ```ts
 export declare const pick: <S, Keys extends readonly [keyof S, ...(keyof S)[]]>(...keys: Keys) => any
-```
-
-Added in v1.0.0
-
-## polyTraversal
-
-**Signature**
-
-```ts
-export declare const polyTraversal: <S, T, A, B>(
-  decode: (s: S) => Either<readonly [Error, T], readonly A[]>,
-  replace: (bs: readonly B[]) => (s: S) => Either<readonly [Error, T], T>
-) => any
-```
-
-Added in v1.0.0
-
-## traversal
-
-**Signature**
-
-```ts
-export declare const traversal: <S, A>(
-  decode: (s: S) => Either<Error, readonly A[]>,
-  replace: (as: readonly A[]) => (s: S) => Either<Error, S>
-) => any
 ```
 
 Added in v1.0.0

@@ -14,7 +14,6 @@ Added in v1.0.0
 
 - [utils](#utils)
   - [none](#none)
-  - [some](#some)
 
 ---
 
@@ -28,18 +27,6 @@ An optic that accesses the `None` case of an `Option`.
 
 ```ts
 export declare const none: <A>() => any
-```
-
-Added in v1.0.0
-
-## some
-
-An optic that accesses the `Some` case of an `Option`.
-
-**Signature**
-
-```ts
-export declare const some: { <A>(): any; <A, B>(): any }
 ```
 
 Added in v1.0.0

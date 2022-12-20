@@ -1,6 +1,6 @@
 ---
 title: data/String.ts
-nav_order: 6
+nav_order: 8
 parent: Modules
 ---
 
@@ -14,7 +14,6 @@ Added in v1.0.0
 
 - [utils](#utils)
   - [index](#index)
-  - [isChar](#ischar)
 
 ---
 
@@ -28,16 +27,6 @@ An optic that accesses the specified index of a `string`.
 
 ```ts
 export declare const index: (n: number) => any
-```
-
-Added in v1.0.0
-
-## isChar
-
-**Signature**
-
-```ts
-export declare const isChar: (s: string) => s is string
 ```
 
 Added in v1.0.0
