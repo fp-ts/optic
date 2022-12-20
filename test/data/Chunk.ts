@@ -29,8 +29,8 @@ describe("Chunk", () => {
     expect(pipe(C.fromIterable([1, 2, 3]), Optic.getOption(_cons))).toEqual(
       O.some([1, C.fromIterable([2, 3])])
     )
-    expect(pipe(C.empty, Optic.getOption(_cons))).toEqual(O.none)
-    expect(pipe(C.empty, _cons.getOptic)).toEqual(E.left([new Error("isCons"), C.empty]))
+    expect(pipe(C.empty(), Optic.getOption(_cons))).toEqual(O.none)
+    expect(pipe(C.empty(), _cons.getOptic)).toEqual(E.left([new Error("isCons"), C.empty()]))
     expect(pipe([1, C.fromIterable([2, 3])], Optic.encode(_cons))).toEqual(
       C.fromIterable([1, 2, 3])
     )
