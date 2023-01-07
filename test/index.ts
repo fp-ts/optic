@@ -117,6 +117,19 @@ describe("index", () => {
     expect(pipe([1], Optic.replace(_index1)(4))).toEqual([1])
   })
 
+  it("key", () => {
+    const _keya = Optic.id<Readonly<Record<string, number>>>().key("a")
+
+    expect(pipe({ a: 1 }, Optic.getOption(_keya))).toEqual(O.some(1))
+    expect(pipe({ b: 2 }, Optic.getOption(_keya))).toEqual(O.none)
+    expect(pipe({ b: 2 }, _keya.getOptic)).toEqual(
+      E.left([new Error("hasKey(a)"), { b: 2 }])
+    )
+
+    expect(pipe({ a: 1, b: 2 }, Optic.replace(_keya)(3))).toEqual({ a: 3, b: 2 })
+    expect(pipe({ b: 2 }, Optic.replace(_keya)(3))).toEqual({ b: 2 })
+  })
+
   it("head", () => {
     const _head = Optic.id<ReadonlyArray<number>>()
       .compose(Optic.head())
@@ -151,7 +164,7 @@ describe("index", () => {
 
   it("nonNullable", () => {
     const _nonNullable = Optic.id<string | undefined | null>()
-      .compose(Optic.nonNullable())
+      .nonNullable()
 
     expect(pipe("a", Optic.getOption(_nonNullable))).toEqual(O.some("a"))
     expect(pipe(null, Optic.getOption(_nonNullable))).toEqual(O.none)

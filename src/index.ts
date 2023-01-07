@@ -104,6 +104,16 @@ export interface Optic<
    * @since 1.0.0
    */
   index<S, A>(this: Optional<S, ReadonlyArray<A>>, n: number): Optional<S, A>
+
+  /**
+   * An optic that accesses the specified index of a `ReadonlyRecord`.
+   *
+   * @since 1.0.0
+   */
+  key<S, A>(
+    this: Optional<S, Readonly<Record<string | symbol, A>>>,
+    key: string | symbol
+  ): Optional<S, A>
 }
 
 class Builder<
@@ -151,6 +161,10 @@ class Builder<
 
   index(n: number) {
     return this.compose(index(n))
+  }
+
+  key(k: string | symbol) {
+    return this.compose(key(k))
   }
 }
 
@@ -540,6 +554,50 @@ export const index = <A>(i: number): Optional<ReadonlyArray<A>, A> =>
           RA.replaceOption(i, a)(s),
           O.match(
             () => E.left(new Error(`hasIndex(${i})`)),
+            E.right
+          )
+        )
+  )
+
+// TODO: replace with @fp-ts/data/ReadonlyRecord
+const RR = {
+  get: (key: string | symbol) =>
+    <A>(rr: Readonly<Record<string | symbol, A>>): Option<A> =>
+      Object.prototype.hasOwnProperty.call(rr, key) ? O.some(rr[key]) : O.none,
+  replaceOption: <A>(key: string | symbol, a: A) =>
+    (rr: Readonly<Record<string | symbol, A>>): Option<Readonly<Record<string | symbol, A>>> => {
+      if (Object.prototype.hasOwnProperty.call(rr, key)) {
+        const out = { ...rr }
+        out[key] = a
+        return O.some(out)
+      }
+      return O.none
+    }
+}
+
+/**
+ * An optic that accesses the specified index of a `ReadonlyRecord`.
+ *
+ * @category constructors
+ * @since 1.0.0
+ */
+export const key = <A>(key: string | symbol): Optional<Readonly<Record<string | symbol, A>>, A> =>
+  optional(
+    (s) =>
+      pipe(
+        s,
+        RR.get(key),
+        O.match(
+          () => E.left(new Error(`hasKey(${String(key)})`)),
+          E.right
+        )
+      ),
+    (a) =>
+      (s) =>
+        pipe(
+          RR.replaceOption(key, a)(s),
+          O.match(
+            () => E.left(new Error(`hasKey(${String(key)})`)),
             E.right
           )
         )
