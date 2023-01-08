@@ -94,6 +94,11 @@ Optic.id<SindexSignature>().key('a')
 // $ExpectType Optional<SindexSignature, number>
 Optic.id<SindexSignature>().compose(Optic.key('a'))
 
+// $ExpectType Optional<{ readonly a: { readonly [x: string]: number; }; }, number>
+Optic.id<{ readonly a: { readonly [x: string]: number } }>().at('a').key('b')
+// $ExpectType Optional<{ readonly a: { readonly [x: string]: number; readonly [x: symbol]: number; }; }, number>
+Optic.id<{ readonly a: { readonly [x: string | symbol]: number } }>().at('a').key('b')
+
 //
 // filter
 //
