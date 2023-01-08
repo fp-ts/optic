@@ -650,6 +650,15 @@ export const index = <A>(i: number): Optional<ReadonlyArray<A>, A> =>
   )
 
 /**
+ * An optic that accesses all of the elements in a `ReadonlyArray`.
+ *
+ * @category constructors
+ * @since 1.0.0
+ */
+export const indexes = <A>(): Traversal<ReadonlyArray<A>, A> =>
+  traversal(E.right, (as) => (s) => E.right(as.concat(s.slice(as.length))))
+
+/**
  * @since 1.0.0
  */
 export interface IndexSignature<A> {

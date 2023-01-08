@@ -117,6 +117,16 @@ describe("index", () => {
     expect(pipe([1], Optic.replace(_index1)(4))).toEqual([1])
   })
 
+  it("indexes", () => {
+    const _indexes = Optic.indexes<number>()
+
+    expect(pipe([], Optic.getOption(_indexes))).toEqual(O.some([]))
+    expect(pipe([1, 2, 3], Optic.getOption(_indexes))).toEqual(O.some([1, 2, 3]))
+
+    expect(pipe([], Optic.replace(_indexes))([4, 5])).toEqual([4, 5])
+    expect(pipe([1, 2, 3], Optic.replace(_indexes)([4, 5]))).toEqual([4, 5, 3])
+  })
+
   it("key/ string keys", () => {
     const _keya = Optic.id<Record<string, number>>().key("a")
 
