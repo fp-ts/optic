@@ -157,6 +157,23 @@ describe("index", () => {
     expect(pipe({ b: 2 }, Optic.replace(_keya)(3))).toEqual({ b: 2 })
   })
 
+  it("pick", () => {
+    type S = {
+      readonly a: string
+      readonly b: number
+      readonly c: boolean
+    }
+
+    const _ab = Optic.id<S>().pick("a", "b")
+
+    expect(pipe({ a: "a", b: 1, c: true }, Optic.get(_ab))).toEqual({ a: "a", b: 1 })
+    expect(pipe({ a: "a1", b: 1, c: true }, Optic.replace(_ab)({ a: "a2", b: 2 }))).toEqual({
+      a: "a2",
+      b: 2,
+      c: true
+    })
+  })
+
   it("head", () => {
     const _head = Optic.id<ReadonlyArray<number>>()
       .compose(Optic.head())
