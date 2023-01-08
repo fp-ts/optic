@@ -67,6 +67,20 @@ export interface Optic<
   ): Optional<S, A[Key]>
 
   /**
+   * An optic that accesses a group of keys of a struct.
+   *
+   * @since 1.0.0
+   */
+  pick<S, A, Keys extends readonly [keyof A, ...Array<keyof A>]>(
+    this: Lens<S, A>,
+    ...keys: Keys
+  ): Lens<S, { readonly [K in Keys[number]]: A[K] }>
+  pick<S, A, Keys extends readonly [keyof A, ...Array<keyof A>]>(
+    this: Optional<S, A>,
+    ...keys: Keys
+  ): Optional<S, { readonly [K in Keys[number]]: A[K] }>
+
+  /**
    * An optic that accesses the case specified by a predicate.
    *
    * @since 1.0.0
@@ -143,8 +157,12 @@ class Builder<
       prismComposition(that)(this as any)
   }
 
-  at(key: string) {
+  at(key: PropertyKey) {
     return this.compose(at<any, any>(key))
+  }
+
+  pick(...keys: readonly [PropertyKey, ...Array<PropertyKey>]) {
+    return this.compose(pick<any, any>(...keys))
   }
 
   filter(predicate: Predicate<any>) {
@@ -362,6 +380,31 @@ export const at = <S, Key extends keyof S & (string | symbol)>(key: Key): Lens<S
       return { ...s, [key]: b }
     })
 
+// TODO: replace with @fp-ts/data/Struct
+const Struct = {
+  pick: <S, Keys extends readonly [keyof S, ...Array<keyof S>]>(
+    ...keys: Keys
+  ) =>
+    (s: S): { [K in Keys[number]]: S[K] } => {
+      const out: any = {}
+      for (const k of keys) {
+        out[k] = s[k]
+      }
+      return out
+    }
+}
+
+/**
+ * An optic that accesses a group of keys of a struct.
+ *
+ * @category constructors
+ * @since 1.0.0
+ */
+export const pick = <S, Keys extends readonly [keyof S, ...Array<keyof S>]>(
+  ...keys: Keys
+): Lens<S, { readonly [K in Keys[number]]: S[K] }> =>
+  lens(Struct.pick(...keys), (a) => (s) => ({ ...s, ...a }))
+
 /**
  * @since 1.0.0
  */
@@ -567,7 +610,7 @@ export interface IndexSignature<A> {
 }
 
 // TODO: replace with @fp-ts/data/ReadonlyRecord
-const IS = {
+const IndexSignature = {
   get: (key: PropertyKey) =>
     <A>(is: IndexSignature<A>): Option<A> =>
       Object.prototype.hasOwnProperty.call(is, key) ? O.some(is[key]) : O.none,
@@ -593,7 +636,7 @@ export const key = <A>(key: PropertyKey): Optional<IndexSignature<A>, A> =>
     (s) =>
       pipe(
         s,
-        IS.get(key),
+        IndexSignature.get(key),
         O.match(
           () => E.left(new Error(`hasKey(${String(key)})`)),
           E.right
@@ -602,7 +645,7 @@ export const key = <A>(key: PropertyKey): Optional<IndexSignature<A>, A> =>
     (a) =>
       (s) =>
         pipe(
-          IS.replaceOption(key, a)(s),
+          IndexSignature.replaceOption(key, a)(s),
           O.match(
             () => E.left(new Error(`hasKey(${String(key)})`)),
             E.right

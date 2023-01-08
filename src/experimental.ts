@@ -124,19 +124,3 @@ export const zoom: {
   }
   return out
 }
-
-/**
- * An optic that accesses a group of keys of a struct.
- *
- * @since 1.0.0
- */
-export const pick = <S, Keys extends readonly [keyof S, ...Array<keyof S>]>(
-  ...keys: Keys
-): Lens<S, { readonly [K in Keys[number]]: S[K] }> =>
-  Optic.lens((s) => {
-    const out: any = {}
-    for (const k of keys) {
-      out[k] = s[k]
-    }
-    return out
-  }, (a) => (s) => ({ ...s, ...a }))
