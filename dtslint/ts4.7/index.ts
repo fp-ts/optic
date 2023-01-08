@@ -1,28 +1,47 @@
 import * as Optic from "@fp-ts/optic"
 
-interface S {
+interface Sstruct {
   readonly a: string
   readonly b: number
 }
 
-interface T {
-  readonly a: boolean
-  readonly b: number
-}
+type Stuple = readonly [string, number]
 
-type ST = readonly [string, number]
+type SreadonlyArray = ReadonlyArray<number>
 
-type TT = readonly [boolean, number]
+type SindexSignature = Record<string, number>
 
 //
 // at
 //
 
-// $ExpectType Lens<S, string>
-Optic.id<S>().compose(Optic.at('a'))
+// $ExpectType Lens<Sstruct, string>
+Optic.id<Sstruct>().at('a')
+// $ExpectType Lens<Sstruct, string>
+Optic.id<Sstruct>().compose(Optic.at('a'))
 
-// $ExpectType Lens<ST, string>
-Optic.id<ST>().compose(Optic.at('0'))
+// $ExpectType Lens<Stuple, string>
+Optic.id<Stuple>().at('0')
+// $ExpectType Lens<Stuple, string>
+Optic.id<Stuple>().compose(Optic.at('0'))
+
+//
+// index
+//
+
+// $ExpectType Optional<SreadonlyArray, number>
+Optic.id<SreadonlyArray>().index(1)
+// $ExpectType Optional<SreadonlyArray, number>
+Optic.id<SreadonlyArray>().compose(Optic.index(1))
+
+//
+// key
+//
+
+// $ExpectType Optional<SindexSignature, number>
+Optic.id<SindexSignature>().key('a')
+// $ExpectType Optional<SindexSignature, number>
+Optic.id<SindexSignature>().compose(Optic.key('a'))
 
 //
 // filter

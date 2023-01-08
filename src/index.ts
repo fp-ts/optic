@@ -60,8 +60,8 @@ export interface Optic<
    *
    * @since 1.0.0
    */
-  at<S, A, Key extends keyof A & (string | symbol)>(this: Lens<S, A>, key: Key): Lens<S, A[Key]>
-  at<S, A, Key extends keyof A & (string | symbol)>(
+  at<S, A, Key extends keyof A>(this: Lens<S, A>, key: Key): Lens<S, A[Key]>
+  at<S, A, Key extends keyof A>(
     this: Optional<S, A>,
     key: Key
   ): Optional<S, A[Key]>
@@ -106,13 +106,13 @@ export interface Optic<
   index<S, A>(this: Optional<S, ReadonlyArray<A>>, n: number): Optional<S, A>
 
   /**
-   * An optic that accesses the specified index of a `ReadonlyRecord`.
+   * An optic that accesses the specified key of an index signature.
    *
    * @since 1.0.0
    */
   key<S, A>(
-    this: Optional<S, Readonly<Record<string | symbol, A>>>,
-    key: string | symbol
+    this: Optional<S, IndexSignature<A>>,
+    key: PropertyKey
   ): Optional<S, A>
 }
 
@@ -163,7 +163,7 @@ class Builder<
     return this.compose(index(n))
   }
 
-  key(k: string | symbol) {
+  key(k: PropertyKey) {
     return this.compose(key(k))
   }
 }
@@ -559,15 +559,22 @@ export const index = <A>(i: number): Optional<ReadonlyArray<A>, A> =>
         )
   )
 
+/**
+ * @since 1.0.0
+ */
+export interface IndexSignature<A> {
+  readonly [x: PropertyKey]: A
+}
+
 // TODO: replace with @fp-ts/data/ReadonlyRecord
-const RR = {
-  get: (key: string | symbol) =>
-    <A>(rr: Readonly<Record<string | symbol, A>>): Option<A> =>
-      Object.prototype.hasOwnProperty.call(rr, key) ? O.some(rr[key]) : O.none,
-  replaceOption: <A>(key: string | symbol, a: A) =>
-    (rr: Readonly<Record<string | symbol, A>>): Option<Readonly<Record<string | symbol, A>>> => {
-      if (Object.prototype.hasOwnProperty.call(rr, key)) {
-        const out = { ...rr }
+const IS = {
+  get: (key: PropertyKey) =>
+    <A>(is: IndexSignature<A>): Option<A> =>
+      Object.prototype.hasOwnProperty.call(is, key) ? O.some(is[key]) : O.none,
+  replaceOption: <A>(key: PropertyKey, a: A) =>
+    (is: IndexSignature<A>): Option<IndexSignature<A>> => {
+      if (Object.prototype.hasOwnProperty.call(is, key)) {
+        const out = { ...is }
         out[key] = a
         return O.some(out)
       }
@@ -576,17 +583,17 @@ const RR = {
 }
 
 /**
- * An optic that accesses the specified index of a `ReadonlyRecord`.
+ * An optic that accesses the specified key of an index signature.
  *
  * @category constructors
  * @since 1.0.0
  */
-export const key = <A>(key: string | symbol): Optional<Readonly<Record<string | symbol, A>>, A> =>
+export const key = <A>(key: PropertyKey): Optional<IndexSignature<A>, A> =>
   optional(
     (s) =>
       pipe(
         s,
-        RR.get(key),
+        IS.get(key),
         O.match(
           () => E.left(new Error(`hasKey(${String(key)})`)),
           E.right
@@ -595,7 +602,7 @@ export const key = <A>(key: string | symbol): Optional<Readonly<Record<string | 
     (a) =>
       (s) =>
         pipe(
-          RR.replaceOption(key, a)(s),
+          IS.replaceOption(key, a)(s),
           O.match(
             () => E.left(new Error(`hasKey(${String(key)})`)),
             E.right

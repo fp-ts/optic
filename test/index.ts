@@ -117,8 +117,8 @@ describe("index", () => {
     expect(pipe([1], Optic.replace(_index1)(4))).toEqual([1])
   })
 
-  it("key", () => {
-    const _keya = Optic.id<Readonly<Record<string, number>>>().key("a")
+  it("key/ string keys", () => {
+    const _keya = Optic.id<Record<string, number>>().key("a")
 
     expect(pipe({ a: 1 }, Optic.getOption(_keya))).toEqual(O.some(1))
     expect(pipe({ b: 2 }, Optic.getOption(_keya))).toEqual(O.none)
@@ -127,6 +127,33 @@ describe("index", () => {
     )
 
     expect(pipe({ a: 1, b: 2 }, Optic.replace(_keya)(3))).toEqual({ a: 3, b: 2 })
+    expect(pipe({ b: 2 }, Optic.replace(_keya)(3))).toEqual({ b: 2 })
+  })
+
+  it("key/ symbol keys", () => {
+    const a = Symbol.for("@fp-ts/optic/test/a")
+    const _keya = Optic.id<Record<symbol, number>>().key(a)
+
+    expect(pipe({ [a]: 1 }, Optic.getOption(_keya))).toEqual(O.some(1))
+    expect(pipe({ b: 2 }, Optic.getOption(_keya))).toEqual(O.none)
+    expect(pipe({ b: 2 }, _keya.getOptic)).toEqual(
+      E.left([new Error("hasKey(Symbol(@fp-ts/optic/test/a))"), { b: 2 }])
+    )
+
+    expect(pipe({ [a]: 1, b: 2 }, Optic.replace(_keya)(3))).toEqual({ [a]: 3, b: 2 })
+    expect(pipe({ b: 2 }, Optic.replace(_keya)(3))).toEqual({ b: 2 })
+  })
+
+  it("key/ number keys", () => {
+    const _keya = Optic.id<Record<number, number>>().key(1)
+
+    expect(pipe({ [1]: 1 }, Optic.getOption(_keya))).toEqual(O.some(1))
+    expect(pipe({ b: 2 }, Optic.getOption(_keya))).toEqual(O.none)
+    expect(pipe({ b: 2 }, _keya.getOptic)).toEqual(
+      E.left([new Error("hasKey(1)"), { b: 2 }])
+    )
+
+    expect(pipe({ [1]: 1, b: 2 }, Optic.replace(_keya)(3))).toEqual({ [1]: 3, b: 2 })
     expect(pipe({ b: 2 }, Optic.replace(_keya)(3))).toEqual({ b: 2 })
   })
 
