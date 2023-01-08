@@ -241,16 +241,20 @@ There are also more polymorphic versions of each optic that allow the types of t
 | Iso      | iso          | `S => A`, `A => S`                                              | `Iso<S, A>`                |
 |          | id           |                                                                 | `Iso<S, S>`                |
 | Lens     | lens         | `S => A`, `A => S => S`                                         | `Lens<S, A>`               |
-|          | at           | `Key`                                                           | `Iso<S, S[Key]>`           |
+|          | at           | `Key`                                                           | `Lens<S, S[Key]>`          |
+|          | pick         | `Key`                                                           | `Lens<S, Pick<S, Key>>`    |
+|          | omit         | `Key`                                                           | `Lens<S, Omit<S, Key>>`    |
 | Prism    | prism        | `S => Either<Error, A>`, `A => S`                               | `Prism<S, A>`              |
 |          | polyPrism    | `S => Either<[Error, T], A>`, `B => T`                          | `PolyPrism<S, T, A, B>`    |
 |          | cons         |                                                                 | `Prism<A[], [A, A[]]>`     |
-|          | nonNullable  |                                                                 | `Prism<S, NonNullable<S>>` |
+|          | nonNullable  |                                                                 | `Prism<A, NonNullable<A>>` |
+|          | some         |                                                                 | `Prism<Option<A>, A>`      |
 |          | filter       | `Predicate<S>`                                                  | `Prism<S, S>`              |
 |          | filter       | `Refinement<S, A>`                                              | `Prism<S, A>`              |
 | Optional | optional     | `S => Either<Error, A>`, `A => S => Either<Error, S>`           | `Optional<S, A>`           |
 |          | polyOptional | `S => Either<[Error, T], A>`, `B => S => Either<[Error, T], T>` | `PolyOptional<S, T, A, B>` |
 |          | index        | `number`                                                        | `Optional<A[], A>`         |
+|          | key          | `string`                                                        | `Optional<{ []: A }, A>`   |
 |          | head         |                                                                 | `Optional<A[], A>`         |
 |          | tail         |                                                                 | `Optional<A[], A[]>`       |
 |          | findFirst    | `Predicate<A>`                                                  | `Optional<A[], A>`         |
