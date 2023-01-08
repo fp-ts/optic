@@ -20,7 +20,6 @@ Added in v1.0.0
   - [ZoomerTypeId (type alias)](#zoomertypeid-type-alias)
   - [modifyApplicative](#modifyapplicative)
   - [path](#path)
-  - [pick](#pick)
   - [zoom](#zoom)
 
 ---
@@ -128,18 +127,6 @@ export declare function path<S, K1 extends keyof S, K2 extends keyof S[K1], K3 e
 ): Lens<S, S[K1][K2][K3]>
 export declare function path<S, K1 extends keyof S, K2 extends keyof S[K1]>(...path: [K1, K2]): Lens<S, S[K1][K2]>
 export declare function path<S, K1 extends keyof S>(...path: [K1]): Lens<S, S[K1]>
-```
-
-Added in v1.0.0
-
-## pick
-
-An optic that accesses a group of keys of a struct.
-
-**Signature**
-
-```ts
-export declare const pick: <S, Keys extends readonly [keyof S, ...(keyof S)[]]>(...keys: Keys) => any
 ```
 
 Added in v1.0.0
