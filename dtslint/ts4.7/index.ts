@@ -6,6 +6,7 @@ interface Sstruct {
   readonly a3: {
     readonly b1: boolean
     readonly b2: Date
+    readonly b3: bigint
   }
 }
 
@@ -58,6 +59,22 @@ lensSA.pick('b1', 'b2')
 prismSA.pick('b1', 'b2')
 // $ExpectType Optional<Sstruct, { readonly b1: boolean; readonly b2: Date; }>
 optionalSA.pick('b1', 'b2')
+
+//
+// omit
+//
+
+// $ExpectType Lens<Sstruct, { readonly a1: string; readonly a2: number; }>
+Optic.id<Sstruct>().omit('a3')
+
+// $ExpectType Lens<Sstruct, { readonly b1: boolean; readonly b2: Date; }>
+isoSA.omit('b3')
+// $ExpectType Lens<Sstruct, { readonly b1: boolean; readonly b2: Date; }>
+lensSA.omit('b3')
+// $ExpectType Optional<Sstruct, { readonly b1: boolean; readonly b2: Date; }>
+prismSA.omit('b3')
+// $ExpectType Optional<Sstruct, { readonly b1: boolean; readonly b2: Date; }>
+optionalSA.omit('b3')
 
 //
 // index

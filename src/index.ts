@@ -81,6 +81,20 @@ export interface Optic<
   ): Optional<S, { readonly [K in Keys[number]]: A[K] }>
 
   /**
+   * An optic that excludes a group of keys of a struct.
+   *
+   * @since 1.0.0
+   */
+  omit<S, A, Keys extends readonly [keyof A, ...Array<keyof A>]>(
+    this: Lens<S, A>,
+    ...keys: Keys
+  ): Lens<S, { readonly [K in Exclude<keyof A, Keys[number]>]: A[K] }>
+  omit<S, A, Keys extends readonly [keyof A, ...Array<keyof A>]>(
+    this: Optional<S, A>,
+    ...keys: Keys
+  ): Optional<S, { readonly [K in Exclude<keyof A, Keys[number]>]: A[K] }>
+
+  /**
    * An optic that accesses the case specified by a predicate.
    *
    * @since 1.0.0
@@ -163,6 +177,10 @@ class Builder<
 
   pick(...keys: readonly [PropertyKey, ...Array<PropertyKey>]) {
     return this.compose(pick<any, any>(...keys))
+  }
+
+  omit(...keys: readonly [PropertyKey, ...Array<PropertyKey>]) {
+    return this.compose(omit<any, any>(...keys))
   }
 
   filter(predicate: Predicate<any>) {
@@ -391,6 +409,16 @@ const Struct = {
         out[k] = s[k]
       }
       return out
+    },
+  omit: <S, Keys extends readonly [keyof S, ...Array<keyof S>]>(
+    ...keys: Keys
+  ) =>
+    (s: S): { [K in Exclude<keyof S, Keys[number]>]: S[K] } => {
+      const out: any = { ...s }
+      for (const k of keys) {
+        delete out[k]
+      }
+      return out
     }
 }
 
@@ -404,6 +432,17 @@ export const pick = <S, Keys extends readonly [keyof S, ...Array<keyof S>]>(
   ...keys: Keys
 ): Lens<S, { readonly [K in Keys[number]]: S[K] }> =>
   lens(Struct.pick(...keys), (a) => (s) => ({ ...s, ...a }))
+
+/**
+ * An optic that excludes a group of keys of a struct.
+ *
+ * @category constructors
+ * @since 1.0.0
+ */
+export const omit = <S, Keys extends readonly [keyof S, ...Array<keyof S>]>(
+  ...keys: Keys
+): Lens<S, { readonly [K in Exclude<keyof S, Keys[number]>]: S[K] }> =>
+  lens(Struct.omit(...keys), (a) => (s) => ({ ...s, ...a }))
 
 /**
  * @since 1.0.0
