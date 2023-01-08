@@ -139,8 +139,16 @@ export interface Optic<
    * @since 1.0.0
    */
   key<S, A>(
-    this: Optional<S, IndexSignature<A>>,
-    key: PropertyKey
+    this: Optional<S, { readonly [x: string]: A }>,
+    key: string
+  ): Optional<S, A>
+  key<S, A>(
+    this: Optional<S, { readonly [x: symbol]: A }>,
+    key: symbol
+  ): Optional<S, A>
+  key<S, A>(
+    this: Optional<S, { readonly [x: number]: A }>,
+    key: number
   ): Optional<S, A>
 }
 

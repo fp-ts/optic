@@ -14,17 +14,6 @@ A porting of <a href="https://github.com/zio/zio-optics">zio-optics</a> to TypeS
   </a>
 </p>
 
-`@fp-ts/optic` is a library that makes it easy to modify parts of larger data structures based on a single representation of an optic as a combination of a getter and setter.
-
-`@fp-ts/optic` features a unified representation of optics, deep `@fp-ts/data` integration, helpful error messages,
-
-# Features
-
-- **Unified Representation Of Optics**. All optics compose the same way because they are all instances of the same data type (`Optic`)
-- **Integration**. Built-in optics for `@fp-ts/data` data structures, like `List` and `Chunk`
-
-# Optics
-
 ```mermaid
 flowchart TD
   Iso --> Lens
@@ -38,6 +27,40 @@ flowchart TD
   Setter --> Optic
 ```
 
+# Features
+
+- **Unified Representation Of Optics**. All optics compose the same way because they are all instances of the same data type (`Optic`)
+- **Integration**. Built-in optics for `@fp-ts/data` data structures, like `Option`, `Either` and `Chunk`
+
+## Introduction
+
+`@fp-ts/optic` is a library that makes it easy to modify parts of larger data structures based on a single representation of an optic as a combination of a getter and setter.
+
+`@fp-ts/optic` features a unified representation of optics, deep `@fp-ts/data` integration, helpful error messages,
+
+## Requirements
+
+- TypeScript 4.7 or newer
+- The `strict` flag enabled in your `tsconfig.json` file
+
+## Getting started
+
+To get started with `@fp-ts/optic`, you will need to install the library (**alpha** version) using npm or yarn:
+
+```
+npm install @fp-ts/optic
+```
+
+```
+yarn add @fp-ts/optic
+```
+
+Once you have installed the library, you can import the necessary types and functions from the `@fp-ts/optic` module.
+
+```ts
+import * as Optic from "@fp-ts/optic";
+```
+
 # Summary
 
 Let's say we have an employee and we need to upper case the first character of his company street name.
@@ -46,20 +69,20 @@ Let's say we have an employee and we need to upper case the first character of h
 import * as O from "@fp-ts/data/Option";
 
 interface Street {
-  num: number;
-  name: O.Option<string>;
+  readonly num: number;
+  readonly name: O.Option<string>;
 }
 interface Address {
-  city: string;
-  street: Street;
+  readonly city: string;
+  readonly street: Street;
 }
 interface Company {
-  name: string;
-  address: Address;
+  readonly name: string;
+  readonly address: Address;
 }
 interface Employee {
-  name: string;
-  company: Company;
+  readonly name: string;
+  readonly company: Company;
 }
 
 const from: Employee = {
@@ -246,12 +269,308 @@ There are also more polymorphic versions of each optic that allow the types of t
 | replaceOption | `Setter<S, A>`, `A`, `S`        | `Option<S>`        |
 | getOption     | `Getter<S, A>`, `S`             | `Option<A>`        |
 
-# Installation
+# Basic usage
 
-To install the **alpha** version:
+## id
 
+The `id` optic is a special optic that represents the identity function, which simply returns its input unchanged. It can be thought of as a "base case" for optics, from which more complex optics can be built.
+
+The `id` optic is defined as a singleton type, meaning that there is only one possible value for it. This makes it easy to use as a starting point for building larger optics, as it does not require any arguments or configuration.
+
+```ts
+import * as Optic from "@fp-ts/optic";
+
+interface Whole {
+  readonly a: string;
+  readonly b: number;
+  readonly c: boolean;
+}
+
+// create an iso that focuses on the 'Whole' data structure
+const _a: Optic.Iso<Whole, Whole> = Optic.id<Whole>();
 ```
-npm install @fp-ts/optic
+
+## compose
+
+The `compose` method is a utility function that allows you to combine two or more optics into a single optic.
+
+```ts
+import { pipe } from "@fp-ts/data/Function";
+import * as Optic from "@fp-ts/optic";
+
+// This is the type of the data structure that the lens will be operating on.
+interface Whole {
+  readonly a: string;
+  readonly b: number;
+  readonly c: boolean;
+}
+
+// This creates a lens that focuses on the 'a' field within the 'Whole' object.
+const _a: Optic.Lens<Whole, string> =
+  // The 'id' function creates an identity lens for the 'Whole' type.
+  Optic.id<Whole>()
+    // The 'compose' method combines the identity lens with an 'at' lens,
+    // which selects the 'a' field within the 'Whole' object.
+    .compose(Optic.at("a"));
+
+// Now we can use the '_a' lens to view and modify the 'a' field of a 'Whole' object.
+
+const whole: Whole = {
+  a: "foo",
+  b: 42,
+  c: true,
+};
+
+// Use the 'get' function to view the 'a' field of the 'whole' object.
+const result: string = pipe(whole, Optic.get(_a)); // returns "foo"
+
+// Use the 'replace' function to update the 'a' field of the 'whole' object.
+const updated: Whole = pipe(whole, Optic.replace(_a)("bar")); // returns { a: "bar", b: 42, c: true }
+```
+
+## at
+
+The `at` method is a utility function that creates an optic that focuses on a specific field within a data structure.
+
+```ts
+import { pipe } from "@fp-ts/data/Function";
+import * as Optic from "@fp-ts/optic";
+
+// This is the type of the data structure that the lens will be operating on.
+interface Whole {
+  readonly a: string;
+  readonly b: number;
+  readonly c: boolean;
+}
+
+// This creates a lens that focuses on the 'a' field within the 'Whole' object.
+const _a: Optic.Lens<Whole, string> =
+  // The 'id' function creates an identity lens for the 'Whole' type.
+  Optic.id<Whole>()
+    // The 'at' method selects the 'a' key within the 'Whole' object,
+    // resulting in a lens that is focused on that field.
+    .at("a");
+
+// Now we can use the '_a' lens to view and modify the 'a' field of a 'Whole' object.
+
+const whole: Whole = {
+  a: "foo",
+  b: 42,
+  c: true,
+};
+
+// Use the 'get' function to view the 'a' field of the 'whole' object.
+const result: string = pipe(whole, Optic.get(_a)); // returns "foo"
+
+// Use the 'replace' function to update the 'a' field of the 'whole' object.
+const updated: Whole = pipe(whole, Optic.replace(_a)("bar")); // returns { a: "bar", b: 42, c: true }
+```
+
+## pick
+
+The `pick` method is a utility function that creates an optic that focuses on a group of keys within a data structure.
+
+```ts
+import { pipe } from "@fp-ts/data/Function";
+import * as Optic from "@fp-ts/optic";
+
+// This is the type of the data structure that the lens will be operating on.
+interface Whole {
+  readonly a: string;
+  readonly b: number;
+  readonly c: boolean;
+}
+
+// This creates a lens that focuses on the 'a' and 'b' fields within the 'Whole' object.
+const _ab: Optic.Lens<Whole, { readonly a: string; readonly b: number }> =
+  // The 'id' function creates an identity lens for the 'Whole' type.
+  Optic.id<Whole>()
+    // The 'pick' method selects the 'a' and 'b' keys within the 'Whole' object,
+    // resulting in a lens that is focused on those fields.
+    .pick("a", "b");
+
+// Now we can use the '_ab' lens to view and modify the 'a' and 'b' fields of a 'Whole' object.
+
+const whole: Whole = {
+  a: "foo",
+  b: 42,
+  c: true,
+};
+
+// Use the 'get' function to view the 'a' and 'b' fields of the 'whole' object.
+const result: { readonly a: string; readonly b: number } = pipe(
+  whole,
+  Optic.get(_ab)
+); // returns { a: "foo", b: 42 }
+
+// Use the 'replace' function to update the 'a' and 'b' fields of the 'whole' object.
+const updated: Whole = pipe(whole, Optic.replace(_ab)({ a: "bar", b: 23 })); // returns { a: "bar", b: 23, c: true }
+```
+
+## omit
+
+The `omit` method is a utility function that creates a lens that excludes a group of keys from a struct. This can be useful when you want to focus on a subset of a data structure and ignore certain fields.
+
+```ts
+import { pipe } from "@fp-ts/data/Function";
+import * as Optic from "@fp-ts/optic";
+
+interface Whole {
+  readonly a: string;
+  readonly b: number;
+  readonly c: boolean;
+}
+
+// This creates a lens that focuses on the 'a' and 'c' fields within the 'Whole' object.
+const _ac: Optic.Lens<Whole, { readonly a: string; readonly c: boolean }> =
+  // The 'id' function creates an identity lens for the 'Whole' type.
+  Optic.id<Whole>()
+    // The 'omit' method excludes the 'b' key within the 'Whole' object,
+    // resulting in a lens that is focused on the 'a' and 'c' fields.
+    .omit("b");
+
+// Now we can use the '_ac' lens to view and modify the 'a' and 'c' fields of a 'Whole' object.
+
+const whole: Whole = {
+  a: "foo",
+  b: 42,
+  c: true,
+};
+
+// Use the 'get' function to view the 'a' and 'c' fields of the 'whole' object.
+const result: { readonly a: string; readonly c: boolean } = pipe(
+  whole,
+  Optic.get(_ac)
+); // returns { a: "foo", c: true }
+
+// Use the 'replace' function to update the 'a' and 'c' fields of the 'whole' object.
+const updated: Whole = pipe(whole, Optic.replace(_ac)({ a: "bar", c: false })); // returns { a: "bar", b: 42, c: false }
+```
+
+## filter
+
+The `filter` method is a utility function that creates an optic that focuses on the elements of a data structure that match a specified predicate.
+
+```ts
+import { pipe } from "@fp-ts/data/Function";
+import * as Optic from "@fp-ts/optic";
+import type { Option } from "@fp-ts/data/Option";
+
+// This is the type of the data structure that the prism will be operating on.
+interface Whole {
+  readonly a: number;
+}
+
+// This creates an `Optional` that focuses on the 'a' field within the 'Whole' object,
+// and only includes values that are even numbers.
+const _evenA: Optic.Optional<Whole, number> =
+  // The 'id' function creates an identity prism for the 'Whole' type.
+  Optic.id<Whole>()
+    // The 'at' method selects the 'a' key within the 'Whole' object,
+    // resulting in a `Lens` that is focused on that field.
+    .at("a")
+    // The 'filter' method only includes values that are even numbers.
+    .filter((a) => a % 2 === 0);
+
+// Now we can use the '_evenA' `Optional` to view and modify the 'a' field of a 'Whole' object,
+// but only if the value is an even number.
+
+const whole: Whole = {
+  a: 2,
+};
+
+// Use the 'getOption' function to view the 'a' field of the 'whole' object.
+const result: Option<number> = pipe(whole, Optic.getOption(_evenA)); // returns some(2)
+
+// Use the 'replace' function to update the 'a' field of the 'whole' object.
+const updated: Whole = pipe(whole, Optic.replace(_evenA)(4)); // returns { a: 4 }
+```
+
+## nonNullable
+
+The `nonNullable` method is a utility function that creates a `Prism` that focuses on the non-nullable values of a nullable type. This is useful when you want to manipulate or extract the value of a nullable type, but want to ignore the `null` values.
+
+```ts
+import { pipe } from "@fp-ts/data/Function";
+import * as Optic from "@fp-ts/optic";
+import type { Option } from "@fp-ts/data/Option";
+
+const _nonNullString: Optic.Prism<string | null, string> = Optic.id<
+  string | null
+>().nonNullable();
+
+const result1: Option<string> = pipe("foo", Optic.getOption(_nonNullString)); // returns some("foo")
+const result2: Option<string> = pipe(null, Optic.getOption(_nonNullString)); // returns none
+```
+
+## some
+
+The `some` method is a utility function that creates an optic that focuses on the `Some` case of an `Option` data type. This optic allows you to view and modify the value contained within the `Some` case of an `Option`.
+
+```ts
+import { pipe } from "@fp-ts/data/Function";
+import * as O from "@fp-ts/data/Option";
+import * as Optic from "@fp-ts/optic";
+
+// This creates a prism that focuses on the 'Some' case of the 'Option<number>' object.
+const _some: Optic.Prism<O.Option<number>, number> = Optic.id<
+  O.Option<number>
+>().some();
+
+const option: O.Option<number> = O.some(42);
+
+const result: O.Option<number> = pipe(option, Optic.getOption(_some)); // returns some(42)
+
+const updated: O.Option<number> = pipe(option, Optic.replace(_some)(23)); // returns some(23)
+```
+
+## index
+
+The `index` method creates an `Optional` optic that focuses on a specific index in a `ReadonlyArray`. The `Optional` optic allows you to view the value at the specified index, or `None` if the index does not exist. You can also use the `Optional` optic to update the value at the specified index, if it exists.
+
+```ts
+import { pipe } from "@fp-ts/data/Function";
+import * as Optic from "@fp-ts/optic";
+import type { Option } from "@fp-ts/data/Option";
+
+const _index2: Optic.Optional<ReadonlyArray<number>, number> = Optic.id<
+  ReadonlyArray<number>
+>().index(2);
+
+const arr: ReadonlyArray<number> = [1, 2, 3, 4];
+
+const result: Option<number> = pipe(arr, Optic.getOption(_index2)); // some(3)
+const updated1: ReadonlyArray<number> = pipe(arr, Optic.replace(_index2)(42)); // [1, 2, 42, 4]
+const updated2: ReadonlyArray<number> = pipe(arr, Optic.replace(_index2)(10)); // [1, 2, 10, 4]
+const updated3: ReadonlyArray<number> = pipe([], Optic.replace(_index2)(10)); // []
+```
+
+## key
+
+The `key` method is a utility function that allows you to create an `Optional` optic that focuses on a specific key of an index signature (a type with a string index signature).
+
+```ts
+import { pipe } from "@fp-ts/data/Function";
+import type { Option } from "@fp-ts/data/Option";
+import * as Optic from "@fp-ts/optic";
+
+interface Data {
+  readonly [key: string]: number;
+}
+
+// Create an Optional optic that focuses on the 'foo' key.
+const _foo: Optic.Optional<Data, number> = Optic.id<Data>().key("foo");
+
+const data: Data = {
+  foo: 1,
+  bar: 2,
+};
+
+// Use the 'getOption' function to view the value of the 'foo' key.
+const fooValue: Option<number> = pipe(data, Optic.getOption(_foo)); // returns some(1)
+
+// Use the 'replace' function to update the value of the 'foo' key.
+const updatedData: Data = pipe(data, Optic.replace(_foo)(10)); // returns { foo: 10, bar: 2 }
 ```
 
 # Documentation

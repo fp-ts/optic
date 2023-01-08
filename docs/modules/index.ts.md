@@ -21,9 +21,12 @@ Added in v1.0.0
   - [id](#id)
   - [index](#index)
   - [iso](#iso)
+  - [key](#key)
   - [lens](#lens)
   - [nonNullable](#nonnullable)
+  - [omit](#omit)
   - [optional](#optional)
+  - [pick](#pick)
   - [polyOptional](#polyoptional)
   - [polyPrism](#polyprism)
   - [polyTraversal](#polytraversal)
@@ -35,6 +38,7 @@ Added in v1.0.0
 - [utils](#utils)
   - [Fold (interface)](#fold-interface)
   - [Getter (interface)](#getter-interface)
+  - [IndexSignature (interface)](#indexsignature-interface)
   - [Iso (interface)](#iso-interface)
   - [Lens (interface)](#lens-interface)
   - [Optic (interface)](#optic-interface)
@@ -166,6 +170,18 @@ export declare const iso: {
 
 Added in v1.0.0
 
+## key
+
+An optic that accesses the specified key of an index signature.
+
+**Signature**
+
+```ts
+export declare const key: <A>(key: PropertyKey) => any
+```
+
+Added in v1.0.0
+
 ## lens
 
 **Signature**
@@ -191,6 +207,18 @@ export declare const nonNullable: <S>() => any
 
 Added in v1.0.0
 
+## omit
+
+An optic that excludes a group of keys of a struct.
+
+**Signature**
+
+```ts
+export declare const omit: <S, Keys extends readonly [keyof S, ...(keyof S)[]]>(...keys: Keys) => any
+```
+
+Added in v1.0.0
+
 ## optional
 
 **Signature**
@@ -200,6 +228,18 @@ export declare const optional: <S, A>(
   decode: (s: S) => Either<Error, A>,
   replaceEither: (a: A) => (s: S) => Either<Error, S>
 ) => any
+```
+
+Added in v1.0.0
+
+## pick
+
+An optic that accesses a group of keys of a struct.
+
+**Signature**
+
+```ts
+export declare const pick: <S, Keys extends readonly [keyof S, ...(keyof S)[]]>(...keys: Keys) => any
 ```
 
 Added in v1.0.0
@@ -321,6 +361,18 @@ Added in v1.0.0
 
 ```ts
 export interface Getter<
+```
+
+Added in v1.0.0
+
+## IndexSignature (interface)
+
+**Signature**
+
+```ts
+export interface IndexSignature<A> {
+  readonly [x: PropertyKey]: A
+}
 ```
 
 Added in v1.0.0
