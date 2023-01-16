@@ -35,4 +35,31 @@ describe("Chunk", () => {
       C.fromIterable([1, 2, 3])
     )
   })
+
+  it("head", () => {
+    const _head = Optic.id<Chunk<number>>()
+      .compose(ChunkOptic.head())
+    expect(pipe(C.empty(), Optic.getOption(_head))).toEqual(O.none)
+    expect(pipe(C.fromIterable([1, 2, 3]), Optic.getOption(_head))).toEqual(O.some(1))
+    expect(pipe(C.empty(), _head.getOptic)).toEqual(E.left([new Error("isCons"), C.empty()]))
+    expect(pipe(C.empty(), Optic.replace(_head)(3))).toEqual(C.empty())
+    expect(pipe(C.fromIterable([1, 2]), Optic.replace(_head)(3))).toEqual(C.fromIterable([3, 2]))
+  })
+
+  it("tail", () => {
+    const _tail = Optic.id<Chunk<number>>()
+      .compose(ChunkOptic.tail())
+    expect(pipe(C.empty(), Optic.getOption(_tail))).toEqual(O.none)
+    expect(pipe(C.fromIterable([1]), Optic.getOption(_tail))).toEqual(
+      O.some(C.empty())
+    )
+    expect(pipe(C.fromIterable([1, 2, 3]), Optic.getOption(_tail))).toEqual(
+      O.some(C.fromIterable([2, 3]))
+    )
+    expect(pipe(C.empty(), _tail.getOptic)).toEqual(E.left([new Error("isCons"), C.empty()]))
+    expect(pipe(C.empty(), Optic.replace(_tail)(C.fromIterable([3, 4])))).toEqual(C.empty())
+    expect(pipe(C.fromIterable([1, 2]), Optic.replace(_tail)(C.fromIterable([3, 4])))).toEqual(
+      C.fromIterable([1, 3, 4])
+    )
+  })
 })
