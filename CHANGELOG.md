@@ -1,5 +1,17 @@
 # @fp-ts/optic
 
+## 0.0.7
+
+### Patch Changes
+
+- [#22](https://github.com/fp-ts/optic/pull/22) [`da7b795`](https://github.com/fp-ts/optic/commit/da7b7957cb002a710f8c793dddee76c85594e663) Thanks [@gcanti](https://github.com/gcanti)! - add support for ReadonlyRecord
+
+- [#22](https://github.com/fp-ts/optic/pull/22) [`0af4155`](https://github.com/fp-ts/optic/commit/0af4155e31b8f6758332f84ac43d04231fd52a14) Thanks [@gcanti](https://github.com/gcanti)! - add pick
+
+- [#22](https://github.com/fp-ts/optic/pull/22) [`241b7da`](https://github.com/fp-ts/optic/commit/241b7da131a25941a64c0f34d2dcf45ba1bf6db9) Thanks [@gcanti](https://github.com/gcanti)! - add indexes
+
+- [#22](https://github.com/fp-ts/optic/pull/22) [`f56c810`](https://github.com/fp-ts/optic/commit/f56c81063b78e310d7b8f2ebad337965c3eb55e3) Thanks [@gcanti](https://github.com/gcanti)! - add omit
+
 ## 0.0.6
 
 ### Patch Changes
