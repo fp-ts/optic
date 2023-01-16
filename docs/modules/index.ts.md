@@ -20,6 +20,7 @@ Added in v1.0.0
   - [head](#head)
   - [id](#id)
   - [index](#index)
+  - [indexes](#indexes)
   - [iso](#iso)
   - [key](#key)
   - [lens](#lens)
@@ -153,6 +154,18 @@ An optic that accesses the specified index of a `ReadonlyArray`.
 
 ```ts
 export declare const index: <A>(i: number) => any
+```
+
+Added in v1.0.0
+
+## indexes
+
+An optic that accesses all of the elements in a `ReadonlyArray`.
+
+**Signature**
+
+```ts
+export declare const indexes: <A>() => any
 ```
 
 Added in v1.0.0
