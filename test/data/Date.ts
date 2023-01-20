@@ -67,4 +67,16 @@ describe("Date", () => {
       key: { date: new Date("2001-01-01T01:01:01.002Z") }
     })
   })
+
+  it("time", () => {
+    const time = pipe(Optic.id<S>().at("key").at("date").compose(D.time()))
+
+    expect(Optic.modify(time)((ms) => ms + 1)(obj)).toEqual({
+      key: { date: new Date("2001-01-01T01:01:01.002Z") }
+    })
+
+    expect(Optic.modify(time)((ms) => ms + 1000)(obj)).toEqual({
+      key: { date: new Date("2001-01-01T01:01:02.001Z") }
+    })
+  })
 })
