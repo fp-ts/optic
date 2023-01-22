@@ -13,7 +13,7 @@ const inc = (n: number) => n + 1
 
 describe("Date", () => {
   it("year", () => {
-    const year = pipe(Optic.id<S>().at("key").at("date").compose(D.year()))
+    const year = pipe(Optic.id<S>().at("key").at("date").compose(D.year))
 
     expect(Optic.modify(year)(inc)(obj)).toEqual({
       key: { date: new Date("2002-01-01T01:01:01.001Z") }
@@ -21,7 +21,7 @@ describe("Date", () => {
   })
 
   it("month", () => {
-    const month = pipe(Optic.id<S>().at("key").at("date").compose(D.month()))
+    const month = pipe(Optic.id<S>().at("key").at("date").compose(D.month))
 
     expect(Optic.modify(month)(inc)(obj)).toEqual({
       key: { date: new Date("2001-02-01T01:01:01.001Z") }
@@ -29,7 +29,7 @@ describe("Date", () => {
   })
 
   it("day", () => {
-    const day = pipe(Optic.id<S>().at("key").at("date").compose(D.day()))
+    const day = pipe(Optic.id<S>().at("key").at("date").compose(D.day))
 
     expect(Optic.modify(day)(inc)(obj)).toEqual({
       key: { date: new Date("2001-01-02T01:01:01.001Z") }
@@ -37,7 +37,7 @@ describe("Date", () => {
   })
 
   it("hour", () => {
-    const hour = pipe(Optic.id<S>().at("key").at("date").compose(D.hour()))
+    const hour = pipe(Optic.id<S>().at("key").at("date").compose(D.hour))
 
     expect(Optic.modify(hour)(inc)(obj)).toEqual({
       key: { date: new Date("2001-01-01T02:01:01.001Z") }
@@ -45,7 +45,7 @@ describe("Date", () => {
   })
 
   it("minute", () => {
-    const minute = pipe(Optic.id<S>().at("key").at("date").compose(D.minute()))
+    const minute = pipe(Optic.id<S>().at("key").at("date").compose(D.minute))
 
     expect(Optic.modify(minute)(inc)(obj)).toEqual({
       key: { date: new Date("2001-01-01T01:02:01.001Z") }
@@ -53,7 +53,7 @@ describe("Date", () => {
   })
 
   it("second", () => {
-    const second = pipe(Optic.id<S>().at("key").at("date").compose(D.second()))
+    const second = pipe(Optic.id<S>().at("key").at("date").compose(D.second))
 
     expect(Optic.modify(second)(inc)(obj)).toEqual({
       key: { date: new Date("2001-01-01T01:01:02.001Z") }
@@ -61,7 +61,7 @@ describe("Date", () => {
   })
 
   it("millisecond", () => {
-    const millisecond = pipe(Optic.id<S>().at("key").at("date").compose(D.millisecond()))
+    const millisecond = pipe(Optic.id<S>().at("key").at("date").compose(D.millisecond))
 
     expect(Optic.modify(millisecond)(inc)(obj)).toEqual({
       key: { date: new Date("2001-01-01T01:01:01.002Z") }
@@ -69,7 +69,7 @@ describe("Date", () => {
   })
 
   it("time", () => {
-    const time = pipe(Optic.id<S>().at("key").at("date").compose(D.time()))
+    const time = pipe(Optic.id<S>().at("key").at("date").compose(D.time))
 
     expect(Optic.modify(time)((ms) => ms + 1)(obj)).toEqual({
       key: { date: new Date("2001-01-01T01:01:01.002Z") }
