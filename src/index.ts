@@ -104,14 +104,24 @@ export interface Optic<
    */
   filter<S, A extends B, C extends B, B = A>(
     this: Prism<S, A>,
-    refinement: Refinement<B, C>
+    refinement: Refinement<B, C>,
+    message?: string
   ): Prism<S, C>
-  filter<S, A extends B, B = A>(this: Prism<S, A>, predicate: Predicate<B>): Prism<S, A>
+  filter<S, A extends B, B = A>(
+    this: Prism<S, A>,
+    predicate: Predicate<B>,
+    message?: string
+  ): Prism<S, A>
   filter<S, A extends B, C extends B, B = A>(
     this: Optional<S, A>,
-    refinement: Refinement<B, C>
+    refinement: Refinement<B, C>,
+    message?: string
   ): Optional<S, C>
-  filter<S, A extends B, B = A>(this: Optional<S, A>, predicate: Predicate<B>): Optional<S, A>
+  filter<S, A extends B, B = A>(
+    this: Optional<S, A>,
+    predicate: Predicate<B>,
+    message?: string
+  ): Optional<S, A>
 
   /**
    * An optic that accesses the `NonNullable` case of a nullable type.
@@ -183,8 +193,8 @@ class Builder<
     return this.compose(omit<any, any>(...keys))
   }
 
-  filter(predicate: Predicate<any>) {
-    return this.compose(filter(predicate))
+  filter(predicate: Predicate<any>, message?: string) {
+    return this.compose(filter(predicate, message))
   }
 
   nonNullable() {
@@ -467,7 +477,7 @@ export const cons: {
     (s) =>
       RA.isNonEmpty(s) ?
         E.right([s[0], s.slice(1)]) :
-        E.left(new Error("isNonEmpty")),
+        E.left(new Error("Expected a non empty array")),
     ([head, tail]) => [head, ...tail]
   )
 
@@ -478,14 +488,17 @@ export const cons: {
  * @since 1.0.0
  */
 export const filter: {
-  <S extends A, B extends A, A = S>(refinement: Refinement<A, B>): Prism<S, B>
-  <S extends A, A = S>(predicate: Predicate<A>): Prism<S, S>
-} = <S>(predicate: Predicate<S>): Prism<S, S> =>
+  <S extends A, B extends A, A = S>(
+    refinement: Refinement<A, B>,
+    message?: string
+  ): Prism<S, B>
+  <S extends A, A = S>(predicate: Predicate<A>, message?: string): Prism<S, S>
+} = <S>(predicate: Predicate<S>, message?: string): Prism<S, S> =>
   prism(
     (s) =>
       predicate(s) ?
         E.right(s) :
-        E.left(new Error(predicate.name)),
+        E.left(new Error(message ?? "Expected a value satisfying the specified predicate")),
     identity
   )
 
@@ -496,9 +509,7 @@ export const filter: {
  * @since 1.0.0
  */
 export const nonNullable = <S>(): Prism<S, NonNullable<S>> =>
-  filter(function isNonNullable<S>(s: S): s is NonNullable<S> {
-    return s != null
-  })
+  filter((s: S): s is NonNullable<S> => s != null, "Expected a non nullable value")
 
 /**
  * An optic that accesses the `Some` case of an `Option`.
@@ -509,7 +520,8 @@ export const nonNullable = <S>(): Prism<S, NonNullable<S>> =>
 export const some: {
   <A>(): Prism<Option<A>, A>
   <A, B>(): PolyPrism<Option<A>, Option<B>, A, B>
-} = <A>(): Prism<Option<A>, A> => prism(O.match(() => E.left(new Error("isSome")), E.right), O.some)
+} = <A>(): Prism<Option<A>, A> =>
+  prism(O.match(() => E.left(new Error("Expected a Some")), E.right), O.some)
 
 /**
  * @since 1.0.0
@@ -547,13 +559,13 @@ export const reversedPrism = <S, A>(
  * @since 1.0.0
  */
 export const reversedFilter: {
-  <A, S extends A>(refinement: Refinement<A, S>): ReversedPrism<S, A>
-  <S>(predicate: Predicate<S>): ReversedPrism<S, S>
-} = <S>(predicate: Predicate<S>): ReversedPrism<S, S> =>
+  <A, S extends A>(refinement: Refinement<A, S>, message?: string): ReversedPrism<S, A>
+  <S>(predicate: Predicate<S>, message?: string): ReversedPrism<S, S>
+} = <S>(predicate: Predicate<S>, message?: string): ReversedPrism<S, S> =>
   reversedPrism<S, S>(identity, (s) =>
     predicate(s) ?
       E.right(s) :
-      E.left(new Error(predicate.name)))
+      E.left(new Error(message ?? "Expected a value satisfying the specified predicate")))
 
 /**
  * @since 1.0.0
@@ -602,7 +614,7 @@ export const index = <A>(i: number): Optional<ReadonlyArray<A>, A> =>
         s,
         RA.get(i),
         O.match(
-          () => E.left(new Error(`hasIndex(${i})`)),
+          () => E.left(new Error(`Missing index ${i}`)),
           E.right
         )
       ),
@@ -611,7 +623,7 @@ export const index = <A>(i: number): Optional<ReadonlyArray<A>, A> =>
         pipe(
           RA.replaceOption(i, a)(s),
           O.match(
-            () => E.left(new Error(`hasIndex(${i})`)),
+            () => E.left(new Error(`Missing index ${i}`)),
             E.right
           )
         )
@@ -639,7 +651,7 @@ export const key = <A>(key: string): Optional<ReadonlyRecord<A>, A> =>
         s,
         RR.get(key),
         O.match(
-          () => E.left(new Error(`hasKey(${key})`)),
+          () => E.left(new Error(`Missing key ${JSON.stringify(key)}`)),
           E.right
         )
       ),
@@ -649,7 +661,7 @@ export const key = <A>(key: string): Optional<ReadonlyRecord<A>, A> =>
           s,
           RR.replaceOption(key, a),
           O.match(
-            () => E.left(new Error(`hasKey(${key})`)),
+            () => E.left(new Error(`Missing key ${JSON.stringify(key)}`)),
             E.right
           )
         )
@@ -674,22 +686,29 @@ export const tail = <A>(): Optional<ReadonlyArray<A>, ReadonlyArray<A>> => cons<
  * @since 1.0.0
  */
 export const findFirst: {
-  <C extends A, B extends A, A = C>(refinement: Refinement<A, B>): Optional<ReadonlyArray<C>, B>
-  <B extends A, A = B>(predicate: Predicate<A>): Optional<ReadonlyArray<B>, B>
-} = <A>(predicate: Predicate<A>): Optional<ReadonlyArray<A>, A> =>
+  <C extends A, B extends A, A = C>(
+    refinement: Refinement<A, B>,
+    message?: string
+  ): Optional<ReadonlyArray<C>, B>
+  <B extends A, A = B>(predicate: Predicate<A>, message?: string): Optional<ReadonlyArray<B>, B>
+} = <A>(predicate: Predicate<A>, message?: string): Optional<ReadonlyArray<A>, A> =>
   optional(
     (s) =>
       pipe(
         s,
         RA.findFirst(predicate),
-        E.fromOption(() => new Error(predicate.name))
+        E.fromOption(() =>
+          new Error(message ?? "Expected a value satisfying the specified predicate")
+        )
       ),
     (a) =>
       (s) =>
         pipe(
           s,
           RA.findFirstIndex(predicate),
-          E.fromOption(() => new Error(predicate.name)),
+          E.fromOption(() =>
+            new Error(message ?? "Expected a value satisfying the specified predicate")
+          ),
           E.map((index) => {
             const out = s.slice()
             out[index] = a

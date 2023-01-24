@@ -16,7 +16,7 @@ export const none = <A>(): Prism<Option<A>, void> =>
   Optic.prism(
     O.match(
       () => E.right<void>(undefined),
-      () => E.left(Error("isNone"))
+      () => E.left(new Error("Expected a None"))
     ),
     (): Option<A> => O.none()
   )

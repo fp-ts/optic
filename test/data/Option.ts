@@ -11,7 +11,9 @@ describe("Option", () => {
 
     expect(pipe(O.none(), Optic.getOption(_none))).toEqual(O.some(undefined))
     expect(pipe(O.some("a"), Optic.getOption(_none))).toEqual(O.none())
-    expect(pipe(O.some("a"), _none.getOptic)).toEqual(E.left([new Error("isNone"), O.some("a")]))
+    expect(pipe(O.some("a"), _none.getOptic)).toEqual(
+      E.left([new Error("Expected a None"), O.some("a")])
+    )
     expect(pipe(undefined, Optic.encode(_none))).toEqual(O.none())
   })
 })
