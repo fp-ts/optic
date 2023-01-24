@@ -1,8 +1,8 @@
+import * as E from "@fp-ts/core/Either"
+import { pipe } from "@fp-ts/core/Function"
+import * as O from "@fp-ts/core/Option"
 import type { Chunk } from "@fp-ts/data/Chunk"
 import * as C from "@fp-ts/data/Chunk"
-import * as E from "@fp-ts/data/Either"
-import { pipe } from "@fp-ts/data/Function"
-import * as O from "@fp-ts/data/Option"
 import * as Optic from "@fp-ts/optic"
 import * as ChunkOptic from "@fp-ts/optic/data/Chunk"
 
@@ -11,7 +11,7 @@ describe("Chunk", () => {
     const _index1 = Optic.id<Chunk<number>>().compose(ChunkOptic.index(1))
 
     expect(pipe(C.fromIterable([1, 2, 3]), Optic.getOption(_index1))).toEqual(O.some(2))
-    expect(pipe(C.fromIterable([1]), Optic.getOption(_index1))).toEqual(O.none)
+    expect(pipe(C.fromIterable([1]), Optic.getOption(_index1))).toEqual(O.none())
     expect(pipe(C.fromIterable([1]), _index1.getOptic)).toEqual(
       E.left([new Error("hasIndex(1)"), C.fromIterable([1])])
     )
@@ -29,7 +29,7 @@ describe("Chunk", () => {
     expect(pipe(C.fromIterable([1, 2, 3]), Optic.getOption(_cons))).toEqual(
       O.some([1, C.fromIterable([2, 3])])
     )
-    expect(pipe(C.empty(), Optic.getOption(_cons))).toEqual(O.none)
+    expect(pipe(C.empty(), Optic.getOption(_cons))).toEqual(O.none())
     expect(pipe(C.empty(), _cons.getOptic)).toEqual(E.left([new Error("isCons"), C.empty()]))
     expect(pipe([1, C.fromIterable([2, 3])], Optic.encode(_cons))).toEqual(
       C.fromIterable([1, 2, 3])
@@ -39,7 +39,7 @@ describe("Chunk", () => {
   it("head", () => {
     const _head = Optic.id<Chunk<number>>()
       .compose(ChunkOptic.head())
-    expect(pipe(C.empty(), Optic.getOption(_head))).toEqual(O.none)
+    expect(pipe(C.empty(), Optic.getOption(_head))).toEqual(O.none())
     expect(pipe(C.fromIterable([1, 2, 3]), Optic.getOption(_head))).toEqual(O.some(1))
     expect(pipe(C.empty(), _head.getOptic)).toEqual(E.left([new Error("isCons"), C.empty()]))
     expect(pipe(C.empty(), Optic.replace(_head)(3))).toEqual(C.empty())
@@ -49,7 +49,7 @@ describe("Chunk", () => {
   it("tail", () => {
     const _tail = Optic.id<Chunk<number>>()
       .compose(ChunkOptic.tail())
-    expect(pipe(C.empty(), Optic.getOption(_tail))).toEqual(O.none)
+    expect(pipe(C.empty(), Optic.getOption(_tail))).toEqual(O.none())
     expect(pipe(C.fromIterable([1]), Optic.getOption(_tail))).toEqual(
       O.some(C.empty())
     )

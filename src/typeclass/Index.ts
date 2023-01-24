@@ -2,9 +2,9 @@
  * @since 1.0.0
  */
 
-import * as E from "@fp-ts/data/Either"
-import { pipe } from "@fp-ts/data/Function"
-import type { Option } from "@fp-ts/data/Option"
+import * as E from "@fp-ts/core/Either"
+import { pipe } from "@fp-ts/core/Function"
+import type { Option } from "@fp-ts/core/Option"
 import type { Optional } from "@fp-ts/optic"
 import * as Optic from "@fp-ts/optic"
 import type { At } from "@fp-ts/optic/typeclass/At"

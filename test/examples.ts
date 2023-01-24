@@ -1,7 +1,7 @@
-import { pipe } from "@fp-ts/data/Function"
-import * as O from "@fp-ts/data/Option"
-import type { Option } from "@fp-ts/data/Option"
-import * as String from "@fp-ts/data/String"
+import { pipe } from "@fp-ts/core/Function"
+import * as O from "@fp-ts/core/Option"
+import type { Option } from "@fp-ts/core/Option"
+import * as String from "@fp-ts/core/String"
 import * as Optic from "@fp-ts/optic"
 import * as StringOptic from "@fp-ts/optic/data/String"
 
@@ -98,7 +98,7 @@ describe("examples", () => {
     const s: S = {
       a: {
         b: O.some({
-          c: [O.none, O.some("aaa"), O.some("bbb")]
+          c: [O.none(), O.some("aaa"), O.some("bbb")]
         })
       }
     }
@@ -106,7 +106,7 @@ describe("examples", () => {
     expect(pipe(s, Optic.modify(_c_1)(String.toUpperCase))).toEqual({
       a: {
         b: O.some({
-          c: [O.none, O.some("Aaa"), O.some("bbb")]
+          c: [O.none(), O.some("Aaa"), O.some("bbb")]
         })
       }
     })

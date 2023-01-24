@@ -1,8 +1,8 @@
 /**
  * @since 1.0.0
  */
-import type { Either } from "@fp-ts/data/Either"
-import * as E from "@fp-ts/data/Either"
+import type { Either } from "@fp-ts/core/Either"
+import * as E from "@fp-ts/core/Either"
 import type { PolyPrism, Prism } from "@fp-ts/optic"
 import * as Optic from "@fp-ts/optic"
 

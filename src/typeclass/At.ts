@@ -2,8 +2,8 @@
  * @since 1.0.0
  */
 
-import type { Option } from "@fp-ts/data/Option"
-import * as O from "@fp-ts/data/Option"
+import type { Option } from "@fp-ts/core/Option"
+import * as O from "@fp-ts/core/Option"
 import type { Lens } from "@fp-ts/optic"
 import * as Optic from "@fp-ts/optic"
 
@@ -22,4 +22,4 @@ export interface At<in out S, in I, in out A> {
  * @since 1.0.0
  */
 export const remove = <S, I, A>(F: At<S, I, Option<A>>) =>
-  (i: I) => (s: S): S => Optic.replace(F.at(i))(O.none)(s)
+  (i: I) => (s: S): S => Optic.replace(F.at(i))(O.none())(s)
