@@ -16,7 +16,7 @@ export const right: {
   <E, A, B>(): PolyPrism<Either<E, A>, Either<E, B>, A, B>
 } = <E, A>() =>
   Optic.prism<Either<E, A>, A>(
-    E.mapLeft(() => Error("isRight")),
+    E.mapLeft(() => new Error("Expected a Right")),
     E.right
   )
 
@@ -32,7 +32,7 @@ export const left: {
   Optic.prism<Either<E, A>, E>(
     E.match(
       E.right,
-      () => E.left(Error("isLeft"))
+      () => E.left(new Error("Expected a Left"))
     ),
     E.left
   )

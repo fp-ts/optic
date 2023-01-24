@@ -22,7 +22,7 @@ export const index = <A>(i: number): Optional<Chunk<A>, A> =>
         s,
         C.get(i),
         O.match(
-          () => E.left(new Error(`hasIndex(${i})`)),
+          () => E.left(new Error(`Missing index ${i}`)),
           E.right
         )
       ),
@@ -31,7 +31,7 @@ export const index = <A>(i: number): Optional<Chunk<A>, A> =>
         pipe(
           C.replaceOption(i, a)(s),
           O.match(
-            () => E.left(new Error(`hasIndex(${i})`)),
+            () => E.left(new Error(`Missing index ${i}`)),
             E.right
           )
         )
@@ -52,7 +52,7 @@ export const cons: {
       pipe(
         C.tail(s),
         O.match(
-          () => E.left(Error("isCons")),
+          () => E.left(new Error("Expected a non empty Chunk")),
           (tail) => E.right([C.unsafeHead(s), tail])
         )
       ),

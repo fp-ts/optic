@@ -3,30 +3,29 @@
  */
 
 import * as E from "@fp-ts/core/Either"
+import * as String from "@fp-ts/core/String"
 import type { Optional } from "@fp-ts/optic"
 import * as Optic from "@fp-ts/optic"
-
-const isChar = (s: string): s is string => s.length > 0
 
 /**
  * An optic that accesses the specified index of a `string`.
  *
  * @since 1.0.0
  */
-export const index = (n: number): Optional<string, string> =>
+export const index = (i: number): Optional<string, string> =>
   Optic.optional(
     (s) =>
-      n >= 0 && n < s.length ?
-        E.right(s[n]) :
-        E.left(new Error(`hasIndex(${n})`)),
+      i >= 0 && i < s.length ?
+        E.right(s[i]) :
+        E.left(new Error(`Missing index ${i}`)),
     (char) =>
       (s) => {
-        if (!isChar(char)) {
-          return E.left(new Error("isChar"))
+        if (String.isEmpty(char)) {
+          return E.left(new Error("Expected a non empty string"))
         }
-        if (n >= 0 && n < s.length) {
-          return E.right(s.substring(0, n) + char.charAt(0) + s.substring(n + 1))
+        if (i >= 0 && i < s.length) {
+          return E.right(s.substring(0, i) + char.charAt(0) + s.substring(i + 1))
         }
-        return E.left(new Error(`hasIndex(${n})`))
+        return E.left(new Error(`Missing index ${i}`))
       }
   )
