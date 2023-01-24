@@ -1,4 +1,4 @@
-import { pipe } from "@fp-ts/data/Function"
+import { pipe } from "@fp-ts/core/Function"
 import * as Optic from "@fp-ts/optic"
 import * as D from "@fp-ts/optic/data/Date"
 

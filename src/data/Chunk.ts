@@ -1,11 +1,11 @@
 /**
  * @since 1.0.0
  */
+import * as E from "@fp-ts/core/Either"
+import { pipe } from "@fp-ts/core/Function"
+import * as O from "@fp-ts/core/Option"
 import type { Chunk } from "@fp-ts/data/Chunk"
 import * as C from "@fp-ts/data/Chunk"
-import * as E from "@fp-ts/data/Either"
-import { pipe } from "@fp-ts/data/Function"
-import * as O from "@fp-ts/data/Option"
 import type { Optional, PolyPrism, Prism } from "@fp-ts/optic"
 import * as Optic from "@fp-ts/optic"
 

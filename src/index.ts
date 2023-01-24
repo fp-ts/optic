@@ -1,13 +1,16 @@
 /**
  * @since 1.0.0
  */
-import type { Either } from "@fp-ts/data/Either"
-import * as E from "@fp-ts/data/Either"
-import { identity, pipe } from "@fp-ts/data/Function"
-import * as O from "@fp-ts/data/Option"
-import type { Option } from "@fp-ts/data/Option"
-import type { Predicate, Refinement } from "@fp-ts/data/Predicate"
-import * as RA from "@fp-ts/data/ReadonlyArray"
+import type { Either } from "@fp-ts/core/Either"
+import * as E from "@fp-ts/core/Either"
+import { identity, pipe } from "@fp-ts/core/Function"
+import * as O from "@fp-ts/core/Option"
+import type { Option } from "@fp-ts/core/Option"
+import type { Predicate, Refinement } from "@fp-ts/core/Predicate"
+import * as RA from "@fp-ts/core/ReadonlyArray"
+import * as RR from "@fp-ts/core/ReadonlyRecord"
+import type { ReadonlyRecord } from "@fp-ts/core/ReadonlyRecord"
+import * as S from "@fp-ts/core/Struct"
 
 /**
  * @since 1.0.0
@@ -134,22 +137,11 @@ export interface Optic<
   index<S, A>(this: Optional<S, ReadonlyArray<A>>, n: number): Optional<S, A>
 
   /**
-   * An optic that accesses the specified key of an index signature.
+   * An optic that accesses the specified key of a record.
    *
    * @since 1.0.0
    */
-  key<S, A>(
-    this: Optional<S, { readonly [x: string]: A }>,
-    key: string
-  ): Optional<S, A>
-  key<S, A>(
-    this: Optional<S, { readonly [x: symbol]: A }>,
-    key: symbol
-  ): Optional<S, A>
-  key<S, A>(
-    this: Optional<S, { readonly [x: number]: A }>,
-    key: number
-  ): Optional<S, A>
+  key<S, A>(this: Optional<S, ReadonlyRecord<A>>, key: string): Optional<S, A>
 }
 
 class Builder<
@@ -207,7 +199,7 @@ class Builder<
     return this.compose(index(n))
   }
 
-  key(k: PropertyKey) {
+  key(k: string) {
     return this.compose(key(k))
   }
 }
@@ -406,30 +398,6 @@ export const at = <S, Key extends keyof S & (string | symbol)>(key: Key): Lens<S
       return { ...s, [key]: b }
     })
 
-// TODO: replace with @fp-ts/data/Struct
-const Struct = {
-  pick: <S, Keys extends readonly [keyof S, ...Array<keyof S>]>(
-    ...keys: Keys
-  ) =>
-    (s: S): { [K in Keys[number]]: S[K] } => {
-      const out: any = {}
-      for (const k of keys) {
-        out[k] = s[k]
-      }
-      return out
-    },
-  omit: <S, Keys extends readonly [keyof S, ...Array<keyof S>]>(
-    ...keys: Keys
-  ) =>
-    (s: S): { [K in Exclude<keyof S, Keys[number]>]: S[K] } => {
-      const out: any = { ...s }
-      for (const k of keys) {
-        delete out[k]
-      }
-      return out
-    }
-}
-
 /**
  * An optic that accesses a group of keys of a struct.
  *
@@ -439,7 +407,7 @@ const Struct = {
 export const pick = <S, Keys extends readonly [keyof S, ...Array<keyof S>]>(
   ...keys: Keys
 ): Lens<S, { readonly [K in Keys[number]]: S[K] }> =>
-  lens(Struct.pick(...keys), (a) => (s) => ({ ...s, ...a }))
+  lens(S.pick(...keys), (a) => (s) => ({ ...s, ...a }))
 
 /**
  * An optic that excludes a group of keys of a struct.
@@ -450,7 +418,7 @@ export const pick = <S, Keys extends readonly [keyof S, ...Array<keyof S>]>(
 export const omit = <S, Keys extends readonly [keyof S, ...Array<keyof S>]>(
   ...keys: Keys
 ): Lens<S, { readonly [K in Exclude<keyof S, Keys[number]>]: S[K] }> =>
-  lens(Struct.omit(...keys), (a) => (s) => ({ ...s, ...a }))
+  lens(S.omit(...keys), (a) => (s) => ({ ...s, ...a }))
 
 /**
  * @since 1.0.0
@@ -659,51 +627,29 @@ export const indexes = <A>(): Traversal<ReadonlyArray<A>, A> =>
   traversal(E.right, (as) => (s) => E.right(as.concat(s.slice(as.length))))
 
 /**
- * @since 1.0.0
- */
-export interface IndexSignature<A> {
-  readonly [x: PropertyKey]: A
-}
-
-// TODO: replace with @fp-ts/data/ReadonlyRecord
-const IndexSignature = {
-  get: (key: PropertyKey) =>
-    <A>(is: IndexSignature<A>): Option<A> =>
-      Object.prototype.hasOwnProperty.call(is, key) ? O.some(is[key]) : O.none,
-  replaceOption: <A>(key: PropertyKey, a: A) =>
-    (is: IndexSignature<A>): Option<IndexSignature<A>> => {
-      if (Object.prototype.hasOwnProperty.call(is, key)) {
-        const out = { ...is }
-        out[key] = a
-        return O.some(out)
-      }
-      return O.none
-    }
-}
-
-/**
- * An optic that accesses the specified key of an index signature.
+ * An optic that accesses the specified key of a record.
  *
  * @category constructors
  * @since 1.0.0
  */
-export const key = <A>(key: PropertyKey): Optional<IndexSignature<A>, A> =>
+export const key = <A>(key: string): Optional<ReadonlyRecord<A>, A> =>
   optional(
     (s) =>
       pipe(
         s,
-        IndexSignature.get(key),
+        RR.get(key),
         O.match(
-          () => E.left(new Error(`hasKey(${String(key)})`)),
+          () => E.left(new Error(`hasKey(${key})`)),
           E.right
         )
       ),
     (a) =>
       (s) =>
         pipe(
-          IndexSignature.replaceOption(key, a)(s),
+          s,
+          RR.replaceOption(key, a),
           O.match(
-            () => E.left(new Error(`hasKey(${String(key)})`)),
+            () => E.left(new Error(`hasKey(${key})`)),
             E.right
           )
         )

@@ -1,5 +1,5 @@
-import { pipe } from "@fp-ts/data/Function"
-import * as O from "@fp-ts/data/Option"
+import { pipe } from "@fp-ts/core/Function"
+import * as O from "@fp-ts/core/Option"
 import * as Optic from "@fp-ts/optic"
 import * as ExperimentalOptic from "@fp-ts/optic/experimental"
 
@@ -57,10 +57,10 @@ describe("experimental", () => {
     const _0 = Optic.id<ReadonlyArray<number>>().index(0)
     const f = ExperimentalOptic.modifyApplicative(_0)(O.Applicative)((
       n
-    ) => (n > 0 ? O.some(n * 2) : O.none))
+    ) => (n > 0 ? O.some(n * 2) : O.none()))
     expect(f([])).toEqual(O.some([]))
     expect(f([1, 2, 3])).toEqual(O.some([2, 2, 3]))
-    expect(f([-1, 2, 3])).toEqual(O.none)
+    expect(f([-1, 2, 3])).toEqual(O.none())
   })
 
   it("path", () => {

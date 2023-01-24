@@ -19,8 +19,8 @@ importers:
       '@changesets/cli': ^2.25.2
       '@effect-ts/build-utils': 0.40.5
       '@effect-ts/core': ^0.60.2
-      '@fp-ts/core': ~0.0.11
-      '@fp-ts/data': ~0.0.39
+      '@fp-ts/core': ~0.1.1
+      '@fp-ts/data': ~0.0.41
       '@repo-tooling/eslint-plugin-dprint': ^0.0.4
       '@types/benchmark': ^2.1.2
       '@types/chai': ^4.3.4
@@ -57,8 +57,8 @@ importers:
       vite: ^3.2.5
       vitest: 0.25.5
     dependencies:
-      '@fp-ts/core': 0.0.11
-      '@fp-ts/data': 0.0.39
+      '@fp-ts/core': 0.1.1
+      '@fp-ts/data': 0.0.41
     devDependencies:
       '@babel/cli': 7.19.3_@babel+core@7.20.5
       '@babel/core': 7.20.5
@@ -724,8 +724,12 @@ packages:
     resolution: {integrity: sha512-BCAJBYzghwoJpcUOARJ1tui50HoYJFlV2pJlVMlsEkDFhD8MTtq8xQVpZCRF66RmtkxtGBYINCQ+5H1lRaL35Q==}
     dev: false
 
-  /@fp-ts/data/0.0.39:
-    resolution: {integrity: sha512-dNw1LWjQmChmdenrDuxPct+ycucgKQQboVtWqov8rkAGY3DULznoSDJZam6l2kaLdq1ScPv810N4mzLLT+cBBw==}
+  /@fp-ts/core/0.1.1:
+    resolution: {integrity: sha512-7vQnrnvJAMrXgIwt0qQNhXkPDtm4l8vwql8EvXeY47v/FwnWpDvt1HISoO9Kq3am5SZ0A8Av+4NqPab2FRdKxw==}
+    dev: false
+
+  /@fp-ts/data/0.0.41:
+    resolution: {integrity: sha512-0S93kOQ91D7wp60q/PSVWvMsJjSWJutjt4qX/BvVNV7+fymuC2hTfW2HlE2OcMK11xCNiI6Rq2AkvyzoMhOlpg==}
     dependencies:
       '@fp-ts/core': 0.0.11
     dev: false

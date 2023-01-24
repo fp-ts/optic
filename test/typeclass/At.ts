@@ -1,4 +1,4 @@
-import { pipe } from "@fp-ts/data/Function"
+import { pipe } from "@fp-ts/core/Function"
 import * as HashMap from "@fp-ts/data/HashMap"
 import * as HashMapOptic from "@fp-ts/optic/data/HashMap"
 import * as AtOptic from "@fp-ts/optic/typeclass/At"

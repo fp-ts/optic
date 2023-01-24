@@ -1,6 +1,6 @@
-import * as E from "@fp-ts/data/Either"
-import { identity, pipe, unsafeCoerce } from "@fp-ts/data/Function"
-import * as O from "@fp-ts/data/Option"
+import * as E from "@fp-ts/core/Either"
+import { identity, pipe, unsafeCoerce } from "@fp-ts/core/Function"
+import * as O from "@fp-ts/core/Option"
 import * as Optic from "@fp-ts/optic"
 
 describe("index", () => {
@@ -8,7 +8,7 @@ describe("index", () => {
     const _index1 = Optic.id<ReadonlyArray<number>>().index(1)
 
     expect(pipe([1, 2, 3], Optic.replaceOption(_index1)(4))).toEqual(O.some([1, 4, 3]))
-    expect(pipe([1], Optic.replaceOption(_index1)(4))).toEqual(O.none)
+    expect(pipe([1], Optic.replaceOption(_index1)(4))).toEqual(O.none())
   })
 
   it("getOrModify", () => {
@@ -40,12 +40,12 @@ describe("index", () => {
       b: O.some({ d: O.some(2) }),
       c: true
     })
-    expect(f({ a: "a", b: O.some({ d: O.none }), c: true })).toEqual({
+    expect(f({ a: "a", b: O.some({ d: O.none() }), c: true })).toEqual({
       a: "a",
-      b: O.some({ d: O.none }),
+      b: O.some({ d: O.none() }),
       c: true
     })
-    expect(f({ a: "a", b: O.none, c: true })).toEqual({ a: "a", b: O.none, c: true })
+    expect(f({ a: "a", b: O.none(), c: true })).toEqual({ a: "a", b: O.none(), c: true })
   })
 
   describe("at", () => {
@@ -97,7 +97,7 @@ describe("index", () => {
     expect(pipe([1, 2, 3], Optic.getOption(_cons))).toEqual(
       O.some([1, [2, 3]])
     )
-    expect(pipe([], Optic.getOption(_cons))).toEqual(O.none)
+    expect(pipe([], Optic.getOption(_cons))).toEqual(O.none())
     expect(pipe([], _cons.getOptic)).toEqual(E.left([new Error("isNonEmpty"), []]))
     expect(pipe([1, [2, 3]], Optic.encode(_cons))).toEqual(
       [1, 2, 3]
@@ -108,7 +108,7 @@ describe("index", () => {
     const _index1 = Optic.id<ReadonlyArray<number>>().index(1)
 
     expect(pipe([1, 2, 3], Optic.getOption(_index1))).toEqual(O.some(2))
-    expect(pipe([1], Optic.getOption(_index1))).toEqual(O.none)
+    expect(pipe([1], Optic.getOption(_index1))).toEqual(O.none())
     expect(pipe([1], _index1.getOptic)).toEqual(
       E.left([new Error("hasIndex(1)"), [1]])
     )
@@ -131,39 +131,12 @@ describe("index", () => {
     const _keya = Optic.id<Record<string, number>>().key("a")
 
     expect(pipe({ a: 1 }, Optic.getOption(_keya))).toEqual(O.some(1))
-    expect(pipe({ b: 2 }, Optic.getOption(_keya))).toEqual(O.none)
+    expect(pipe({ b: 2 }, Optic.getOption(_keya))).toEqual(O.none())
     expect(pipe({ b: 2 }, _keya.getOptic)).toEqual(
       E.left([new Error("hasKey(a)"), { b: 2 }])
     )
 
     expect(pipe({ a: 1, b: 2 }, Optic.replace(_keya)(3))).toEqual({ a: 3, b: 2 })
-    expect(pipe({ b: 2 }, Optic.replace(_keya)(3))).toEqual({ b: 2 })
-  })
-
-  it("key/ symbol keys", () => {
-    const a = Symbol.for("@fp-ts/optic/test/a")
-    const _keya = Optic.id<Record<symbol, number>>().key(a)
-
-    expect(pipe({ [a]: 1 }, Optic.getOption(_keya))).toEqual(O.some(1))
-    expect(pipe({ b: 2 }, Optic.getOption(_keya))).toEqual(O.none)
-    expect(pipe({ b: 2 }, _keya.getOptic)).toEqual(
-      E.left([new Error("hasKey(Symbol(@fp-ts/optic/test/a))"), { b: 2 }])
-    )
-
-    expect(pipe({ [a]: 1, b: 2 }, Optic.replace(_keya)(3))).toEqual({ [a]: 3, b: 2 })
-    expect(pipe({ b: 2 }, Optic.replace(_keya)(3))).toEqual({ b: 2 })
-  })
-
-  it("key/ number keys", () => {
-    const _keya = Optic.id<Record<number, number>>().key(1)
-
-    expect(pipe({ [1]: 1 }, Optic.getOption(_keya))).toEqual(O.some(1))
-    expect(pipe({ b: 2 }, Optic.getOption(_keya))).toEqual(O.none)
-    expect(pipe({ b: 2 }, _keya.getOptic)).toEqual(
-      E.left([new Error("hasKey(1)"), { b: 2 }])
-    )
-
-    expect(pipe({ [1]: 1, b: 2 }, Optic.replace(_keya)(3))).toEqual({ [1]: 3, b: 2 })
     expect(pipe({ b: 2 }, Optic.replace(_keya)(3))).toEqual({ b: 2 })
   })
 
@@ -208,7 +181,7 @@ describe("index", () => {
     expect(pipe([1, 2, 3], Optic.getOption(_head))).toEqual(
       O.some(1)
     )
-    expect(pipe([], Optic.getOption(_head))).toEqual(O.none)
+    expect(pipe([], Optic.getOption(_head))).toEqual(O.none())
     expect(pipe([1, 2, 3], Optic.replace(_head)(4))).toEqual(
       [4, 2, 3]
     )
@@ -224,7 +197,7 @@ describe("index", () => {
     expect(pipe([1, 2, 3], Optic.getOption(_tail))).toEqual(
       O.some([2, 3])
     )
-    expect(pipe([], Optic.getOption(_tail))).toEqual(O.none)
+    expect(pipe([], Optic.getOption(_tail))).toEqual(O.none())
     expect(pipe([1, 2, 3], Optic.replace(_tail)([4]))).toEqual(
       [1, 4]
     )
@@ -238,8 +211,8 @@ describe("index", () => {
       .nonNullable()
 
     expect(pipe("a", Optic.getOption(_nonNullable))).toEqual(O.some("a"))
-    expect(pipe(null, Optic.getOption(_nonNullable))).toEqual(O.none)
-    expect(pipe(undefined, Optic.getOption(_nonNullable))).toEqual(O.none)
+    expect(pipe(null, Optic.getOption(_nonNullable))).toEqual(O.none())
+    expect(pipe(undefined, Optic.getOption(_nonNullable))).toEqual(O.none())
     expect(pipe(null, _nonNullable.getOptic)).toEqual(
       E.left([new Error("isNonNullable"), null])
     )
@@ -250,9 +223,9 @@ describe("index", () => {
     const _some = Optic.id<O.Option<string>>().some()
 
     expect(pipe(O.some("a"), Optic.getOption(_some))).toEqual(O.some("a"))
-    expect(pipe(O.none, Optic.getOption(_some))).toEqual(O.none)
-    expect(pipe(O.none, _some.getOptic)).toEqual(
-      E.left([new Error("isSome"), O.none])
+    expect(pipe(O.none(), Optic.getOption(_some))).toEqual(O.none())
+    expect(pipe(O.none(), _some.getOptic)).toEqual(
+      E.left([new Error("isSome"), O.none()])
     )
     expect(pipe("a", Optic.encode(_some))).toEqual(O.some("a"))
   })
@@ -267,7 +240,7 @@ describe("index", () => {
     const _A = Optic.id<S>().filter(isA)
 
     expect(pipe([true, "a"], Optic.getOption(_A))).toEqual(O.some([true, "a"]))
-    expect(pipe([false, 1], Optic.getOption(_A))).toEqual(O.none)
+    expect(pipe([false, 1], Optic.getOption(_A))).toEqual(O.none())
     expect(pipe([false, 1], _A.getOptic)).toEqual(E.left([new Error("isA"), [false, 1]]))
 
     expect(pipe([true, "a"], Optic.encode(_A))).toEqual([true, "a"])
@@ -304,7 +277,7 @@ describe("index", () => {
     const _firstString = Optic.id<ReadonlyArray<string | number>>()
       .compose(Optic.findFirst(isString))
     expect(pipe([1, 2, "a", 3, "b"], Optic.getOption(_firstString))).toEqual(O.some("a"))
-    expect(pipe([1, 2, 3], Optic.getOption(_firstString))).toEqual(O.none)
+    expect(pipe([1, 2, 3], Optic.getOption(_firstString))).toEqual(O.none())
     expect(pipe([1, 2, 3], _firstString.getOptic)).toEqual(
       E.left([new Error("isString"), [1, 2, 3]])
     )
@@ -312,6 +285,6 @@ describe("index", () => {
     expect(pipe([1, 2, "a", 3, "b"], Optic.replaceOption(_firstString)("c"))).toEqual(
       O.some([1, 2, "c", 3, "b"])
     )
-    expect(pipe([1, 2, 3], Optic.replaceOption(_firstString)("c"))).toEqual(O.none)
+    expect(pipe([1, 2, 3], Optic.replaceOption(_firstString)("c"))).toEqual(O.none())
   })
 })

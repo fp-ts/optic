@@ -1,10 +1,10 @@
 /**
  * @since 1.0.0
  */
+import * as E from "@fp-ts/core/Either"
+import { identity, pipe } from "@fp-ts/core/Function"
 import type { Kind, TypeLambda } from "@fp-ts/core/HKT"
 import type { Applicative } from "@fp-ts/core/typeclass/Applicative"
-import * as E from "@fp-ts/data/Either"
-import { identity, pipe } from "@fp-ts/data/Function"
 import type { Lens, Optional, PolyOptional } from "@fp-ts/optic"
 import * as Optic from "@fp-ts/optic"
 

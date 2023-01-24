@@ -1,7 +1,7 @@
-import * as E from "@fp-ts/data/Either"
-import { pipe } from "@fp-ts/data/Function"
+import * as E from "@fp-ts/core/Either"
+import { pipe } from "@fp-ts/core/Function"
+import * as O from "@fp-ts/core/Option"
 import * as HashMap from "@fp-ts/data/HashMap"
-import * as O from "@fp-ts/data/Option"
 import * as Optic from "@fp-ts/optic"
 import * as HashMapOptic from "@fp-ts/optic/data/HashMap"
 import * as AtOptic from "@fp-ts/optic/typeclass/At"
@@ -18,8 +18,8 @@ describe("HaskMap", () => {
   it("getIndex", () => {
     const Index = HashMapOptic.getIndex<string, number>()
     const _a = Index.index("a")
-    expect(pipe(HashMap.empty(), Optic.getOption(_a))).toEqual(O.none)
-    expect(pipe(HashMap.make(["b", 2]), Optic.getOption(_a))).toEqual(O.none)
+    expect(pipe(HashMap.empty(), Optic.getOption(_a))).toEqual(O.none())
+    expect(pipe(HashMap.make(["b", 2]), Optic.getOption(_a))).toEqual(O.none())
     expect(pipe(HashMap.make(["b", 2]), _a.getOptic)).toEqual(
       E.left([new Error("hasIndex(a)"), HashMap.make(["b", 2])])
     )
