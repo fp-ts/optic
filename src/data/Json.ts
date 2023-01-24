@@ -2,7 +2,7 @@
  * @since 1.0.0
  */
 import * as E from "@fp-ts/data/Either"
-import { pipe } from "@fp-ts/data/Function"
+import { identity, pipe } from "@fp-ts/data/Function"
 import * as J from "@fp-ts/data/Json"
 import type { Optional } from "@fp-ts/optic"
 import * as Optic from "@fp-ts/optic"
@@ -26,42 +26,42 @@ export const stringify: Optional<J.Json, string> = Optic.optional(
 /**
  * @since 1.0.0
  */
-export const number: Optional<J.Json, number> = Optic.optional(
+export const number: Optional<J.Json, number> = Optic.prism(
   (json) => typeof json === "number" ? E.right(json) : E.left(new Error("Json.number")),
-  (s) => () => E.right(s)
+  identity
 )
 
 /**
  * @since 1.0.0
  */
-export const string: Optional<J.Json, string> = Optic.optional(
+export const string: Optional<J.Json, string> = Optic.prism(
   (json) => typeof json === "string" ? E.right(json) : E.left(new Error("Json.string")),
-  (s) => () => E.right(s)
+  identity
 )
 
 /**
  * @since 1.0.0
  */
-export const boolean: Optional<J.Json, boolean> = Optic.optional(
+export const boolean: Optional<J.Json, boolean> = Optic.prism(
   (json) => typeof json === "boolean" ? E.right(json) : E.left(new Error("Json.boolean")),
-  (s) => () => E.right(s)
+  identity
 )
 
 /**
  * @since 1.0.0
  */
-export const array: Optional<J.Json, J.JsonArray> = Optic.optional(
+export const array: Optional<J.Json, J.JsonArray> = Optic.prism(
   (json) => json instanceof Array<J.Json> ? E.right(json) : E.left(new Error("Json.array")),
-  (s) => () => E.right(s)
+  identity
 )
 
 /**
  * @since 1.0.0
  */
-export const object: Optional<J.Json, J.JsonObject> = Optic.optional(
+export const object: Optional<J.Json, J.JsonObject> = Optic.prism(
   (json) =>
     typeof json === "object" && !(json instanceof Array<J.Json>) && json !== null ?
       E.right(json) :
       E.left(new Error("Json.object")),
-  (s) => () => E.right(s)
+  identity
 )
