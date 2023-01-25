@@ -1,6 +1,6 @@
 ---
 title: index.ts
-nav_order: 10
+nav_order: 11
 parent: Modules
 ---
 
@@ -13,33 +13,24 @@ Added in v1.0.0
 <h2 class="text-delta">Table of contents</h2>
 
 - [constructors](#constructors)
-  - [at](#at)
   - [cons](#cons)
-  - [filter](#filter)
   - [findFirst](#findfirst)
   - [head](#head)
   - [id](#id)
-  - [index](#index)
   - [indexes](#indexes)
   - [iso](#iso)
-  - [key](#key)
   - [lens](#lens)
-  - [nonNullable](#nonnullable)
-  - [omit](#omit)
   - [optional](#optional)
-  - [pick](#pick)
   - [polyOptional](#polyoptional)
   - [polyPrism](#polyprism)
   - [polyTraversal](#polytraversal)
   - [prism](#prism)
   - [reversedFilter](#reversedfilter)
-  - [some](#some)
   - [tail](#tail)
   - [traversal](#traversal)
 - [utils](#utils)
   - [Fold (interface)](#fold-interface)
   - [Getter (interface)](#getter-interface)
-  - [IndexSignature (interface)](#indexsignature-interface)
   - [Iso (interface)](#iso-interface)
   - [Lens (interface)](#lens-interface)
   - [Optic (interface)](#optic-interface)
@@ -70,18 +61,6 @@ Added in v1.0.0
 
 # constructors
 
-## at
-
-An optic that accesses the specified key of a struct or a tuple.
-
-**Signature**
-
-```ts
-export declare const at: <S, Key extends (keyof S & string) | (keyof S & symbol)>(key: Key) => any
-```
-
-Added in v1.0.0
-
 ## cons
 
 An optic that accesses the `Cons` case of a `ReadonlyArray`.
@@ -94,21 +73,6 @@ export declare const cons: { <A>(): any; <A, B>(): any }
 
 Added in v1.0.0
 
-## filter
-
-An optic that accesses the case specified by a predicate.
-
-**Signature**
-
-```ts
-export declare const filter: {
-  <S extends A, B extends A, A = S>(refinement: Refinement<A, B>): any
-  <S extends A, A = S>(predicate: Predicate<A>): any
-}
-```
-
-Added in v1.0.0
-
 ## findFirst
 
 An optic that accesses the first case specified by a predicate.
@@ -117,8 +81,8 @@ An optic that accesses the first case specified by a predicate.
 
 ```ts
 export declare const findFirst: {
-  <C extends A, B extends A, A = C>(refinement: Refinement<A, B>): any
-  <B extends A, A = B>(predicate: Predicate<A>): any
+  <C extends A, B extends A, A = C>(refinement: Refinement<A, B>, message?: string | undefined): any
+  <B extends A, A = B>(predicate: Predicate<A>, message?: string | undefined): any
 }
 ```
 
@@ -142,18 +106,6 @@ The identity optic.
 
 ```ts
 export declare const id: { <S>(): any; <S, T>(): any }
-```
-
-Added in v1.0.0
-
-## index
-
-An optic that accesses the specified index of a `ReadonlyArray`.
-
-**Signature**
-
-```ts
-export declare const index: <A>(i: number) => any
 ```
 
 Added in v1.0.0
@@ -183,18 +135,6 @@ export declare const iso: {
 
 Added in v1.0.0
 
-## key
-
-An optic that accesses the specified key of an index signature.
-
-**Signature**
-
-```ts
-export declare const key: <A>(key: PropertyKey) => any
-```
-
-Added in v1.0.0
-
 ## lens
 
 **Signature**
@@ -208,30 +148,6 @@ export declare const lens: {
 
 Added in v1.0.0
 
-## nonNullable
-
-An optic that accesses the `NonNullable` case of a nullable type.
-
-**Signature**
-
-```ts
-export declare const nonNullable: <S>() => any
-```
-
-Added in v1.0.0
-
-## omit
-
-An optic that excludes a group of keys of a struct.
-
-**Signature**
-
-```ts
-export declare const omit: <S, Keys extends readonly [keyof S, ...(keyof S)[]]>(...keys: Keys) => any
-```
-
-Added in v1.0.0
-
 ## optional
 
 **Signature**
@@ -241,18 +157,6 @@ export declare const optional: <S, A>(
   decode: (s: S) => Either<Error, A>,
   replaceEither: (a: A) => (s: S) => Either<Error, S>
 ) => any
-```
-
-Added in v1.0.0
-
-## pick
-
-An optic that accesses a group of keys of a struct.
-
-**Signature**
-
-```ts
-export declare const pick: <S, Keys extends readonly [keyof S, ...(keyof S)[]]>(...keys: Keys) => any
 ```
 
 Added in v1.0.0
@@ -314,21 +218,9 @@ An optic that accesses the input case specified by a predicate.
 
 ```ts
 export declare const reversedFilter: {
-  <A, S extends A>(refinement: Refinement<A, S>): any
-  <S>(predicate: Predicate<S>): any
+  <A, S extends A>(refinement: Refinement<A, S>, message?: string | undefined): any
+  <S>(predicate: Predicate<S>, message?: string | undefined): any
 }
-```
-
-Added in v1.0.0
-
-## some
-
-An optic that accesses the `Some` case of an `Option`.
-
-**Signature**
-
-```ts
-export declare const some: { <A>(): any; <A, B>(): any }
 ```
 
 Added in v1.0.0
@@ -374,18 +266,6 @@ Added in v1.0.0
 
 ```ts
 export interface Getter<
-```
-
-Added in v1.0.0
-
-## IndexSignature (interface)
-
-**Signature**
-
-```ts
-export interface IndexSignature<A> {
-  readonly [x: PropertyKey]: A
-}
 ```
 
 Added in v1.0.0

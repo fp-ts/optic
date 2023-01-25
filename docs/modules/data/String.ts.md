@@ -1,6 +1,6 @@
 ---
 title: data/String.ts
-nav_order: 8
+nav_order: 9
 parent: Modules
 ---
 
@@ -26,7 +26,7 @@ An optic that accesses the specified index of a `string`.
 **Signature**
 
 ```ts
-export declare const index: (n: number) => any
+export declare const index: (i: number) => any
 ```
 
 Added in v1.0.0

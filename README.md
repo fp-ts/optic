@@ -30,30 +30,49 @@ flowchart TD
 # Features
 
 - **Unified Representation Of Optics**. All optics compose the same way because they are all instances of the same data type (`Optic`)
-- **Integration**. Built-in optics for `@fp-ts/data` data structures, like `Option`, `Either` and `Chunk`
+- **Integration**. Built-in optics for `@fp-ts/core` data structures, like `Option` and `Either`.
 
 ## Introduction
 
 `@fp-ts/optic` is a library that makes it easy to modify parts of larger data structures based on a single representation of an optic as a combination of a getter and setter.
 
-`@fp-ts/optic` features a unified representation of optics, deep `@fp-ts/data` integration, helpful error messages,
+`@fp-ts/optic` features a unified representation of optics, deep `@fp-ts/core` integration, helpful error messages.
+
+# Credits and sponsorship
+
+This library was inspired by the following projects:
+
+- [zio-optics](https://github.com/zio/zio-optics)
+- [monocle-ts](https://github.com/gcanti/monocle-ts)
+
+A huge thanks to my sponsors who made the development of `@fp-ts/optic` possible.
+
+If you also want to **become a sponsor** to ensure this library continues to improve and receive maintenance, check out my [GitHub Sponsors profile](https://github.com/sponsors/gcanti?o=sd&sc=t)
 
 ## Requirements
 
 - TypeScript 4.7 or newer
 - The `strict` flag enabled in your `tsconfig.json` file
 
+```
+{
+  // ...
+  "compilerOptions": {
+    // ...
+    "strict": true
+  }
+}
+```
+
 ## Getting started
 
-To get started with `@fp-ts/optic`, you will need to install the library (**alpha** version) using npm or yarn:
+To install the **alpha** version:
 
 ```
-npm install @fp-ts/optic
+npm install @fp-ts/schema
 ```
 
-```
-yarn add @fp-ts/optic
-```
+**Warning**. This package is primarily published to receive early feedback and for contributors, during this development phase we cannot guarantee the stability of the APIs, consider each release to contain breaking changes.
 
 Once you have installed the library, you can import the necessary types and functions from the `@fp-ts/optic` module.
 
@@ -66,7 +85,7 @@ import * as Optic from "@fp-ts/optic";
 Let's say we have an employee and we need to upper case the first character of his company street name.
 
 ```ts
-import * as O from "@fp-ts/data/Option";
+import * as O from "@fp-ts/core/Option";
 
 interface Street {
   readonly num: number;
@@ -119,7 +138,7 @@ Let's see what could we do with `@fp-ts/optic`
 ```ts
 import * as Optic from "@fp-ts/optic";
 import * as StringOptic from "@fp-ts/optic/data/String";
-import * as String from "@fp-ts/data/String";
+import * as String from "@fp-ts/core/String";
 
 const _firstChar: Optic.Optional<Employee, string> = Optic.id<Employee>()
   .at("company")
@@ -299,7 +318,7 @@ const _a: Optic.Iso<Whole, Whole> = Optic.id<Whole>();
 The `compose` method is a utility function that allows you to combine two or more optics into a single optic.
 
 ```ts
-import { pipe } from "@fp-ts/data/Function";
+import { pipe } from "@fp-ts/core/Function";
 import * as Optic from "@fp-ts/optic";
 
 // This is the type of the data structure that the lens will be operating on.
@@ -337,7 +356,7 @@ const updated: Whole = pipe(whole, Optic.replace(_a)("bar")); // returns { a: "b
 The `at` method is a utility function that creates an optic that focuses on a specific field within a data structure.
 
 ```ts
-import { pipe } from "@fp-ts/data/Function";
+import { pipe } from "@fp-ts/core/Function";
 import * as Optic from "@fp-ts/optic";
 
 // This is the type of the data structure that the lens will be operating on.
@@ -375,7 +394,7 @@ const updated: Whole = pipe(whole, Optic.replace(_a)("bar")); // returns { a: "b
 The `pick` method is a utility function that creates an optic that focuses on a group of keys within a data structure.
 
 ```ts
-import { pipe } from "@fp-ts/data/Function";
+import { pipe } from "@fp-ts/core/Function";
 import * as Optic from "@fp-ts/optic";
 
 // This is the type of the data structure that the lens will be operating on.
@@ -416,7 +435,7 @@ const updated: Whole = pipe(whole, Optic.replace(_ab)({ a: "bar", b: 23 })); // 
 The `omit` method is a utility function that creates a lens that excludes a group of keys from a struct. This can be useful when you want to focus on a subset of a data structure and ignore certain fields.
 
 ```ts
-import { pipe } from "@fp-ts/data/Function";
+import { pipe } from "@fp-ts/core/Function";
 import * as Optic from "@fp-ts/optic";
 
 interface Whole {
@@ -456,9 +475,9 @@ const updated: Whole = pipe(whole, Optic.replace(_ac)({ a: "bar", c: false })); 
 The `filter` method is a utility function that creates an optic that focuses on the elements of a data structure that match a specified predicate.
 
 ```ts
-import { pipe } from "@fp-ts/data/Function";
+import { pipe } from "@fp-ts/core/Function";
 import * as Optic from "@fp-ts/optic";
-import type { Option } from "@fp-ts/data/Option";
+import type { Option } from "@fp-ts/core/Option";
 
 // This is the type of the data structure that the prism will be operating on.
 interface Whole {
@@ -495,9 +514,9 @@ const updated: Whole = pipe(whole, Optic.replace(_evenA)(4)); // returns { a: 4 
 The `nonNullable` method is a utility function that creates a `Prism` that focuses on the non-nullable values of a nullable type. This is useful when you want to manipulate or extract the value of a nullable type, but want to ignore the `null` values.
 
 ```ts
-import { pipe } from "@fp-ts/data/Function";
+import { pipe } from "@fp-ts/core/Function";
 import * as Optic from "@fp-ts/optic";
-import type { Option } from "@fp-ts/data/Option";
+import type { Option } from "@fp-ts/core/Option";
 
 const _nonNullString: Optic.Prism<string | null, string> = Optic.id<
   string | null
@@ -512,8 +531,8 @@ const result2: Option<string> = pipe(null, Optic.getOption(_nonNullString)); // 
 The `some` method is a utility function that creates an optic that focuses on the `Some` case of an `Option` data type. This optic allows you to view and modify the value contained within the `Some` case of an `Option`.
 
 ```ts
-import { pipe } from "@fp-ts/data/Function";
-import * as O from "@fp-ts/data/Option";
+import { pipe } from "@fp-ts/core/Function";
+import * as O from "@fp-ts/core/Option";
 import * as Optic from "@fp-ts/optic";
 
 // This creates a prism that focuses on the 'Some' case of the 'Option<number>' object.
@@ -533,9 +552,9 @@ const updated: O.Option<number> = pipe(option, Optic.replace(_some)(23)); // ret
 The `index` method creates an `Optional` optic that focuses on a specific index in a `ReadonlyArray`. The `Optional` optic allows you to view the value at the specified index, or `None` if the index does not exist. You can also use the `Optional` optic to update the value at the specified index, if it exists.
 
 ```ts
-import { pipe } from "@fp-ts/data/Function";
+import { pipe } from "@fp-ts/core/Function";
 import * as Optic from "@fp-ts/optic";
-import type { Option } from "@fp-ts/data/Option";
+import type { Option } from "@fp-ts/core/Option";
 
 const _index2: Optic.Optional<ReadonlyArray<number>, number> = Optic.id<
   ReadonlyArray<number>
@@ -554,8 +573,8 @@ const updated3: ReadonlyArray<number> = pipe([], Optic.replace(_index2)(10)); //
 The `key` method is a utility function that allows you to create an `Optional` optic that focuses on a specific key of an index signature (a type with a string index signature).
 
 ```ts
-import { pipe } from "@fp-ts/data/Function";
-import type { Option } from "@fp-ts/data/Option";
+import { pipe } from "@fp-ts/core/Function";
+import type { Option } from "@fp-ts/core/Option";
 import * as Optic from "@fp-ts/optic";
 
 interface Data {
