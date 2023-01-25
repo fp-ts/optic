@@ -64,10 +64,18 @@ export interface Optic<
    * @since 1.0.0
    */
   at<S, A, Key extends keyof A>(this: Lens<S, A>, key: Key): Lens<S, A[Key]>
+  at<S, T, A, B, Key extends keyof A & keyof B>(
+    this: PolyLens<S, T, A, B>,
+    key: Key
+  ): PolyLens<S, T, A[Key], B[Key]>
   at<S, A, Key extends keyof A>(
     this: Optional<S, A>,
     key: Key
   ): Optional<S, A[Key]>
+  at<S, T, A, B, Key extends keyof A & keyof B>(
+    this: PolyOptional<S, T, A, B>,
+    key: Key
+  ): PolyOptional<S, T, A[Key], B[Key]>
 
   /**
    * An optic that accesses a group of keys of a struct.
@@ -152,66 +160,6 @@ export interface Optic<
    * @since 1.0.0
    */
   key<S, A>(this: Optional<S, ReadonlyRecord<A>>, key: string): Optional<S, A>
-}
-
-class Builder<
-  GetWhole,
-  SetWholeBefore,
-  SetPiece,
-  GetError,
-  SetError,
-  GetPiece,
-  SetWholeAfter
-> implements
-  Optic<GetWhole, SetWholeBefore, SetPiece, GetError, SetError, GetPiece, SetWholeAfter>
-{
-  constructor(
-    readonly composition: "prism" | "lens",
-    readonly getOptic: (GetWhole: GetWhole) => Either<readonly [GetError, SetWholeAfter], GetPiece>,
-    readonly setOptic: (
-      SetPiece: SetPiece
-    ) => (
-      SetWholeBefore: SetWholeBefore
-    ) => Either<readonly [SetError, SetWholeAfter], SetWholeAfter>
-  ) {}
-
-  compose(that: any): any {
-    return this.composition === "lens" || that.composition === "lens" ?
-      lensComposition(that)(this as any) :
-      prismComposition(that)(this as any)
-  }
-
-  at(key: PropertyKey) {
-    return this.compose(at<any, any>(key))
-  }
-
-  pick(...keys: readonly [PropertyKey, ...Array<PropertyKey>]) {
-    return this.compose(pick<any, any>(...keys))
-  }
-
-  omit(...keys: readonly [PropertyKey, ...Array<PropertyKey>]) {
-    return this.compose(omit<any, any>(...keys))
-  }
-
-  filter(predicate: Predicate<any>, message?: string) {
-    return this.compose(filter(predicate, message))
-  }
-
-  nonNullable() {
-    return this.compose(nonNullable())
-  }
-
-  some() {
-    return this.compose(some())
-  }
-
-  index(n: number) {
-    return this.compose(index(n))
-  }
-
-  key(k: string) {
-    return this.compose(key(k))
-  }
 }
 
 /**
@@ -338,6 +286,153 @@ const lensComposition = <
           )
     )
 
+const at = <S, Key extends keyof S & (string | symbol)>(key: Key): Lens<S, S[Key]> =>
+  lens((s) => s[key], (b) =>
+    (s) => {
+      if (Array.isArray(s)) {
+        const out: any = s.slice()
+        out[key] = b
+        return out
+      }
+      return { ...s, [key]: b }
+    })
+
+const pick = <S, Keys extends readonly [keyof S, ...Array<keyof S>]>(
+  ...keys: Keys
+): Lens<S, { readonly [K in Keys[number]]: S[K] }> =>
+  lens(S.pick(...keys), (a) => (s) => ({ ...s, ...a }))
+
+const omit = <S, Keys extends readonly [keyof S, ...Array<keyof S>]>(
+  ...keys: Keys
+): Lens<S, { readonly [K in Exclude<keyof S, Keys[number]>]: S[K] }> =>
+  lens(S.omit(...keys), (a) => (s) => ({ ...s, ...a }))
+
+const filter: {
+  <S extends A, B extends A, A = S>(
+    refinement: Refinement<A, B>,
+    message?: string
+  ): Prism<S, B>
+  <S extends A, A = S>(predicate: Predicate<A>, message?: string): Prism<S, S>
+} = <S>(predicate: Predicate<S>, message?: string): Prism<S, S> =>
+  prism(
+    (s) =>
+      predicate(s) ?
+        E.right(s) :
+        E.left(new Error(message ?? "Expected a value satisfying the specified predicate")),
+    identity
+  )
+
+const nonNullable = <S>(): Prism<S, NonNullable<S>> =>
+  filter((s: S): s is NonNullable<S> => s != null, "Expected a non nullable value")
+
+const some = <A>(): Prism<Option<A>, A> =>
+  prism(O.match(() => E.left(new Error("Expected a Some")), E.right), O.some)
+
+const index = <A>(i: number): Optional<ReadonlyArray<A>, A> =>
+  optional(
+    (s) =>
+      pipe(
+        s,
+        RA.get(i),
+        O.match(
+          () => E.left(new Error(`Missing index ${i}`)),
+          E.right
+        )
+      ),
+    (a) =>
+      (s) =>
+        pipe(
+          RA.replaceOption(i, a)(s),
+          O.match(
+            () => E.left(new Error(`Missing index ${i}`)),
+            E.right
+          )
+        )
+  )
+
+const key = <A>(key: string): Optional<ReadonlyRecord<A>, A> =>
+  optional(
+    (s) =>
+      pipe(
+        s,
+        RR.get(key),
+        O.match(
+          () => E.left(new Error(`Missing key ${JSON.stringify(key)}`)),
+          E.right
+        )
+      ),
+    (a) =>
+      (s) =>
+        pipe(
+          s,
+          RR.replaceOption(key, a),
+          O.match(
+            () => E.left(new Error(`Missing key ${JSON.stringify(key)}`)),
+            E.right
+          )
+        )
+  )
+
+class Builder<
+  GetWhole,
+  SetWholeBefore,
+  SetPiece,
+  GetError,
+  SetError,
+  GetPiece,
+  SetWholeAfter
+> implements
+  Optic<GetWhole, SetWholeBefore, SetPiece, GetError, SetError, GetPiece, SetWholeAfter>
+{
+  constructor(
+    readonly composition: "prism" | "lens",
+    readonly getOptic: (GetWhole: GetWhole) => Either<readonly [GetError, SetWholeAfter], GetPiece>,
+    readonly setOptic: (
+      SetPiece: SetPiece
+    ) => (
+      SetWholeBefore: SetWholeBefore
+    ) => Either<readonly [SetError, SetWholeAfter], SetWholeAfter>
+  ) {}
+
+  compose(that: any): any {
+    return this.composition === "lens" || that.composition === "lens" ?
+      lensComposition(that)(this as any) :
+      prismComposition(that)(this as any)
+  }
+
+  at(key: PropertyKey) {
+    return this.compose(at<any, any>(key))
+  }
+
+  pick(...keys: readonly [PropertyKey, ...Array<PropertyKey>]) {
+    return this.compose(pick<any, any>(...keys))
+  }
+
+  omit(...keys: readonly [PropertyKey, ...Array<PropertyKey>]) {
+    return this.compose(omit<any, any>(...keys))
+  }
+
+  filter(predicate: Predicate<any>, message?: string) {
+    return this.compose(filter(predicate, message))
+  }
+
+  nonNullable() {
+    return this.compose(nonNullable())
+  }
+
+  some() {
+    return this.compose(some())
+  }
+
+  index(n: number) {
+    return this.compose(index(n))
+  }
+
+  key(k: string) {
+    return this.compose(key(k))
+  }
+}
+
 /**
  * @since 1.0.0
  */
@@ -392,45 +487,6 @@ export const lens: {
   new Builder("lens", (s) => E.right(get(s)), (b) => (s) => E.right(set(b)(s)))
 
 /**
- * An optic that accesses the specified key of a struct or a tuple.
- *
- * @category constructors
- * @since 1.0.0
- */
-export const at = <S, Key extends keyof S & (string | symbol)>(key: Key): Lens<S, S[Key]> =>
-  lens((s) => s[key], (b) =>
-    (s) => {
-      if (Array.isArray(s)) {
-        const out: any = s.slice()
-        out[key] = b
-        return out
-      }
-      return { ...s, [key]: b }
-    })
-
-/**
- * An optic that accesses a group of keys of a struct.
- *
- * @category constructors
- * @since 1.0.0
- */
-export const pick = <S, Keys extends readonly [keyof S, ...Array<keyof S>]>(
-  ...keys: Keys
-): Lens<S, { readonly [K in Keys[number]]: S[K] }> =>
-  lens(S.pick(...keys), (a) => (s) => ({ ...s, ...a }))
-
-/**
- * An optic that excludes a group of keys of a struct.
- *
- * @category constructors
- * @since 1.0.0
- */
-export const omit = <S, Keys extends readonly [keyof S, ...Array<keyof S>]>(
-  ...keys: Keys
-): Lens<S, { readonly [K in Exclude<keyof S, Keys[number]>]: S[K] }> =>
-  lens(S.omit(...keys), (a) => (s) => ({ ...s, ...a }))
-
-/**
  * @since 1.0.0
  */
 export interface PolyPrism<in S, out T, out A, in B>
@@ -480,48 +536,6 @@ export const cons: {
         E.left(new Error("Expected a non empty array")),
     ([head, tail]) => [head, ...tail]
   )
-
-/**
- * An optic that accesses the case specified by a predicate.
- *
- * @category constructors
- * @since 1.0.0
- */
-export const filter: {
-  <S extends A, B extends A, A = S>(
-    refinement: Refinement<A, B>,
-    message?: string
-  ): Prism<S, B>
-  <S extends A, A = S>(predicate: Predicate<A>, message?: string): Prism<S, S>
-} = <S>(predicate: Predicate<S>, message?: string): Prism<S, S> =>
-  prism(
-    (s) =>
-      predicate(s) ?
-        E.right(s) :
-        E.left(new Error(message ?? "Expected a value satisfying the specified predicate")),
-    identity
-  )
-
-/**
- * An optic that accesses the `NonNullable` case of a nullable type.
- *
- * @category constructors
- * @since 1.0.0
- */
-export const nonNullable = <S>(): Prism<S, NonNullable<S>> =>
-  filter((s: S): s is NonNullable<S> => s != null, "Expected a non nullable value")
-
-/**
- * An optic that accesses the `Some` case of an `Option`.
- *
- * @category constructors
- * @since 1.0.0
- */
-export const some: {
-  <A>(): Prism<Option<A>, A>
-  <A, B>(): PolyPrism<Option<A>, Option<B>, A, B>
-} = <A>(): Prism<Option<A>, A> =>
-  prism(O.match(() => E.left(new Error("Expected a Some")), E.right), O.some)
 
 /**
  * @since 1.0.0
@@ -602,34 +616,6 @@ export const optional = <S, A>(
   )
 
 /**
- * An optic that accesses the specified index of a `ReadonlyArray`.
- *
- * @category constructors
- * @since 1.0.0
- */
-export const index = <A>(i: number): Optional<ReadonlyArray<A>, A> =>
-  optional(
-    (s) =>
-      pipe(
-        s,
-        RA.get(i),
-        O.match(
-          () => E.left(new Error(`Missing index ${i}`)),
-          E.right
-        )
-      ),
-    (a) =>
-      (s) =>
-        pipe(
-          RA.replaceOption(i, a)(s),
-          O.match(
-            () => E.left(new Error(`Missing index ${i}`)),
-            E.right
-          )
-        )
-  )
-
-/**
  * An optic that accesses all of the elements in a `ReadonlyArray`.
  *
  * @category constructors
@@ -637,35 +623,6 @@ export const index = <A>(i: number): Optional<ReadonlyArray<A>, A> =>
  */
 export const indexes = <A>(): Traversal<ReadonlyArray<A>, A> =>
   traversal(E.right, (as) => (s) => E.right(as.concat(s.slice(as.length))))
-
-/**
- * An optic that accesses the specified key of a record.
- *
- * @category constructors
- * @since 1.0.0
- */
-export const key = <A>(key: string): Optional<ReadonlyRecord<A>, A> =>
-  optional(
-    (s) =>
-      pipe(
-        s,
-        RR.get(key),
-        O.match(
-          () => E.left(new Error(`Missing key ${JSON.stringify(key)}`)),
-          E.right
-        )
-      ),
-    (a) =>
-      (s) =>
-        pipe(
-          s,
-          RR.replaceOption(key, a),
-          O.match(
-            () => E.left(new Error(`Missing key ${JSON.stringify(key)}`)),
-            E.right
-          )
-        )
-  )
 
 /**
  * @category constructors
