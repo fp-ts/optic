@@ -23,7 +23,7 @@ export interface Index<in out S, in I, in out A> {
  */
 export const fromAt = <S, I, A>(F: At<S, I, Option<A>>): Index<S, I, A> => ({
   index: (i) => {
-    const some = Optic.some<A>()
+    const some = Optic.id<Option<A>>().some()
     return F.at(i).compose(Optic.prism<Option<A>, A>(
       (s) =>
         pipe(

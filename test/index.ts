@@ -1,9 +1,18 @@
 import * as E from "@fp-ts/core/Either"
 import { identity, pipe, unsafeCoerce } from "@fp-ts/core/Function"
 import * as O from "@fp-ts/core/Option"
+import { isString } from "@fp-ts/core/String"
 import * as Optic from "@fp-ts/optic"
 
 describe("index", () => {
+  it("decode", () => {
+    const _some = Optic.id<O.Option<number>>().some()
+
+    expect(pipe(O.none(), Optic.decode(_some))).toEqual(
+      E.left(new Error("Expected a Some"))
+    )
+  })
+
   it("replaceOption", () => {
     const _index1 = Optic.id<ReadonlyArray<number>>().index(1)
 
@@ -250,6 +259,13 @@ describe("index", () => {
     expect(pipe([true, "a"], Optic.encode(_A))).toEqual([true, "a"])
   })
 
+  it("filter/ default error message", () => {
+    const _int = Optic.id<number>().filter(Number.isInteger)
+    expect(pipe(1.1, _int.getOptic)).toEqual(
+      E.left([new Error("Expected a value satisfying the specified predicate"), 1.1])
+    )
+  })
+
   it("reversedFilter", () => {
     type Int = number & { __brand: "Int" }
 
@@ -277,7 +293,6 @@ describe("index", () => {
   })
 
   it("findFirst", () => {
-    const isString = (u: unknown): u is string => typeof u === "string"
     const _firstString = Optic.id<ReadonlyArray<string | number>>()
       .compose(Optic.findFirst(isString, "Expected a string"))
     expect(pipe([1, 2, "a", 3, "b"], Optic.getOption(_firstString))).toEqual(O.some("a"))
@@ -290,5 +305,32 @@ describe("index", () => {
       O.some([1, 2, "c", 3, "b"])
     )
     expect(pipe([1, 2, 3], Optic.replaceOption(_firstString)("c"))).toEqual(O.none())
+    expect(pipe([1, 2, 3], _firstString.setOptic("c"))).toEqual(
+      E.left([new Error("Expected a string"), [1, 2, 3]])
+    )
+  })
+
+  it("findFirst/ default error message", () => {
+    const _firstString = Optic.id<ReadonlyArray<string | number>>()
+      .compose(Optic.findFirst(isString))
+    expect(pipe([1, 2, 3], _firstString.getOptic)).toEqual(
+      E.left([new Error("Expected a value satisfying the specified predicate"), [1, 2, 3]])
+    )
+    expect(pipe([1, 2, 3], _firstString.setOptic("c"))).toEqual(
+      E.left([new Error("Expected a value satisfying the specified predicate"), [1, 2, 3]])
+    )
+  })
+
+  it("PolyLens", () => {
+    type S = {
+      a: { b: string }
+    }
+    type T = {
+      a: { b: number }
+    }
+    const _a = Optic.id<S, T>().at("a").at("b")
+    expect(pipe({ a: { b: "b" } }, Optic.get(_a))).toEqual("b")
+
+    expect(pipe({ a: { b: "b" } }, Optic.replace(_a)(1))).toEqual({ a: { b: 1 } })
   })
 })
