@@ -1,5 +1,13 @@
 # @fp-ts/optic
 
+## 0.1.0
+
+### Minor Changes
+
+- [#27](https://github.com/fp-ts/optic/pull/27) [`7bc1d05`](https://github.com/fp-ts/optic/commit/7bc1d0581b3f1e9382d034af32036ee6a7bb86a8) Thanks [@gcanti](https://github.com/gcanti)! - Remove constructors corresponding to Optic's methods
+
+- [#27](https://github.com/fp-ts/optic/pull/27) [`08a7519`](https://github.com/fp-ts/optic/commit/08a751996229c6c140869f71de80f29712ba4f9b) Thanks [@gcanti](https://github.com/gcanti)! - upgrade to @fp-ts/core@0.1.1, @fp-ts/data@0.1.0
+
 ## 0.0.7
 
 ### Patch Changes
