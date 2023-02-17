@@ -188,7 +188,7 @@ const prismComposition = <GetPiece, SetPiece1, GetError1, SetError1, GetPiece1, 
             (getPiece) =>
               pipe(
                 that.getOptic(getPiece),
-                E.catchAll(([GetError1, SetPiece]) =>
+                E.orElse(([GetError1, SetPiece]) =>
                   pipe(
                     self.setOptic(SetPiece)(getWhole),
                     E.match(
@@ -251,7 +251,7 @@ const lensComposition = <
             (a) =>
               pipe(
                 that.getOptic(a),
-                E.catchAll(([de, b]) =>
+                E.orElse(([de, b]) =>
                   pipe(
                     self.setOptic(b)(s),
                     E.match(
@@ -734,7 +734,7 @@ export interface Fold<in S, out A> extends Getter<S, ReadonlyArray<A>> {}
  * @since 1.0.0
  */
 export const get = <S, T, A, B>(optic: PolyReversedPrism<S, T, A, B>) =>
-  (s: S): A => pipe(optic.getOptic(s), E.getOrThrow(identity))
+  (s: S): A => pipe(optic.getOptic(s), E.getOrThrowWith(identity))
 
 /**
  * @since 1.0.0
@@ -758,7 +758,7 @@ export const decode = <S, T, A, B>(optic: PolyPrism<S, T, A, B>) =>
  * @since 1.0.0
  */
 export const encode = <S, T, A, B>(optic: PolyPrism<S, T, A, B>) =>
-  (SetPiece: B): T => pipe(optic.setOptic(SetPiece)(undefined), E.getOrThrow(identity))
+  (SetPiece: B): T => pipe(optic.setOptic(SetPiece)(undefined), E.getOrThrowWith(identity))
 
 /**
  * @since 1.0.0

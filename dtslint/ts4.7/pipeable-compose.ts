@@ -1,4 +1,4 @@
-import { pipe } from "@fp-ts/data/Function"
+import { pipe } from "@fp-ts/core/Function"
 import type { Iso, Lens, Optional, PolyIso, PolyLens, PolyOptional, PolyPrism, Prism } from "@fp-ts/optic"
 
 interface S { s: string }

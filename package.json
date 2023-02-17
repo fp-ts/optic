@@ -112,7 +112,7 @@
     }
   },
   "dependencies": {
-    "@fp-ts/core": "~0.1.1",
-    "@fp-ts/data": "~0.1.0"
+    "@effect/data": "^0.1.2",
+    "@fp-ts/core": "~0.2.1"
   }
 }

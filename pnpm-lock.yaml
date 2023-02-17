@@ -19,8 +19,8 @@ importers:
       '@changesets/cli': ^2.25.2
       '@effect-ts/build-utils': 0.40.5
       '@effect-ts/core': ^0.60.2
-      '@fp-ts/core': ~0.1.1
-      '@fp-ts/data': ~0.1.0
+      '@effect/data': ^0.1.2
+      '@fp-ts/core': ~0.2.1
       '@repo-tooling/eslint-plugin-dprint': ^0.0.4
       '@types/benchmark': ^2.1.2
       '@types/chai': ^4.3.4
@@ -57,8 +57,8 @@ importers:
       vite: ^3.2.5
       vitest: 0.25.5
     dependencies:
-      '@fp-ts/core': 0.1.1
-      '@fp-ts/data': 0.1.0
+      '@effect/data': 0.1.2
+      '@fp-ts/core': 0.2.1
     devDependencies:
       '@babel/cli': 7.19.3_@babel+core@7.20.5
       '@babel/core': 7.20.5
@@ -676,6 +676,12 @@ packages:
     resolution: {integrity: sha512-gGnOCvDv6829EeeC+NgTnwIt4XxclR0KqrG7BRemmNX5cm75cF0CKiuEB/o902wjAlt+MdrxTtFC+XsYdLnxzA==}
     dev: true
 
+  /@effect/data/0.1.2:
+    resolution: {integrity: sha512-X0zlbWN/po6LxMQRxRAdIJMiBNpp8ib7FpskVeDmTlJ2id+SrcFoE4R/QnW1YkD2WvnPH2s7AtNLT8Xwx7+GnQ==}
+    dependencies:
+      '@fp-ts/core': 0.2.1
+    dev: false
+
   /@esbuild/android-arm/0.15.18:
     resolution: {integrity: sha512-5GT+kcs2WVGjVs7+boataCkO5Fg0y4kCjzkB5bAip7H4jfnOS3dA6KPiww9W1OEKTKeAcUVhdZGvgI65OXmUnw==}
     engines: {node: '>=12'}
@@ -720,14 +726,8 @@ packages:
       - supports-color
     dev: true
 
-  /@fp-ts/core/0.1.1:
-    resolution: {integrity: sha512-7vQnrnvJAMrXgIwt0qQNhXkPDtm4l8vwql8EvXeY47v/FwnWpDvt1HISoO9Kq3am5SZ0A8Av+4NqPab2FRdKxw==}
-    dev: false
-
-  /@fp-ts/data/0.1.0:
-    resolution: {integrity: sha512-T4PbFVo2fzy2XaUHbFmEc24TJSPzTl/xUHC+1qCXZZfb3MaIKdKHS10aUt+9zcQ75KpiZbHL8hBfoP9fHOI6Mg==}
-    dependencies:
-      '@fp-ts/core': 0.1.1
+  /@fp-ts/core/0.2.1:
+    resolution: {integrity: sha512-gjp/LTCsxqe8KYvPOcMcsEXT+J6tKC4v1nNqK4RZsZcB6pMcQgrullh5Oa371O9WHSULivpgOvjWyeioFevg5g==}
     dev: false
 
   /@humanwhocodes/config-array/0.11.7:

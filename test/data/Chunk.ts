@@ -1,8 +1,8 @@
+import type { Chunk } from "@effect/data/Chunk"
+import * as C from "@effect/data/Chunk"
 import * as E from "@fp-ts/core/Either"
 import { pipe } from "@fp-ts/core/Function"
 import * as O from "@fp-ts/core/Option"
-import type { Chunk } from "@fp-ts/data/Chunk"
-import * as C from "@fp-ts/data/Chunk"
 import * as Optic from "@fp-ts/optic"
 import * as ChunkOptic from "@fp-ts/optic/data/Chunk"
 
