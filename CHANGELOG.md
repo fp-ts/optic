@@ -1,5 +1,11 @@
 # @fp-ts/optic
 
+## 0.2.0
+
+### Minor Changes
+
+- [#29](https://github.com/fp-ts/optic/pull/29) [`92b2fa5`](https://github.com/fp-ts/optic/commit/92b2fa5e26451bb02724b67aa90e195a5719cb76) Thanks [@gcanti](https://github.com/gcanti)! - update to fp-ts/core 0.2 and effect/data
+
 ## 0.1.0
 
 ### Minor Changes
