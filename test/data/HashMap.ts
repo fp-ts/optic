@@ -1,7 +1,7 @@
+import * as HashMap from "@effect/data/HashMap"
 import * as E from "@fp-ts/core/Either"
 import { pipe } from "@fp-ts/core/Function"
 import * as O from "@fp-ts/core/Option"
-import * as HashMap from "@fp-ts/data/HashMap"
 import * as Optic from "@fp-ts/optic"
 import * as HashMapOptic from "@fp-ts/optic/data/HashMap"
 import * as AtOptic from "@fp-ts/optic/typeclass/At"

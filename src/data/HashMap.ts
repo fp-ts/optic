@@ -2,11 +2,11 @@
  * @since 1.0.0
  */
 
+import type { HashMap } from "@effect/data/HashMap"
+import * as HM from "@effect/data/HashMap"
 import { pipe } from "@fp-ts/core/Function"
 import type { Option } from "@fp-ts/core/Option"
 import * as O from "@fp-ts/core/Option"
-import type { HashMap } from "@fp-ts/data/HashMap"
-import * as HM from "@fp-ts/data/HashMap"
 import * as Optic from "@fp-ts/optic"
 import type { At } from "@fp-ts/optic/typeclass/At"
 import type { Index } from "@fp-ts/optic/typeclass/Index"

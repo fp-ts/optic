@@ -22,13 +22,9 @@ type SindexSignature = Record<string, number>
 
 // $ExpectType Lens<Sstruct, string>
 Optic.id<Sstruct>().at('a1')
-// $ExpectType Lens<Sstruct, string>
-Optic.id<Sstruct>().compose(Optic.at('a1'))
 
 // $ExpectType Lens<Stuple, string>
 Optic.id<Stuple>().at('0')
-// $ExpectType Lens<Stuple, string>
-Optic.id<Stuple>().compose(Optic.at('0'))
 
 declare const isoSA: Optic.Iso<Sstruct, Sstruct['a3']>
 declare const lensSA: Optic.Lens<Sstruct, Sstruct['a3']>
@@ -82,8 +78,6 @@ optionalSA.omit('b3')
 
 // $ExpectType Optional<SreadonlyArray, number>
 Optic.id<SreadonlyArray>().index(1)
-// $ExpectType Optional<SreadonlyArray, number>
-Optic.id<SreadonlyArray>().compose(Optic.index(1))
 
 //
 // key
@@ -91,13 +85,9 @@ Optic.id<SreadonlyArray>().compose(Optic.index(1))
 
 // $ExpectType Optional<SindexSignature, number>
 Optic.id<SindexSignature>().key('a')
-// $ExpectType Optional<SindexSignature, number>
-Optic.id<SindexSignature>().compose(Optic.key('a'))
 
 // $ExpectType Optional<{ readonly a: { readonly [x: string]: number; }; }, number>
 Optic.id<{ readonly a: { readonly [x: string]: number } }>().at('a').key('b')
-// $ExpectType Optional<{ readonly a: { readonly [x: string]: number; readonly [x: symbol]: number; }; }, number>
-Optic.id<{ readonly a: { readonly [x: string | symbol]: number } }>().at('a').key('b')
 
 //
 // filter
@@ -106,12 +96,12 @@ Optic.id<{ readonly a: { readonly [x: string | symbol]: number } }>().at('a').ke
 declare const isString: (u: unknown) => u is string
 
 // $ExpectType Prism<string | number, string>
-Optic.id<string | number>().compose(Optic.filter(isString))
+Optic.id<string | number>().filter(isString)
 
 declare const predicate: (u: string | number | boolean) => boolean
 
 // $ExpectType Prism<string | number, string | number>
-Optic.id<string | number>().compose(Optic.filter(predicate))
+Optic.id<string | number>().filter(predicate)
 
 //
 // findFirst

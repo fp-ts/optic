@@ -1,7 +1,7 @@
+import * as SortedMap from "@effect/data/SortedMap"
 import { pipe } from "@fp-ts/core/Function"
 import * as O from "@fp-ts/core/Option"
 import * as String from "@fp-ts/core/String"
-import * as SortedMap from "@fp-ts/data/SortedMap"
 import * as Optic from "@fp-ts/optic"
 import * as SortedMapOptic from "@fp-ts/optic/data/SortedMap"
 import * as AtOptic from "@fp-ts/optic/typeclass/At"
