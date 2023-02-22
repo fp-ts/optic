@@ -1,9 +1,9 @@
 /**
  * @since 1.0.0
  */
-import * as E from "@fp-ts/core/Either"
-import type { Option } from "@fp-ts/core/Option"
-import * as O from "@fp-ts/core/Option"
+import * as E from "@effect/data/Either"
+import type { Option } from "@effect/data/Option"
+import * as O from "@effect/data/Option"
 import type { Prism } from "@fp-ts/optic"
 import * as Optic from "@fp-ts/optic"
 

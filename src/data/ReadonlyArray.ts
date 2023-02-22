@@ -2,8 +2,8 @@
  * @since 1.0.0
  */
 
-import type { NonEmptyReadonlyArray } from "@fp-ts/core/ReadonlyArray"
-import * as RA from "@fp-ts/core/ReadonlyArray"
+import type { NonEmptyReadonlyArray } from "@effect/data/ReadonlyArray"
+import * as RA from "@effect/data/ReadonlyArray"
 import type { Iso, PolyIso } from "@fp-ts/optic"
 import * as Optic from "@fp-ts/optic"
 

@@ -2,8 +2,8 @@
  * @since 1.0.0
  */
 
-import type { Option } from "@fp-ts/core/Option"
-import * as O from "@fp-ts/core/Option"
+import type { Option } from "@effect/data/Option"
+import * as O from "@effect/data/Option"
 import type { Lens } from "@fp-ts/optic"
 import * as Optic from "@fp-ts/optic"
 

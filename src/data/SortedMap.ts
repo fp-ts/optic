@@ -2,11 +2,11 @@
  * @since 1.0.0
  */
 
+import { pipe } from "@effect/data/Function"
+import type { Option } from "@effect/data/Option"
+import * as O from "@effect/data/Option"
 import * as SM from "@effect/data/SortedMap"
 import type { SortedMap } from "@effect/data/SortedMap"
-import { pipe } from "@fp-ts/core/Function"
-import type { Option } from "@fp-ts/core/Option"
-import * as O from "@fp-ts/core/Option"
 import * as Optic from "@fp-ts/optic"
 import type { At } from "@fp-ts/optic/typeclass/At"
 import type { Index } from "@fp-ts/optic/typeclass/Index"
