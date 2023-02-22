@@ -1,5 +1,11 @@
 # @fp-ts/optic
 
+## 0.3.0
+
+### Minor Changes
+
+- [#31](https://github.com/fp-ts/optic/pull/31) [`d9a747d`](https://github.com/fp-ts/optic/commit/d9a747d9c3b0c17249b4f46cd4f2845a8b4d0507) Thanks [@patroza](https://github.com/patroza)! - Switch to @effect/data from @fp-ts/core
+
 ## 0.2.0
 
 ### Minor Changes
