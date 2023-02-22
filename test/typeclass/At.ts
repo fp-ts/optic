@@ -1,5 +1,5 @@
+import { pipe } from "@effect/data/Function"
 import * as HashMap from "@effect/data/HashMap"
-import { pipe } from "@fp-ts/core/Function"
 import * as HashMapOptic from "@fp-ts/optic/data/HashMap"
 import * as AtOptic from "@fp-ts/optic/typeclass/At"
 

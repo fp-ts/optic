@@ -1,16 +1,16 @@
 /**
  * @since 1.0.0
  */
-import type { Either } from "@fp-ts/core/Either"
-import * as E from "@fp-ts/core/Either"
-import { identity, pipe } from "@fp-ts/core/Function"
-import * as O from "@fp-ts/core/Option"
-import type { Option } from "@fp-ts/core/Option"
-import type { Predicate, Refinement } from "@fp-ts/core/Predicate"
-import * as RA from "@fp-ts/core/ReadonlyArray"
-import * as RR from "@fp-ts/core/ReadonlyRecord"
-import type { ReadonlyRecord } from "@fp-ts/core/ReadonlyRecord"
-import * as S from "@fp-ts/core/Struct"
+import type { Either } from "@effect/data/Either"
+import * as E from "@effect/data/Either"
+import { identity, pipe } from "@effect/data/Function"
+import * as O from "@effect/data/Option"
+import type { Option } from "@effect/data/Option"
+import type { Predicate, Refinement } from "@effect/data/Predicate"
+import * as RA from "@effect/data/ReadonlyArray"
+import * as RR from "@effect/data/ReadonlyRecord"
+import type { ReadonlyRecord } from "@effect/data/ReadonlyRecord"
+import * as S from "@effect/data/Struct"
 
 /**
  * @since 1.0.0
@@ -531,7 +531,7 @@ export const cons: {
 } = <A>() =>
   prism<ReadonlyArray<A>, readonly [A, ReadonlyArray<A>]>(
     (s) =>
-      RA.isNonEmpty(s) ?
+      RA.isNonEmptyReadonlyArray(s) ?
         E.right([s[0], s.slice(1)]) :
         E.left(new Error("Expected a non empty array")),
     ([head, tail]) => [head, ...tail]

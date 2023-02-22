@@ -1,4 +1,4 @@
-import { pipe } from "@fp-ts/core/Function"
+import { pipe } from "@effect/data/Function"
 import * as Optic from "@fp-ts/optic"
 import * as ReadonlyArrayOptic from "@fp-ts/optic/data/ReadonlyArray"
 

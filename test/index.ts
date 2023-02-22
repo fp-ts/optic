@@ -1,7 +1,7 @@
-import * as E from "@fp-ts/core/Either"
-import { identity, pipe, unsafeCoerce } from "@fp-ts/core/Function"
-import * as O from "@fp-ts/core/Option"
-import { isString } from "@fp-ts/core/String"
+import * as E from "@effect/data/Either"
+import { identity, pipe, unsafeCoerce } from "@effect/data/Function"
+import * as O from "@effect/data/Option"
+import { isString } from "@effect/data/String"
 import * as Optic from "@fp-ts/optic"
 
 describe("index", () => {

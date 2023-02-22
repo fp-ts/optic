@@ -1,7 +1,7 @@
-import { pipe } from "@fp-ts/core/Function"
-import * as O from "@fp-ts/core/Option"
-import type { Option } from "@fp-ts/core/Option"
-import * as String from "@fp-ts/core/String"
+import { pipe } from "@effect/data/Function"
+import * as O from "@effect/data/Option"
+import type { Option } from "@effect/data/Option"
+import * as String from "@effect/data/String"
 import * as Optic from "@fp-ts/optic"
 import * as StringOptic from "@fp-ts/optic/data/String"
 
