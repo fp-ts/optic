@@ -19,7 +19,7 @@ importers:
       '@changesets/cli': ^2.25.2
       '@effect-ts/build-utils': 0.40.5
       '@effect-ts/core': ^0.60.2
-      '@effect/data': ^0.2.0
+      '@effect/data': ^0.3.2
       '@repo-tooling/eslint-plugin-dprint': ^0.0.4
       '@types/benchmark': ^2.1.2
       '@types/chai': ^4.3.4
@@ -56,7 +56,7 @@ importers:
       vite: ^3.2.5
       vitest: 0.25.5
     dependencies:
-      '@effect/data': 0.2.0
+      '@effect/data': 0.3.2
     devDependencies:
       '@babel/cli': 7.19.3_@babel+core@7.20.5
       '@babel/core': 7.20.5
@@ -100,7 +100,6 @@ importers:
       ultra-runner: 3.10.5
       vite: 3.2.5_@types+node@18.11.11
       vitest: 0.25.5
-    publishDirectory: dist
 
   packages/babel-plugin:
     specifiers: {}
@@ -128,7 +127,6 @@ importers:
       ts-node: 10.9.1_5ra3kupzwcghzakkfdrtyjk72u
       typescript: 4.8.4
       vitest: 0.16.0
-    publishDirectory: dist
 
 packages:
 
@@ -674,8 +672,8 @@ packages:
     resolution: {integrity: sha512-gGnOCvDv6829EeeC+NgTnwIt4XxclR0KqrG7BRemmNX5cm75cF0CKiuEB/o902wjAlt+MdrxTtFC+XsYdLnxzA==}
     dev: true
 
-  /@effect/data/0.2.0:
-    resolution: {integrity: sha512-1hSNjR0LX3zsGxCB8wykSNZ4OHXoA9NjeWlxgjmxcCOkYyMH+3exxJu/9GbkXt/35zaZE0KDFyMwfvrr20zRKw==}
+  /@effect/data/0.3.2:
+    resolution: {integrity: sha512-4rdxsQI9mwfBdgbWQ5SjekLEJpxSJLiHLQOgZ6atoPFwKqAo1PsYglf8gbonWvMx4lIR2R2Km7zXwhk/LEgY0Q==}
     dev: false
 
   /@esbuild/android-arm/0.15.18:
