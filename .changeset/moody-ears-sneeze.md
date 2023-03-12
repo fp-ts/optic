@@ -2,4 +2,4 @@
 "@fp-ts/optic": minor
 ---
 
-Update packages
+update to latest effect/data
