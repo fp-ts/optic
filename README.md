@@ -69,7 +69,7 @@ If you also want to **become a sponsor** to ensure this library continues to imp
 To install the **alpha** version:
 
 ```
-npm install @fp-ts/schema
+npm install @fp-ts/optic
 ```
 
 **Warning**. This package is primarily published to receive early feedback and for contributors, during this development phase we cannot guarantee the stability of the APIs, consider each release to contain breaking changes.
