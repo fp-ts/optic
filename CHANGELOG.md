@@ -1,5 +1,11 @@
 # @fp-ts/optic
 
+## 0.9.0
+
+### Minor Changes
+
+- [#45](https://github.com/fp-ts/optic/pull/45) [`772e5c7`](https://github.com/fp-ts/optic/commit/772e5c7bd447e960e414422a4337b190dc4a06d5) Thanks [@gcanti](https://github.com/gcanti)! - upgrade to latest @effect/data
+
 ## 0.8.0
 
 ### Minor Changes
