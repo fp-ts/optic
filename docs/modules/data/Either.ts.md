@@ -27,7 +27,10 @@ An optic that accesses the `Left` case of an `Either`.
 **Signature**
 
 ```ts
-export declare const left: { <E, A>(): any; <E, A, B>(): any }
+export declare const left: {
+  <E, A>(): Prism<Either.Either<E, A>, E>
+  <E, A, B>(): PolyPrism<Either.Either<E, A>, Either.Either<B, A>, E, B>
+}
 ```
 
 Added in v1.0.0
@@ -39,7 +42,10 @@ An optic that accesses the `Right` case of an `Either`.
 **Signature**
 
 ```ts
-export declare const right: { <E, A>(): any; <E, A, B>(): any }
+export declare const right: {
+  <E, A>(): Prism<Either.Either<E, A>, A>
+  <E, A, B>(): PolyPrism<Either.Either<E, A>, Either.Either<E, B>, A, B>
+}
 ```
 
 Added in v1.0.0

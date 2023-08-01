@@ -26,7 +26,10 @@ An optic that accesses the `Cons` case of a `NonEmptyReadonlyArray`.
 **Signature**
 
 ```ts
-export declare const consNonEmpty: { <A>(): any; <A, B>(): any }
+export declare const consNonEmpty: {
+  <A>(): Iso<readonly [A, ...A[]], readonly [A, readonly A[]]>
+  <A, B>(): PolyIso<readonly [A, ...A[]], readonly [B, ...B[]], readonly [A, readonly A[]], readonly [B, readonly B[]]>
+}
 ```
 
 Added in v1.0.0

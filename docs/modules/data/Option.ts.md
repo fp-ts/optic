@@ -26,7 +26,7 @@ An optic that accesses the `None` case of an `Option`.
 **Signature**
 
 ```ts
-export declare const none: <A>() => any
+export declare const none: <A>() => Prism<Option.Option<A>, void>
 ```
 
 Added in v1.0.0

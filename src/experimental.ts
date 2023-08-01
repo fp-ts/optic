@@ -1,10 +1,10 @@
 /**
  * @since 1.0.0
  */
-import * as E from "@effect/data/Either"
-import { identity, pipe } from "@effect/data/Function"
+import * as Either from "@effect/data/Either"
+import { pipe } from "@effect/data/Function"
 import type { Kind, TypeLambda } from "@effect/data/HKT"
-import type { Applicative } from "@effect/data/typeclass/Applicative"
+import type { Applicative } from "@effect/typeclass/Applicative"
 import type { Lens, Optional, PolyOptional } from "@fp-ts/optic"
 import * as Optic from "@fp-ts/optic"
 
@@ -17,11 +17,19 @@ export const modifyApplicative = <S, T, A, B>(optic: PolyOptional<S, T, A, B>) =
       (s: S): Kind<F, R, E, O, T> =>
         pipe(
           optic.getOptic(s),
-          E.match(
-            ([_, t]) => F.of(t),
-            (a) =>
-              pipe(f(a), F.map((b) => pipe(optic.setOptic(b)(s), E.match(([_, t]) => t, identity))))
-          )
+          Either.match({
+            onLeft: ([_, t]) => F.of(t),
+            onRight: (a) =>
+              pipe(
+                f(a),
+                F.map((b) =>
+                  pipe(
+                    optic.setOptic(b)(s),
+                    Either.getOrElse(([_, t]) => t)
+                  )
+                )
+              )
+          })
         )
 
 /**

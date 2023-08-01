@@ -52,5 +52,5 @@ declare function compose<A, B, C, D>(
   that: PolyOptional<A, B, C, D>
 ): <S, T>(self: PolyOptional<S, T, A, B>) => PolyOptional<S, T, C, D>
 
-// $ExpectError
+// @ts-expect-error
 pipe(optionalSA, compose(optionalAB))

@@ -15,22 +15,22 @@ type SindexSignature = Record<string, number>
 // at
 //
 
-// $ExpectError
+// @ts-expect-error
 Optic.id<Sstruct>().at('c')
 
-// $ExpectError
+// @ts-expect-error
 Optic.id<Stuple>().at('2')
 
 //
 // index
 //
 
-// $ExpectError
+// @ts-expect-error
 Optic.id<SreadonlyArray>().index(true)
 
 //
 // key
 //
 
-// $ExpectError
+// @ts-expect-error
 Optic.id<SindexSignature>().key(true)

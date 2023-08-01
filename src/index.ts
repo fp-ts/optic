@@ -1,16 +1,29 @@
 /**
  * @since 1.0.0
  */
-import type { Either } from "@effect/data/Either"
-import * as E from "@effect/data/Either"
-import { identity, pipe } from "@effect/data/Function"
-import * as O from "@effect/data/Option"
-import type { Option } from "@effect/data/Option"
+import * as Either from "@effect/data/Either"
+import { dual, identity, pipe } from "@effect/data/Function"
+import * as Option from "@effect/data/Option"
 import type { Predicate, Refinement } from "@effect/data/Predicate"
-import * as RA from "@effect/data/ReadonlyArray"
-import * as RR from "@effect/data/ReadonlyRecord"
-import type { ReadonlyRecord } from "@effect/data/ReadonlyRecord"
+import * as ReadonlyArray from "@effect/data/ReadonlyArray"
+import * as ReadonlyRecord from "@effect/data/ReadonlyRecord"
 import * as S from "@effect/data/Struct"
+
+const orElse: {
+  <E1, E2, B>(
+    that: (e1: E1) => Either.Either<E2, B>
+  ): <A>(self: Either.Either<E1, A>) => Either.Either<E2, A | B>
+  <E1, A, E2, B>(
+    self: Either.Either<E1, A>,
+    that: (e1: E1) => Either.Either<E2, B>
+  ): Either.Either<E2, A | B>
+} = dual(
+  2,
+  <E1, A, E2, B>(
+    self: Either.Either<E1, A>,
+    that: (e1: E1) => Either.Either<E2, B>
+  ): Either.Either<E2, A | B> => Either.isLeft(self) ? that(self.left) : Either.right(self.right)
+)
 
 /**
  * @since 1.0.0
@@ -24,10 +37,14 @@ export interface Optic<
   out GetPiece,
   out SetWholeAfter
 > {
-  readonly getOptic: (GetWhole: GetWhole) => Either<readonly [GetError, SetWholeAfter], GetPiece>
+  readonly getOptic: (
+    GetWhole: GetWhole
+  ) => Either.Either<readonly [GetError, SetWholeAfter], GetPiece>
   readonly setOptic: (
     SetPiece: SetPiece
-  ) => (SetWholeBefore: SetWholeBefore) => Either<readonly [SetError, SetWholeAfter], SetWholeAfter>
+  ) => (
+    SetWholeBefore: SetWholeBefore
+  ) => Either.Either<readonly [SetError, SetWholeAfter], SetWholeAfter>
 
   /**
    * @since 1.0.0
@@ -144,8 +161,8 @@ export interface Optic<
    *
    * @since 1.0.0
    */
-  some<S, A>(this: Prism<S, Option<A>>): Prism<S, A>
-  some<S, A>(this: Optional<S, Option<A>>): Optional<S, A>
+  some<S, A>(this: Prism<S, Option.Option<A>>): Prism<S, A>
+  some<S, A>(this: Optional<S, Option.Option<A>>): Optional<S, A>
 
   /**
    * An optic that accesses the specified index of a `ReadonlyArray`.
@@ -159,7 +176,7 @@ export interface Optic<
    *
    * @since 1.0.0
    */
-  key<S, A>(this: Optional<S, ReadonlyRecord<A>>, key: string): Optional<S, A>
+  key<S, A>(this: Optional<S, ReadonlyRecord.ReadonlyRecord<A>>, key: string): Optional<S, A>
 }
 
 /**
@@ -184,17 +201,18 @@ const prismComposition = <GetPiece, SetPiece1, GetError1, SetError1, GetPiece1, 
       (getWhole) =>
         pipe(
           self.getOptic(getWhole),
-          E.flatMap(
+          Either.flatMap(
             (getPiece) =>
               pipe(
                 that.getOptic(getPiece),
-                E.orElse(([GetError1, SetPiece]) =>
+                orElse(([GetError1, SetPiece]) =>
                   pipe(
                     self.setOptic(SetPiece)(getWhole),
-                    E.match(
-                      ([_, SetWholeAfter]) => E.left([GetError1, SetWholeAfter] as const),
-                      (SetWholeAfter) => E.left([GetError1, SetWholeAfter] as const)
-                    )
+                    Either.match({
+                      onLeft: ([_, SetWholeAfter]) =>
+                        Either.left([GetError1, SetWholeAfter] as const),
+                      onRight: (SetWholeAfter) => Either.left([GetError1, SetWholeAfter] as const)
+                    })
                   )
                 )
               )
@@ -204,17 +222,18 @@ const prismComposition = <GetPiece, SetPiece1, GetError1, SetError1, GetPiece1, 
         (SetWholeBefore) =>
           pipe(
             that.setOptic(SetPiece1)(undefined),
-            E.match(
-              ([SetError1, SetPiece]) =>
+            Either.match({
+              onLeft: ([SetError1, SetPiece]) =>
                 pipe(
                   self.setOptic(SetPiece)(SetWholeBefore),
-                  E.match(
-                    ([_, SetWholeAfter]) => E.left([SetError1, SetWholeAfter] as const),
-                    (SetWholeAfter) => E.left([SetError1, SetWholeAfter] as const)
-                  )
+                  Either.match({
+                    onLeft: ([_, SetWholeAfter]) =>
+                      Either.left([SetError1, SetWholeAfter] as const),
+                    onRight: (SetWholeAfter) => Either.left([SetError1, SetWholeAfter] as const)
+                  })
                 ),
-              (SetPiece) => self.setOptic(SetPiece)(SetWholeBefore)
-            )
+              onRight: (SetPiece) => self.setOptic(SetPiece)(SetWholeBefore)
+            })
           )
     )
 
@@ -247,17 +266,17 @@ const lensComposition = <
       (s) =>
         pipe(
           self.getOptic(s),
-          E.flatMap(
+          Either.flatMap(
             (a) =>
               pipe(
                 that.getOptic(a),
-                E.orElse(([de, b]) =>
+                orElse(([de, b]) =>
                   pipe(
                     self.setOptic(b)(s),
-                    E.match(
-                      ([_ee, t]) => E.left([de, t] as const),
-                      (t) => E.left([de, t] as const)
-                    )
+                    Either.match({
+                      onLeft: ([_ee, t]) => Either.left([de, t] as const),
+                      onRight: (t) => Either.left([de, t] as const)
+                    })
                   )
                 )
               )
@@ -267,20 +286,20 @@ const lensComposition = <
         (s) =>
           pipe(
             self.getOptic(s),
-            E.flatMap((a) =>
+            Either.flatMap((a) =>
               pipe(
                 that.setOptic(d)(a),
-                E.match(
-                  ([ee, b]) =>
+                Either.match({
+                  onLeft: ([ee, b]) =>
                     pipe(
                       self.setOptic(b)(s),
-                      E.match(
-                        ([_, t]) => E.left([ee, t] as const),
-                        (t) => E.left([ee, t] as const)
-                      )
+                      Either.match({
+                        onLeft: ([_, t]) => Either.left([ee, t] as const),
+                        onRight: (t) => Either.left([ee, t] as const)
+                      })
                     ),
-                  (b) => self.setOptic(b)(s)
-                )
+                  onRight: (b) => self.setOptic(b)(s)
+                })
               )
             )
           )
@@ -317,59 +336,47 @@ const filter: {
   prism(
     (s) =>
       predicate(s) ?
-        E.right(s) :
-        E.left(new Error(message ?? "Expected a value satisfying the specified predicate")),
+        Either.right(s) :
+        Either.left(new Error(message ?? "Expected a value satisfying the specified predicate")),
     identity
   )
 
 const nonNullable = <S>(): Prism<S, NonNullable<S>> =>
   filter((s: S): s is NonNullable<S> => s != null, "Expected a non nullable value")
 
-const some = <A>(): Prism<Option<A>, A> =>
-  prism(O.match(() => E.left(new Error("Expected a Some")), E.right), O.some)
+const some = <A>(): Prism<Option.Option<A>, A> =>
+  prism(Either.fromOption(() => new Error("Expected a Some")), Option.some)
 
 const index = <A>(i: number): Optional<ReadonlyArray<A>, A> =>
   optional(
     (s) =>
       pipe(
         s,
-        RA.get(i),
-        O.match(
-          () => E.left(new Error(`Missing index ${i}`)),
-          E.right
-        )
+        ReadonlyArray.get(i),
+        Either.fromOption(() => new Error(`Missing index ${i}`))
       ),
     (a) =>
       (s) =>
         pipe(
-          RA.replaceOption(i, a)(s),
-          O.match(
-            () => E.left(new Error(`Missing index ${i}`)),
-            E.right
-          )
+          ReadonlyArray.replaceOption(i, a)(s),
+          Either.fromOption(() => new Error(`Missing index ${i}`))
         )
   )
 
-const key = <A>(key: string): Optional<ReadonlyRecord<A>, A> =>
+const key = <A>(key: string): Optional<ReadonlyRecord.ReadonlyRecord<A>, A> =>
   optional(
     (s) =>
       pipe(
         s,
-        RR.get(key),
-        O.match(
-          () => E.left(new Error(`Missing key ${JSON.stringify(key)}`)),
-          E.right
-        )
+        ReadonlyRecord.get(key),
+        Either.fromOption(() => new Error(`Missing key ${JSON.stringify(key)}`))
       ),
     (a) =>
       (s) =>
         pipe(
           s,
-          RR.replaceOption(key, a),
-          O.match(
-            () => E.left(new Error(`Missing key ${JSON.stringify(key)}`)),
-            E.right
-          )
+          ReadonlyRecord.replaceOption(key, a),
+          Either.fromOption(() => new Error(`Missing key ${JSON.stringify(key)}`))
         )
   )
 
@@ -386,12 +393,14 @@ class Builder<
 {
   constructor(
     readonly composition: "prism" | "lens",
-    readonly getOptic: (GetWhole: GetWhole) => Either<readonly [GetError, SetWholeAfter], GetPiece>,
+    readonly getOptic: (
+      GetWhole: GetWhole
+    ) => Either.Either<readonly [GetError, SetWholeAfter], GetPiece>,
     readonly setOptic: (
       SetPiece: SetPiece
     ) => (
       SetWholeBefore: SetWholeBefore
-    ) => Either<readonly [SetError, SetWholeAfter], SetWholeAfter>
+    ) => Either.Either<readonly [SetError, SetWholeAfter], SetWholeAfter>
   ) {}
 
   compose(that: any): any {
@@ -453,7 +462,7 @@ export const iso: {
   <S, A>(get: (s: S) => A, encode: (a: A) => S): Iso<S, A>
   <S, T, A, B>(get: (s: S) => A, encode: (b: B) => T): PolyIso<S, T, A, B>
 } = <S, A>(get: (s: S) => A, encode: (a: A) => S): Iso<S, A> =>
-  new Builder("prism", (s) => E.right(get(s)), (a) => () => E.right(encode(a)))
+  new Builder("prism", (s) => Either.right(get(s)), (a) => () => Either.right(encode(a)))
 
 /**
  * The identity optic.
@@ -484,7 +493,7 @@ export const lens: {
   <S, A>(get: (s: S) => A, set: (a: A) => (s: S) => S): Lens<S, A>
   <S, T, A, B>(get: (s: S) => A, set: (b: B) => (s: S) => T): PolyLens<S, T, A, B>
 } = <S, A>(get: (s: S) => A, set: (a: A) => (s: S) => S): Lens<S, A> =>
-  new Builder("lens", (s) => E.right(get(s)), (b) => (s) => E.right(set(b)(s)))
+  new Builder("lens", (s) => Either.right(get(s)), (b) => (s) => Either.right(set(b)(s)))
 
 /**
  * @since 1.0.0
@@ -498,9 +507,9 @@ export interface PolyPrism<in S, out T, out A, in B>
  * @since 1.0.0
  */
 export const polyPrism = <S, T, A, B>(
-  polyDecode: (s: S) => Either<readonly [Error, T], A>,
+  polyDecode: (s: S) => Either.Either<readonly [Error, T], A>,
   encode: (b: B) => T
-): PolyPrism<S, T, A, B> => new Builder("prism", polyDecode, (b) => (_) => E.right(encode(b)))
+): PolyPrism<S, T, A, B> => new Builder("prism", polyDecode, (b) => (_) => Either.right(encode(b)))
 
 /**
  * @since 1.0.0
@@ -511,8 +520,10 @@ export interface Prism<in out S, in out A> extends PolyPrism<S, S, A, A> {}
  * @category constructors
  * @since 1.0.0
  */
-export const prism = <S, A>(decode: (s: S) => Either<Error, A>, encode: (a: A) => S): Prism<S, A> =>
-  polyPrism((s) => pipe(decode(s), E.mapLeft((e) => [e, s])), encode)
+export const prism = <S, A>(
+  decode: (s: S) => Either.Either<Error, A>,
+  encode: (a: A) => S
+): Prism<S, A> => polyPrism((s) => pipe(decode(s), Either.mapLeft((e) => [e, s])), encode)
 
 /**
  * An optic that accesses the `Cons` case of a `ReadonlyArray`.
@@ -531,9 +542,9 @@ export const cons: {
 } = <A>() =>
   prism<ReadonlyArray<A>, readonly [A, ReadonlyArray<A>]>(
     (s) =>
-      RA.isNonEmptyReadonlyArray(s) ?
-        E.right([s[0], s.slice(1)]) :
-        E.left(new Error("Expected a non empty array")),
+      ReadonlyArray.isNonEmptyReadonlyArray(s) ?
+        Either.right([s[0], s.slice(1)]) :
+        Either.left(new Error("Expected a non empty array")),
     ([head, tail]) => [head, ...tail]
   )
 
@@ -549,8 +560,9 @@ export interface PolyReversedPrism<in S, out T, out A, in B>
  */
 export const polyReversedPrism = <S, T, A, B>(
   get: (s: S) => A,
-  polyReplaceEither: (b: B) => (s: S) => Either<readonly [Error, T], T>
-): PolyReversedPrism<S, T, A, B> => new Builder("prism", (s) => E.right(get(s)), polyReplaceEither)
+  polyReplaceEither: (b: B) => (s: S) => Either.Either<readonly [Error, T], T>
+): PolyReversedPrism<S, T, A, B> =>
+  new Builder("prism", (s) => Either.right(get(s)), polyReplaceEither)
 
 /**
  * @since 1.0.0
@@ -562,9 +574,9 @@ export interface ReversedPrism<in out S, in out A> extends PolyReversedPrism<S, 
  */
 export const reversedPrism = <S, A>(
   get: (s: S) => A,
-  replaceEither: (a: A) => Either<Error, S>
+  replaceEither: (a: A) => Either.Either<Error, S>
 ): ReversedPrism<S, A> =>
-  polyReversedPrism(get, (a) => (s) => pipe(replaceEither(a), E.mapLeft((e) => [e, s])))
+  polyReversedPrism(get, (a) => (s) => pipe(replaceEither(a), Either.mapLeft((e) => [e, s])))
 
 /**
  * An optic that accesses the input case specified by a predicate.
@@ -578,8 +590,8 @@ export const reversedFilter: {
 } = <S>(predicate: Predicate<S>, message?: string): ReversedPrism<S, S> =>
   reversedPrism<S, S>(identity, (s) =>
     predicate(s) ?
-      E.right(s) :
-      E.left(new Error(message ?? "Expected a value satisfying the specified predicate")))
+      Either.right(s) :
+      Either.left(new Error(message ?? "Expected a value satisfying the specified predicate")))
 
 /**
  * @since 1.0.0
@@ -593,8 +605,8 @@ export interface PolyOptional<in S, out T, out A, in B>
  * @since 1.0.0
  */
 export const polyOptional = <S, T, A, B>(
-  polyDecode: (s: S) => Either<readonly [Error, T], A>,
-  polyReplaceEither: (b: B) => (s: S) => Either<readonly [Error, T], T>
+  polyDecode: (s: S) => Either.Either<readonly [Error, T], A>,
+  polyReplaceEither: (b: B) => (s: S) => Either.Either<readonly [Error, T], T>
 ): PolyOptional<S, T, A, B> => new Builder("lens", polyDecode, polyReplaceEither)
 
 /**
@@ -607,12 +619,12 @@ export interface Optional<in out S, in out A> extends PolyOptional<S, S, A, A> {
  * @since 1.0.0
  */
 export const optional = <S, A>(
-  decode: (s: S) => Either<Error, A>,
-  replaceEither: (a: A) => (s: S) => Either<Error, S>
+  decode: (s: S) => Either.Either<Error, A>,
+  replaceEither: (a: A) => (s: S) => Either.Either<Error, S>
 ): Optional<S, A> =>
   polyOptional(
-    (s) => pipe(decode(s), E.mapLeft((e) => [e, s])),
-    (a) => (s) => pipe(replaceEither(a)(s), E.mapLeft((e) => [e, s]))
+    (s) => pipe(decode(s), Either.mapLeft((e) => [e, s])),
+    (a) => (s) => pipe(replaceEither(a)(s), Either.mapLeft((e) => [e, s]))
   )
 
 /**
@@ -622,7 +634,7 @@ export const optional = <S, A>(
  * @since 1.0.0
  */
 export const indexes = <A>(): Traversal<ReadonlyArray<A>, A> =>
-  traversal(E.right, (as) => (s) => E.right(as.concat(s.slice(as.length))))
+  traversal(Either.right, (as) => (s) => Either.right(as.concat(s.slice(as.length))))
 
 /**
  * @category constructors
@@ -653,8 +665,8 @@ export const findFirst: {
     (s) =>
       pipe(
         s,
-        RA.findFirst(predicate),
-        E.fromOption(() =>
+        ReadonlyArray.findFirst(predicate),
+        Either.fromOption(() =>
           new Error(message ?? "Expected a value satisfying the specified predicate")
         )
       ),
@@ -662,11 +674,11 @@ export const findFirst: {
       (s) =>
         pipe(
           s,
-          RA.findFirstIndex(predicate),
-          E.fromOption(() =>
+          ReadonlyArray.findFirstIndex(predicate),
+          Either.fromOption(() =>
             new Error(message ?? "Expected a value satisfying the specified predicate")
           ),
-          E.map((index) => {
+          Either.mapRight((index) => {
             const out = s.slice()
             out[index] = a
             return out
@@ -703,8 +715,8 @@ export interface PolyTraversal<in S, out T, out A, in B>
  * @since 1.0.0
  */
 export const polyTraversal = <S, T, A, B>(
-  decode: (s: S) => Either<readonly [Error, T], ReadonlyArray<A>>,
-  replace: (bs: ReadonlyArray<B>) => (s: S) => Either<readonly [Error, T], T>
+  decode: (s: S) => Either.Either<readonly [Error, T], ReadonlyArray<A>>,
+  replace: (bs: ReadonlyArray<B>) => (s: S) => Either.Either<readonly [Error, T], T>
 ): PolyTraversal<S, T, A, B> => new Builder("lens", decode, replace)
 
 /**
@@ -717,12 +729,12 @@ export interface Traversal<in out S, in out A> extends PolyTraversal<S, S, A, A>
  * @since 1.0.0
  */
 export const traversal = <S, A>(
-  decode: (s: S) => Either<Error, ReadonlyArray<A>>,
-  replace: (as: ReadonlyArray<A>) => (s: S) => Either<Error, S>
+  decode: (s: S) => Either.Either<Error, ReadonlyArray<A>>,
+  replace: (as: ReadonlyArray<A>) => (s: S) => Either.Either<Error, S>
 ): Traversal<S, A> =>
   polyTraversal(
-    (s) => pipe(decode(s), E.mapLeft((e) => [e, s])),
-    (as) => (s) => pipe(replace(as)(s), E.mapLeft((e) => [e, s]))
+    (s) => pipe(decode(s), Either.mapLeft((e) => [e, s])),
+    (as) => (s) => pipe(replace(as)(s), Either.mapLeft((e) => [e, s]))
   )
 
 /**
@@ -734,43 +746,44 @@ export interface Fold<in S, out A> extends Getter<S, ReadonlyArray<A>> {}
  * @since 1.0.0
  */
 export const get = <S, T, A, B>(optic: PolyReversedPrism<S, T, A, B>) =>
-  (s: S): A => pipe(optic.getOptic(s), E.getOrThrowWith(identity))
+  (s: S): A => pipe(optic.getOptic(s), Either.getOrThrowWith(identity))
 
 /**
  * @since 1.0.0
  */
 export const getOption = <S, A>(optic: Getter<S, A>) =>
-  (s: S): Option<A> => E.getRight(optic.getOptic(s))
+  (s: S): Option.Option<A> => Either.getRight(optic.getOptic(s))
 
 /**
  * @since 1.0.0
  */
 export const getOrModify = <S, T, A, B>(optic: PolyOptional<S, T, A, B>) =>
-  (s: S): Either<T, A> => pipe(optic.getOptic(s), E.mapLeft(([_, t]) => t))
+  (s: S): Either.Either<T, A> => pipe(optic.getOptic(s), Either.mapLeft(([_, t]) => t))
 
 /**
  * @since 1.0.0
  */
 export const decode = <S, T, A, B>(optic: PolyPrism<S, T, A, B>) =>
-  (GetWhole: S): Either<Error, A> => pipe(optic.getOptic(GetWhole), E.mapLeft(([e, _]) => e))
+  (GetWhole: S): Either.Either<Error, A> =>
+    pipe(optic.getOptic(GetWhole), Either.mapLeft(([e, _]) => e))
 
 /**
  * @since 1.0.0
  */
 export const encode = <S, T, A, B>(optic: PolyPrism<S, T, A, B>) =>
-  (SetPiece: B): T => pipe(optic.setOptic(SetPiece)(undefined), E.getOrThrowWith(identity))
+  (SetPiece: B): T => pipe(optic.setOptic(SetPiece)(undefined), Either.getOrThrowWith(identity))
 
 /**
  * @since 1.0.0
  */
 export const replace = <S, T, A>(optic: PolySetter<S, T, A>) =>
-  (a: A) => (s: S): T => pipe(optic.setOptic(a)(s), E.match(([_, t]) => t, identity))
+  (a: A) => (s: S): T => pipe(optic.setOptic(a)(s), Either.getOrElse(([_, t]) => t))
 
 /**
  * @since 1.0.0
  */
 export const replaceOption = <S, T, A>(optic: PolySetter<S, T, A>) =>
-  (a: A) => (s: S): Option<T> => E.getRight(optic.setOptic(a)(s))
+  (a: A) => (s: S): Option.Option<T> => Either.getRight(optic.setOptic(a)(s))
 
 /**
  * @since 1.0.0
@@ -780,6 +793,6 @@ export const modify = <S, T, A, B>(optic: PolyOptional<S, T, A, B>) =>
     (s: S): T =>
       pipe(
         optic.getOptic(s),
-        E.flatMap((a) => optic.setOptic(f(a))(s)),
-        E.match(([_, t]) => t, identity)
+        Either.flatMap((a) => optic.setOptic(f(a))(s)),
+        Either.getOrElse(([_, t]) => t)
       )
