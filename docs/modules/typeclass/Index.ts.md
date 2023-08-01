@@ -27,7 +27,9 @@ Typeclass that defines a `Lens` from an `S` to an `A` at an index `I`
 **Signature**
 
 ```ts
-export interface Index<
+export interface Index<in out S, in I, in out A> {
+  readonly index: (i: I) => Optional<S, A>
+}
 ```
 
 Added in v1.0.0
@@ -37,7 +39,7 @@ Added in v1.0.0
 **Signature**
 
 ```ts
-export declare const fromAt: <S, I, A>(F: any) => any
+export declare const fromAt: <S, I, A>(F: At<S, I, Option<A>>) => Index<S, I, A>
 ```
 
 Added in v1.0.0

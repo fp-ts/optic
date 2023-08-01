@@ -3,7 +3,7 @@
  */
 
 import type { NonEmptyReadonlyArray } from "@effect/data/ReadonlyArray"
-import * as RA from "@effect/data/ReadonlyArray"
+import * as ReadonlyArray from "@effect/data/ReadonlyArray"
 import type { Iso, PolyIso } from "@fp-ts/optic"
 import * as Optic from "@fp-ts/optic"
 
@@ -23,6 +23,6 @@ export const consNonEmpty: {
   >
 } = <A>() =>
   Optic.iso<NonEmptyReadonlyArray<A>, readonly [A, ReadonlyArray<A>]>(
-    (s) => [RA.headNonEmpty(s), RA.tailNonEmpty(s)],
-    ([head, tail]) => RA.prepend(head)(tail)
+    (s) => [ReadonlyArray.headNonEmpty(s), ReadonlyArray.tailNonEmpty(s)],
+    ([head, tail]) => ReadonlyArray.prepend(head)(tail)
   )

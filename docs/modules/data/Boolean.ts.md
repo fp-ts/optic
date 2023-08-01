@@ -24,7 +24,7 @@ Added in v1.0.0
 **Signature**
 
 ```ts
-export declare const toggle: <S>(optic: any) => (s: S) => S
+export declare const toggle: <S>(optic: Optional<S, boolean>) => (s: S) => S
 ```
 
 Added in v1.0.0

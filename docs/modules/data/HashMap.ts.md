@@ -25,7 +25,7 @@ Added in v1.0.0
 **Signature**
 
 ```ts
-export declare const getAt: <K, A>() => any
+export declare const getAt: <K, A>() => At<HashMap.HashMap<K, A>, K, Option.Option<A>>
 ```
 
 Added in v1.0.0
@@ -35,7 +35,7 @@ Added in v1.0.0
 **Signature**
 
 ```ts
-export declare const getIndex: <K, A>() => any
+export declare const getIndex: <K, A>() => Index<HashMap.HashMap<K, A>, K, A>
 ```
 
 Added in v1.0.0

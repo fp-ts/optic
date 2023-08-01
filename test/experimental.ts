@@ -1,5 +1,6 @@
 import { pipe } from "@effect/data/Function"
-import * as O from "@effect/data/Option"
+import * as Option from "@effect/data/Option"
+import * as OptionInstances from "@effect/typeclass/data/Option"
 import * as Optic from "@fp-ts/optic"
 import * as ExperimentalOptic from "@fp-ts/optic/experimental"
 
@@ -55,12 +56,12 @@ const employeeCapitalized = {
 describe("experimental", () => {
   it("modifyApplicative", () => {
     const _0 = Optic.id<ReadonlyArray<number>>().index(0)
-    const f = ExperimentalOptic.modifyApplicative(_0)(O.Applicative)((
+    const f = ExperimentalOptic.modifyApplicative(_0)(OptionInstances.Applicative)((
       n
-    ) => (n > 0 ? O.some(n * 2) : O.none()))
-    expect(f([])).toEqual(O.some([]))
-    expect(f([1, 2, 3])).toEqual(O.some([2, 2, 3]))
-    expect(f([-1, 2, 3])).toEqual(O.none())
+    ) => (n > 0 ? Option.some(n * 2) : Option.none()))
+    expect(f([])).toEqual(Option.some([]))
+    expect(f([1, 2, 3])).toEqual(Option.some([2, 2, 3]))
+    expect(f([-1, 2, 3])).toEqual(Option.none())
   })
 
   it("path", () => {
@@ -86,7 +87,7 @@ describe("experimental", () => {
       .index(0)
 
     expect(pipe(employeeCapitalized, Optic.getOption(firstOwner))).toEqual(
-      O.some("mike")
+      Option.some("mike")
     )
   })
 })

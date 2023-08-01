@@ -26,7 +26,7 @@ An optic that accesses the specified index of a `string`.
 **Signature**
 
 ```ts
-export declare const index: (i: number) => any
+export declare const index: (i: number) => Optional<string, string>
 ```
 
 Added in v1.0.0

@@ -27,7 +27,9 @@ Typeclass that defines a `Lens` from an `S` to an `A` at an index `I`
 **Signature**
 
 ```ts
-export interface At<
+export interface At<in out S, in I, in out A> {
+  readonly at: (i: I) => Lens<S, A>
+}
 ```
 
 Added in v1.0.0
@@ -39,7 +41,7 @@ Delete a value associated with a key in a Map-like container
 **Signature**
 
 ```ts
-export declare const remove: <S, I, A>(F: any) => (i: I) => (s: S) => S
+export declare const remove: <S, I, A>(F: At<S, I, Option.Option<A>>) => (i: I) => (s: S) => S
 ```
 
 Added in v1.0.0

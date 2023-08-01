@@ -92,7 +92,7 @@ Added in v1.0.0
 
 ```ts
 export declare const modifyApplicative: <S, T, A, B>(
-  optic: any
+  optic: PolyOptional<S, T, A, B>
 ) => <F extends TypeLambda>(
   F: Applicative<F>
 ) => <R, E, O>(f: (a: A) => Kind<F, R, E, O, B>) => (s: S) => Kind<F, R, E, O, T>
@@ -139,8 +139,8 @@ An optic that accesses a nested field of a struct.
 
 ```ts
 export declare const zoom: {
-  <S, A>(f: (s: FocusInitial<S>) => FocusStructure<A>): any
-  <S, A>(f: (s: FocusInitial<S>) => FocusPrimitive<A>): any
+  <S, A>(f: (s: FocusInitial<S>) => FocusStructure<A>): Lens<S, A>
+  <S, A>(f: (s: FocusInitial<S>) => FocusPrimitive<A>): Lens<S, A>
 }
 ```
 

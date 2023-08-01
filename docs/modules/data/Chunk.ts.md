@@ -29,7 +29,10 @@ An optic that accesses the `Cons` case of a `Chunk`.
 **Signature**
 
 ```ts
-export declare const cons: { <A>(): any; <A, B>(): any }
+export declare const cons: {
+  <A>(): Prism<Chunk.Chunk<A>, readonly [A, Chunk.Chunk<A>]>
+  <A, B>(): PolyPrism<Chunk.Chunk<A>, Chunk.Chunk<B>, readonly [A, Chunk.Chunk<A>], readonly [B, Chunk.Chunk<B>]>
+}
 ```
 
 Added in v1.0.0
@@ -39,7 +42,7 @@ Added in v1.0.0
 **Signature**
 
 ```ts
-export declare const head: <A>() => any
+export declare const head: <A>() => Optional<Chunk.Chunk<A>, A>
 ```
 
 Added in v1.0.0
@@ -51,7 +54,7 @@ An optic that accesses the specified index of a `Chunk`.
 **Signature**
 
 ```ts
-export declare const index: <A>(i: number) => any
+export declare const index: <A>(i: number) => Optional<Chunk.Chunk<A>, A>
 ```
 
 Added in v1.0.0
@@ -61,7 +64,7 @@ Added in v1.0.0
 **Signature**
 
 ```ts
-export declare const tail: <A>() => any
+export declare const tail: <A>() => Optional<Chunk.Chunk<A>, Chunk.Chunk<A>>
 ```
 
 Added in v1.0.0

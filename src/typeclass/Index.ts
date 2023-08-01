@@ -2,7 +2,7 @@
  * @since 1.0.0
  */
 
-import * as E from "@effect/data/Either"
+import * as Either from "@effect/data/Either"
 import { pipe } from "@effect/data/Function"
 import type { Option } from "@effect/data/Option"
 import type { Optional } from "@fp-ts/optic"
@@ -28,7 +28,7 @@ export const fromAt = <S, I, A>(F: At<S, I, Option<A>>): Index<S, I, A> => ({
       (s) =>
         pipe(
           some.getOptic(s),
-          E.mapLeft(() => new Error(`Missing key/index ${JSON.stringify(i)}`))
+          Either.mapLeft(() => new Error(`Missing key/index ${JSON.stringify(i)}`))
         ),
       Optic.encode(some)
     ))
