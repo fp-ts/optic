@@ -1,12 +1,12 @@
 /**
  * @since 1.0.0
  */
-import * as Either from "@effect/data/Either"
-import { pipe } from "@effect/data/Function"
-import type { Kind, TypeLambda } from "@effect/data/HKT"
 import type { Applicative } from "@effect/typeclass/Applicative"
 import type { Lens, Optional, PolyOptional } from "@fp-ts/optic"
 import * as Optic from "@fp-ts/optic"
+import * as Either from "effect/Either"
+import { pipe } from "effect/Function"
+import type { Kind, TypeLambda } from "effect/HKT"
 
 /**
  * @since 1.0.0

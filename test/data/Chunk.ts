@@ -1,10 +1,10 @@
-import type { Chunk } from "@effect/data/Chunk"
-import * as C from "@effect/data/Chunk"
-import * as E from "@effect/data/Either"
-import { pipe } from "@effect/data/Function"
-import * as O from "@effect/data/Option"
 import * as Optic from "@fp-ts/optic"
 import * as ChunkOptic from "@fp-ts/optic/data/Chunk"
+import type { Chunk } from "effect/Chunk"
+import * as C from "effect/Chunk"
+import * as E from "effect/Either"
+import { pipe } from "effect/Function"
+import * as O from "effect/Option"
 
 describe("Chunk", () => {
   it("index", () => {

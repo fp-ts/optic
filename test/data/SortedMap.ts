@@ -1,10 +1,10 @@
-import { pipe } from "@effect/data/Function"
-import * as O from "@effect/data/Option"
-import * as SortedMap from "@effect/data/SortedMap"
-import * as String from "@effect/data/String"
 import * as Optic from "@fp-ts/optic"
 import * as SortedMapOptic from "@fp-ts/optic/data/SortedMap"
 import * as AtOptic from "@fp-ts/optic/typeclass/At"
+import { pipe } from "effect/Function"
+import * as O from "effect/Option"
+import * as SortedMap from "effect/SortedMap"
+import * as String from "effect/String"
 
 describe("SortedMap", () => {
   it("getAt", () => {

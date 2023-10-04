@@ -2,10 +2,10 @@
  * @since 1.0.0
  */
 
-import type { NonEmptyReadonlyArray } from "@effect/data/ReadonlyArray"
-import * as ReadonlyArray from "@effect/data/ReadonlyArray"
 import type { Iso, PolyIso } from "@fp-ts/optic"
 import * as Optic from "@fp-ts/optic"
+import type { NonEmptyReadonlyArray } from "effect/ReadonlyArray"
+import * as ReadonlyArray from "effect/ReadonlyArray"
 
 /**
  * An optic that accesses the `Cons` case of a `NonEmptyReadonlyArray`.

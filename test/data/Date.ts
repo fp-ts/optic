@@ -1,6 +1,6 @@
-import { pipe } from "@effect/data/Function"
 import * as Optic from "@fp-ts/optic"
 import * as D from "@fp-ts/optic/data/Date"
+import { pipe } from "effect/Function"
 
 type S = {
   readonly key: {

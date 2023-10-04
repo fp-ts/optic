@@ -30,13 +30,13 @@ flowchart TD
 # Features
 
 - **Unified Representation Of Optics**. All optics compose the same way because they are all instances of the same data type (`Optic`)
-- **Integration**. Built-in optics for `@effect/data` data structures, like `Option` and `Either`.
+- **Integration**. Built-in optics for `effect` data structures, like `Option` and `Either`.
 
 ## Introduction
 
 `@fp-ts/optic` is a library that makes it easy to modify parts of larger data structures based on a single representation of an optic as a combination of a getter and setter.
 
-`@fp-ts/optic` features a unified representation of optics, deep `@effect/data` integration, helpful error messages.
+`@fp-ts/optic` features a unified representation of optics, deep `effect` integration, helpful error messages.
 
 # Credits and sponsorship
 
@@ -51,7 +51,7 @@ If you also want to **become a sponsor** to ensure this library continues to imp
 
 ## Requirements
 
-- TypeScript 4.7 or newer
+- TypeScript 5.0 or newer
 - The `strict` flag enabled in your `tsconfig.json` file
 
 ```
@@ -85,7 +85,7 @@ import * as Optic from "@fp-ts/optic";
 Let's say we have an employee and we need to upper case the first character of his company street name.
 
 ```ts
-import * as O from "@effect/data/Option";
+import * as O from "effect/Option";
 
 interface Street {
   readonly num: number;
@@ -138,7 +138,7 @@ Let's see what could we do with `@fp-ts/optic`
 ```ts
 import * as Optic from "@fp-ts/optic";
 import * as StringOptic from "@fp-ts/optic/data/String";
-import * as String from "@effect/data/String";
+import * as String from "effect/String";
 
 const _firstChar: Optic.Optional<Employee, string> = Optic.id<Employee>()
   .at("company")
@@ -318,7 +318,7 @@ const _a: Optic.Iso<Whole, Whole> = Optic.id<Whole>();
 The `compose` method is a utility function that allows you to combine two or more optics into a single optic.
 
 ```ts
-import { pipe } from "@effect/data/Function";
+import { pipe } from "effect";
 import * as Optic from "@fp-ts/optic";
 
 // This is the type of the data structure that the lens will be operating on.
@@ -356,7 +356,7 @@ const updated: Whole = pipe(whole, Optic.replace(_a)("bar")); // returns { a: "b
 The `at` method is a utility function that creates an optic that focuses on a specific field within a data structure.
 
 ```ts
-import { pipe } from "@effect/data/Function";
+import { pipe } from "effect";
 import * as Optic from "@fp-ts/optic";
 
 // This is the type of the data structure that the lens will be operating on.
@@ -394,7 +394,7 @@ const updated: Whole = pipe(whole, Optic.replace(_a)("bar")); // returns { a: "b
 The `pick` method is a utility function that creates an optic that focuses on a group of keys within a data structure.
 
 ```ts
-import { pipe } from "@effect/data/Function";
+import { pipe } from "effect";
 import * as Optic from "@fp-ts/optic";
 
 // This is the type of the data structure that the lens will be operating on.
@@ -435,7 +435,7 @@ const updated: Whole = pipe(whole, Optic.replace(_ab)({ a: "bar", b: 23 })); // 
 The `omit` method is a utility function that creates a lens that excludes a group of keys from a struct. This can be useful when you want to focus on a subset of a data structure and ignore certain fields.
 
 ```ts
-import { pipe } from "@effect/data/Function";
+import { pipe } from "effect";
 import * as Optic from "@fp-ts/optic";
 
 interface Whole {
@@ -475,9 +475,9 @@ const updated: Whole = pipe(whole, Optic.replace(_ac)({ a: "bar", c: false })); 
 The `filter` method is a utility function that creates an optic that focuses on the elements of a data structure that match a specified predicate.
 
 ```ts
-import { pipe } from "@effect/data/Function";
+import { pipe } from "effect";
 import * as Optic from "@fp-ts/optic";
-import type { Option } from "@effect/data/Option";
+import type { Option } from "effect/Option";
 
 // This is the type of the data structure that the prism will be operating on.
 interface Whole {
@@ -514,9 +514,9 @@ const updated: Whole = pipe(whole, Optic.replace(_evenA)(4)); // returns { a: 4 
 The `nonNullable` method is a utility function that creates a `Prism` that focuses on the non-nullable values of a nullable type. This is useful when you want to manipulate or extract the value of a nullable type, but want to ignore the `null` values.
 
 ```ts
-import { pipe } from "@effect/data/Function";
+import { pipe } from "effect";
 import * as Optic from "@fp-ts/optic";
-import type { Option } from "@effect/data/Option";
+import type { Option } from "effect/Option";
 
 const _nonNullString: Optic.Prism<string | null, string> = Optic.id<
   string | null
@@ -531,8 +531,8 @@ const result2: Option<string> = pipe(null, Optic.getOption(_nonNullString)); // 
 The `some` method is a utility function that creates an optic that focuses on the `Some` case of an `Option` data type. This optic allows you to view and modify the value contained within the `Some` case of an `Option`.
 
 ```ts
-import { pipe } from "@effect/data/Function";
-import * as O from "@effect/data/Option";
+import { pipe } from "effect";
+import * as O from "effect/Option";
 import * as Optic from "@fp-ts/optic";
 
 // This creates a prism that focuses on the 'Some' case of the 'Option<number>' object.
@@ -552,9 +552,9 @@ const updated: O.Option<number> = pipe(option, Optic.replace(_some)(23)); // ret
 The `index` method creates an `Optional` optic that focuses on a specific index in a `ReadonlyArray`. The `Optional` optic allows you to view the value at the specified index, or `None` if the index does not exist. You can also use the `Optional` optic to update the value at the specified index, if it exists.
 
 ```ts
-import { pipe } from "@effect/data/Function";
+import { pipe } from "effect";
 import * as Optic from "@fp-ts/optic";
-import type { Option } from "@effect/data/Option";
+import type { Option } from "effect/Option";
 
 const _index2: Optic.Optional<ReadonlyArray<number>, number> = Optic.id<
   ReadonlyArray<number>
@@ -573,8 +573,8 @@ const updated3: ReadonlyArray<number> = pipe([], Optic.replace(_index2)(10)); //
 The `key` method is a utility function that allows you to create an `Optional` optic that focuses on a specific key of an index signature (a type with a string index signature).
 
 ```ts
-import { pipe } from "@effect/data/Function";
-import type { Option } from "@effect/data/Option";
+import { pipe } from "effect";
+import type { Option } from "effect/Option";
 import * as Optic from "@fp-ts/optic";
 
 interface Data {

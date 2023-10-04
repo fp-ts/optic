@@ -1,10 +1,10 @@
-import * as E from "@effect/data/Either"
-import { pipe } from "@effect/data/Function"
-import * as HashMap from "@effect/data/HashMap"
-import * as O from "@effect/data/Option"
 import * as Optic from "@fp-ts/optic"
 import * as HashMapOptic from "@fp-ts/optic/data/HashMap"
 import * as AtOptic from "@fp-ts/optic/typeclass/At"
+import * as E from "effect/Either"
+import { pipe } from "effect/Function"
+import * as HashMap from "effect/HashMap"
+import * as O from "effect/Option"
 
 describe("HaskMap", () => {
   it("getAt", () => {

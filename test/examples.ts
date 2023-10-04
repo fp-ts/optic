@@ -1,9 +1,9 @@
-import { pipe } from "@effect/data/Function"
-import * as O from "@effect/data/Option"
-import type { Option } from "@effect/data/Option"
-import * as String from "@effect/data/String"
 import * as Optic from "@fp-ts/optic"
 import * as StringOptic from "@fp-ts/optic/data/String"
+import { pipe } from "effect/Function"
+import * as O from "effect/Option"
+import type { Option } from "effect/Option"
+import * as String from "effect/String"
 
 describe("examples", () => {
   it("README", () => {

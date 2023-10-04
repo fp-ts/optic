@@ -2,10 +2,10 @@
  * @since 1.0.0
  */
 
-import * as Either from "@effect/data/Either"
-import * as String from "@effect/data/String"
 import type { Optional } from "@fp-ts/optic"
 import * as Optic from "@fp-ts/optic"
+import * as Either from "effect/Either"
+import * as String from "effect/String"
 
 /**
  * An optic that accesses the specified index of a `string`.

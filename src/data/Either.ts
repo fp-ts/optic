@@ -1,9 +1,9 @@
 /**
  * @since 1.0.0
  */
-import * as Either from "@effect/data/Either"
 import type { PolyPrism, Prism } from "@fp-ts/optic"
 import * as Optic from "@fp-ts/optic"
+import * as Either from "effect/Either"
 
 /**
  * An optic that accesses the `Right` case of an `Either`.

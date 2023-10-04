@@ -2,12 +2,12 @@
  * @since 1.0.0
  */
 
-import * as Either from "@effect/data/Either"
-import { pipe } from "@effect/data/Function"
-import type { Option } from "@effect/data/Option"
 import type { Optional } from "@fp-ts/optic"
 import * as Optic from "@fp-ts/optic"
 import type { At } from "@fp-ts/optic/typeclass/At"
+import * as Either from "effect/Either"
+import { pipe } from "effect/Function"
+import type { Option } from "effect/Option"
 
 /**
  * Typeclass that defines a `Lens` from an `S` to an `A` at an index `I`
