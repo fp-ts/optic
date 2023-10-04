@@ -2,9 +2,9 @@
  * @since 1.0.0
  */
 
-import * as Option from "@effect/data/Option"
 import type { Lens } from "@fp-ts/optic"
 import * as Optic from "@fp-ts/optic"
+import * as Option from "effect/Option"
 
 /**
  * Typeclass that defines a `Lens` from an `S` to an `A` at an index `I`

@@ -1,8 +1,8 @@
-import * as E from "@effect/data/Either"
-import { pipe } from "@effect/data/Function"
-import * as O from "@effect/data/Option"
 import * as Optic from "@fp-ts/optic"
 import * as StringOptic from "@fp-ts/optic/data/String"
+import * as E from "effect/Either"
+import { pipe } from "effect/Function"
+import * as O from "effect/Option"
 
 describe("string", () => {
   it("index", () => {

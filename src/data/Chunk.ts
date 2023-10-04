@@ -1,12 +1,12 @@
 /**
  * @since 1.0.0
  */
-import * as Chunk from "@effect/data/Chunk"
-import * as Either from "@effect/data/Either"
-import { pipe } from "@effect/data/Function"
-import * as Option from "@effect/data/Option"
 import type { Optional, PolyPrism, Prism } from "@fp-ts/optic"
 import * as Optic from "@fp-ts/optic"
+import * as Chunk from "effect/Chunk"
+import * as Either from "effect/Either"
+import { pipe } from "effect/Function"
+import * as Option from "effect/Option"
 
 /**
  * An optic that accesses the specified index of a `Chunk`.

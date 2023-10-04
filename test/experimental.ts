@@ -1,8 +1,8 @@
-import { pipe } from "@effect/data/Function"
-import * as Option from "@effect/data/Option"
 import * as OptionInstances from "@effect/typeclass/data/Option"
 import * as Optic from "@fp-ts/optic"
 import * as ExperimentalOptic from "@fp-ts/optic/experimental"
+import { pipe } from "effect/Function"
+import * as Option from "effect/Option"
 
 interface Street {
   num: number

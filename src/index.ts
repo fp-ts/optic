@@ -1,13 +1,13 @@
 /**
  * @since 1.0.0
  */
-import * as Either from "@effect/data/Either"
-import { dual, identity, pipe } from "@effect/data/Function"
-import * as Option from "@effect/data/Option"
-import type { Predicate, Refinement } from "@effect/data/Predicate"
-import * as ReadonlyArray from "@effect/data/ReadonlyArray"
-import * as ReadonlyRecord from "@effect/data/ReadonlyRecord"
-import * as S from "@effect/data/Struct"
+import * as Either from "effect/Either"
+import { dual, identity, pipe } from "effect/Function"
+import * as Option from "effect/Option"
+import type { Predicate, Refinement } from "effect/Predicate"
+import * as ReadonlyArray from "effect/ReadonlyArray"
+import * as ReadonlyRecord from "effect/ReadonlyRecord"
+import * as S from "effect/Struct"
 
 const orElse: {
   <E1, E2, B>(
@@ -678,7 +678,7 @@ export const findFirst: {
           Either.fromOption(() =>
             new Error(message ?? "Expected a value satisfying the specified predicate")
           ),
-          Either.mapRight((index) => {
+          Either.map((index) => {
             const out = s.slice()
             out[index] = a
             return out

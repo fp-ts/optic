@@ -1,6 +1,6 @@
-import { pipe } from "@effect/data/Function"
 import * as Optic from "@fp-ts/optic"
 import * as ReadonlyArrayOptic from "@fp-ts/optic/data/ReadonlyArray"
+import { pipe } from "effect/Function"
 
 describe("ReadonlyArray", () => {
   it("consNonEmpty", () => {

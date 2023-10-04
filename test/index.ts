@@ -1,8 +1,8 @@
-import * as E from "@effect/data/Either"
-import { identity, pipe, unsafeCoerce } from "@effect/data/Function"
-import * as O from "@effect/data/Option"
-import { isString } from "@effect/data/String"
 import * as Optic from "@fp-ts/optic"
+import * as E from "effect/Either"
+import { identity, pipe, unsafeCoerce } from "effect/Function"
+import * as O from "effect/Option"
+import { isString } from "effect/String"
 
 describe("index", () => {
   it("decode", () => {

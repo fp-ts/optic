@@ -1,10 +1,10 @@
 /**
  * @since 1.0.0
  */
-import * as Either from "@effect/data/Either"
-import * as Option from "@effect/data/Option"
 import type { Prism } from "@fp-ts/optic"
 import * as Optic from "@fp-ts/optic"
+import * as Either from "effect/Either"
+import * as Option from "effect/Option"
 
 /**
  * An optic that accesses the `None` case of an `Option`.
