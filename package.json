@@ -41,7 +41,7 @@
     "lint": "eslint . --ext .ts,.tsx",
     "autofix": "pnpm lint --fix",
     "tc": "tsc --noEmit",
-    "docgen": "docgen",
+    "docs": "docgen",
     "docs-update": "git add --force --all docs/modules || true",
     "circular": "madge --ts-config ./tsconfig.madge.json --circular --no-color --no-spinner --warning build/esm",
     "test": "vitest",
