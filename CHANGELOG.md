@@ -1,5 +1,11 @@
 # @fp-ts/optic
 
+## 0.10.0
+
+### Minor Changes
+
+- [#47](https://github.com/fp-ts/optic/pull/47) [`8e86238`](https://github.com/fp-ts/optic/commit/8e86238996ba971f0a685063b91aa92cbb02de6b) Thanks [@gcanti](https://github.com/gcanti)! - switch to effect package
+
 ## 0.9.0
 
 ### Minor Changes
