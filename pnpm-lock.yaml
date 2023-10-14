@@ -30,11 +30,11 @@ devDependencies:
     specifier: ^0.60.5
     version: 0.60.5
   '@effect/docgen':
-    specifier: ^0.1.8
-    version: 0.1.8(@types/node@18.16.13)(typescript@5.1.6)
+    specifier: ^0.2.0
+    version: 0.2.0(@types/node@18.16.13)(typescript@5.1.6)
   '@effect/typeclass':
-    specifier: ^0.6.2
-    version: 0.6.2(effect@2.0.0-next.44)
+    specifier: ^0.10.0
+    version: 0.10.0(effect@2.0.0-next.48)
   '@repo-tooling/eslint-plugin-dprint':
     specifier: ^0.0.4
     version: 0.0.4(typescript@5.1.6)
@@ -78,8 +78,8 @@ devDependencies:
     specifier: ^1.5.0
     version: 1.5.0
   effect:
-    specifier: 2.0.0-next.44
-    version: 2.0.0-next.44
+    specifier: 2.0.0-next.48
+    version: 2.0.0-next.48
   eslint:
     specifier: ^8.37.0
     version: 8.41.0
@@ -717,8 +717,8 @@ packages:
     resolution: {integrity: sha512-/crHGujo0xnuHIYNc1VgP0HGJGFSoSqq88JFXe6FmFyXPpWt8Xu39LyLg7rchsxfXFeEdA9CrIZvLV5eswXV5g==}
     dev: true
 
-  /@effect/docgen@0.1.8(@types/node@18.16.13)(typescript@5.1.6):
-    resolution: {integrity: sha512-o3iLXvbkkxEuRUnJ6hJDEXHfeDfA86iVkQm/s8heWQQgD7UBZ7TTWkDIobFaXRKU8qKoCKPSgmLlSq0F3IsBgw==}
+  /@effect/docgen@0.2.0(@types/node@18.16.13)(typescript@5.1.6):
+    resolution: {integrity: sha512-QVQmQESrw9Ayn6LCxlnK+mvFCpkGGtUOtTnp4faTjJ5cC9sfII3pzzaQFXqFoJlsYA9qioJwUb4SBL6h4s7KHA==}
     engines: {node: '>=16.17.1'}
     hasBin: true
     peerDependencies:
@@ -729,7 +729,6 @@ packages:
       glob: 10.3.3
       markdown-toc: github.com/effect-ts/markdown-toc/4bfeb0f140105440ea0d12df2fa23199cc3ec1d5
       prettier: 2.8.8
-      rimraf: 5.0.1
       ts-morph: 19.0.0
       ts-node: 10.9.1(@types/node@18.16.13)(typescript@5.1.6)
       tsconfck: 2.1.2(typescript@5.1.6)
@@ -740,12 +739,12 @@ packages:
       - '@types/node'
     dev: true
 
-  /@effect/typeclass@0.6.2(effect@2.0.0-next.44):
-    resolution: {integrity: sha512-H9FklKKpzm8RjaIwHVruk+hHUK6HYW9aVRQ09YMCQMJBdxs/bPdJ6/hJvBVhPp1TmcwGLe0mI2+IQ3HSpIjgfg==}
+  /@effect/typeclass@0.10.0(effect@2.0.0-next.48):
+    resolution: {integrity: sha512-pELnCfLZMKU8I/ax/2ciVIIuRX22NJaSriToOS/QekCW5twK2COVDJYsTGPEDdJ86nth5/W0rt0wUZf0mjwxWQ==}
     peerDependencies:
-      effect: ^2.0.0-next.39
+      effect: 2.0.0-next.48
     dependencies:
-      effect: 2.0.0-next.44
+      effect: 2.0.0-next.48
     dev: true
 
   /@esbuild/android-arm64@0.17.19:
@@ -2931,8 +2930,8 @@ packages:
       safer-buffer: 2.1.2
     dev: true
 
-  /effect@2.0.0-next.44:
-    resolution: {integrity: sha512-0oBnoqWW5u1b0AhmDiGZ/TX8La697YcCrTacEBU7v+gKZeH+bbVJwPEqesGagot0sErBrvyE0H9h7Si4lHhkuA==}
+  /effect@2.0.0-next.48:
+    resolution: {integrity: sha512-vwMIl39m8fMBeXoGIdSwMi2lrg7NltyrGMK0N/liGDl7G9LXvERKOCipNcobSIGO0V7hjaXEWgL6W/KEWEww+g==}
     dev: true
 
   /electron-to-chromium@1.4.402:
@@ -6388,14 +6387,6 @@ packages:
     hasBin: true
     dependencies:
       glob: 9.3.5
-    dev: true
-
-  /rimraf@5.0.1:
-    resolution: {integrity: sha512-OfFZdwtd3lZ+XZzYP/6gTACubwFcHdLRqS9UX3UwpU2dnGQYkPFISRwvM3w9IiB2w7bW5qGo/uAwE4SmXXSKvg==}
-    engines: {node: '>=14'}
-    hasBin: true
-    dependencies:
-      glob: 10.3.3
     dev: true
 
   /rollup@3.22.0:
