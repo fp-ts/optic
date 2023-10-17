@@ -33,8 +33,8 @@ devDependencies:
     specifier: ^0.2.0
     version: 0.2.0(@types/node@18.16.13)(typescript@5.1.6)
   '@effect/typeclass':
-    specifier: ^0.10.0
-    version: 0.10.0(effect@2.0.0-next.48)
+    specifier: ^0.11.0
+    version: 0.11.0(effect@2.0.0-next.49)
   '@repo-tooling/eslint-plugin-dprint':
     specifier: ^0.0.4
     version: 0.0.4(typescript@5.1.6)
@@ -78,8 +78,8 @@ devDependencies:
     specifier: ^1.5.0
     version: 1.5.0
   effect:
-    specifier: 2.0.0-next.48
-    version: 2.0.0-next.48
+    specifier: 2.0.0-next.49
+    version: 2.0.0-next.49
   eslint:
     specifier: ^8.37.0
     version: 8.41.0
@@ -739,12 +739,12 @@ packages:
       - '@types/node'
     dev: true
 
-  /@effect/typeclass@0.10.0(effect@2.0.0-next.48):
-    resolution: {integrity: sha512-pELnCfLZMKU8I/ax/2ciVIIuRX22NJaSriToOS/QekCW5twK2COVDJYsTGPEDdJ86nth5/W0rt0wUZf0mjwxWQ==}
+  /@effect/typeclass@0.11.0(effect@2.0.0-next.49):
+    resolution: {integrity: sha512-Q7sVLW3P5uKHjv7BF75KRDn/Z6E7CwsHNI6Ejqj9qDeEeN2bzAd46TnZ8fXcAEqQ/Pi5v6aJVTF0wSfQ7Ai0kg==}
     peerDependencies:
-      effect: 2.0.0-next.48
+      effect: 2.0.0-next.49
     dependencies:
-      effect: 2.0.0-next.48
+      effect: 2.0.0-next.49
     dev: true
 
   /@esbuild/android-arm64@0.17.19:
@@ -2930,8 +2930,8 @@ packages:
       safer-buffer: 2.1.2
     dev: true
 
-  /effect@2.0.0-next.48:
-    resolution: {integrity: sha512-vwMIl39m8fMBeXoGIdSwMi2lrg7NltyrGMK0N/liGDl7G9LXvERKOCipNcobSIGO0V7hjaXEWgL6W/KEWEww+g==}
+  /effect@2.0.0-next.49:
+    resolution: {integrity: sha512-FiOQ2Khm2REPQOkxkRPyTVyfPCUNecDopz1ZOKzZrZyCAzDqWiFYvdPwX/nYQrXY77/DBGcaLEsQ4/1BpG1bAg==}
     dev: true
 
   /electron-to-chromium@1.4.402:

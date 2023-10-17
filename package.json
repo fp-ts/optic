@@ -71,7 +71,7 @@
     "@effect-ts/build-utils": "0.40.7",
     "@effect-ts/core": "^0.60.5",
     "@effect/docgen": "^0.2.0",
-    "@effect/typeclass": "^0.10.0",
+    "@effect/typeclass": "^0.11.0",
     "@repo-tooling/eslint-plugin-dprint": "^0.0.4",
     "@types/benchmark": "^2.1.2",
     "@types/chai": "^4.3.4",
@@ -86,7 +86,7 @@
     "babel-plugin-annotate-pure-calls": "^0.4.0",
     "concurrently": "^8.0.1",
     "cpx": "^1.5.0",
-    "effect": "2.0.0-next.48",
+    "effect": "2.0.0-next.49",
     "eslint": "^8.37.0",
     "eslint-import-resolver-typescript": "^3.5.5",
     "eslint-plugin-codegen": "0.17.0",
@@ -108,7 +108,7 @@
     "vitest": "0.30.1"
   },
   "peerDependencies": {
-    "@effect/typeclass": "^0.10.0",
-    "effect": "^2.0.0-next.48"
+    "@effect/typeclass": "^0.11.0",
+    "effect": "2.0.0-next.49"
   }
 }
