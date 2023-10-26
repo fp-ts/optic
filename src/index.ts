@@ -8,6 +8,7 @@ import type { Predicate, Refinement } from "effect/Predicate"
 import * as ReadonlyArray from "effect/ReadonlyArray"
 import * as ReadonlyRecord from "effect/ReadonlyRecord"
 import * as S from "effect/Struct"
+import type { Simplify } from "effect/Types"
 
 const orElse: {
   <E1, E2, B>(
@@ -318,13 +319,13 @@ const at = <S, Key extends keyof S & (string | symbol)>(key: Key): Lens<S, S[Key
 
 const pick = <S, Keys extends readonly [keyof S, ...Array<keyof S>]>(
   ...keys: Keys
-): Lens<S, { readonly [K in Keys[number]]: S[K] }> =>
-  lens(S.pick(...keys), (a) => (s) => ({ ...s, ...a }))
+): Lens<S, Simplify<Pick<S, Keys[number]>>> =>
+  lens(S.pick(...keys), (a) => (s) => ({ ...s, ...a as any }))
 
 const omit = <S, Keys extends readonly [keyof S, ...Array<keyof S>]>(
   ...keys: Keys
-): Lens<S, { readonly [K in Exclude<keyof S, Keys[number]>]: S[K] }> =>
-  lens(S.omit(...keys), (a) => (s) => ({ ...s, ...a }))
+): Lens<S, Simplify<Omit<S, Keys[number]>>> =>
+  lens(S.omit(...keys), (a) => (s) => ({ ...s, ...a as any }))
 
 const filter: {
   <S extends A, B extends A, A = S>(
