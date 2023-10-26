@@ -1,6 +1,7 @@
 import * as Optic from "@fp-ts/optic"
 import * as ReadonlyArrayOptic from "@fp-ts/optic/data/ReadonlyArray"
 import { pipe } from "effect/Function"
+import { describe, expect, it } from "vitest"
 
 describe("ReadonlyArray", () => {
   it("consNonEmpty", () => {

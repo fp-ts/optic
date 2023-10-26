@@ -2,6 +2,7 @@ import * as HashMapOptic from "@fp-ts/optic/data/HashMap"
 import * as AtOptic from "@fp-ts/optic/typeclass/At"
 import { pipe } from "effect/Function"
 import * as HashMap from "effect/HashMap"
+import { describe, expect, it } from "vitest"
 
 describe("At", () => {
   it("remove", () => {

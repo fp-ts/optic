@@ -4,6 +4,7 @@ import { pipe } from "effect/Function"
 import * as O from "effect/Option"
 import type { Option } from "effect/Option"
 import * as String from "effect/String"
+import { describe, expect, it } from "vitest"
 
 describe("examples", () => {
   it("README", () => {

@@ -3,6 +3,7 @@ import * as E from "effect/Either"
 import { identity, pipe, unsafeCoerce } from "effect/Function"
 import * as O from "effect/Option"
 import { isString } from "effect/String"
+import { describe, expect, it } from "vitest"
 
 describe("index", () => {
   it("decode", () => {
