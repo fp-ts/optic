@@ -1,4 +1,4 @@
-import { pipe } from "@effect/data/Function"
+import { pipe } from "effect/Function"
 import type { Iso, Lens, Optional, PolyIso, PolyLens, PolyOptional, PolyPrism, Prism } from "@fp-ts/optic"
 
 interface S { s: string }
