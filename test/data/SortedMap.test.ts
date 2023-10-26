@@ -5,6 +5,7 @@ import { pipe } from "effect/Function"
 import * as O from "effect/Option"
 import * as SortedMap from "effect/SortedMap"
 import * as String from "effect/String"
+import { describe, expect, it } from "vitest"
 
 describe("SortedMap", () => {
   it("getAt", () => {

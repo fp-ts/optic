@@ -3,6 +3,7 @@ import * as EitherOptic from "@fp-ts/optic/data/Either"
 import * as E from "effect/Either"
 import { pipe } from "effect/Function"
 import * as O from "effect/Option"
+import { describe, expect, it } from "vitest"
 
 describe("prisms", () => {
   it("right", () => {

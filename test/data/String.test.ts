@@ -3,6 +3,7 @@ import * as StringOptic from "@fp-ts/optic/data/String"
 import * as E from "effect/Either"
 import { pipe } from "effect/Function"
 import * as O from "effect/Option"
+import { describe, expect, it } from "vitest"
 
 describe("string", () => {
   it("index", () => {

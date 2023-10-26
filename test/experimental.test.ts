@@ -3,6 +3,7 @@ import * as Optic from "@fp-ts/optic"
 import * as ExperimentalOptic from "@fp-ts/optic/experimental"
 import { pipe } from "effect/Function"
 import * as Option from "effect/Option"
+import { describe, expect, it } from "vitest"
 
 interface Street {
   num: number

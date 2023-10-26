@@ -1,5 +1,6 @@
 import * as Optic from "@fp-ts/optic"
 import * as BooleanOptic from "@fp-ts/optic/data/Boolean"
+import { describe, expect, it } from "vitest"
 
 describe("Boolean", () => {
   it("toggle", () => {

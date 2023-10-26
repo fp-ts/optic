@@ -75,7 +75,6 @@
     "@effect/typeclass": "^0.13.1",
     "@repo-tooling/eslint-plugin-dprint": "^0.0.4",
     "@types/benchmark": "^2.1.2",
-    "@types/chai": "^4.3.4",
     "@types/glob": "^8.1.0",
     "@types/jest": "^29.5.0",
     "@types/node": "^18.15.11",
