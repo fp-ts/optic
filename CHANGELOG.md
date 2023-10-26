@@ -1,5 +1,11 @@
 # @fp-ts/optic
 
+## 0.14.0
+
+### Minor Changes
+
+- [#57](https://github.com/fp-ts/optic/pull/57) [`209cac1`](https://github.com/fp-ts/optic/commit/209cac10f12cce86eec8ca9bdb5258e6c611d307) Thanks [@gcanti](https://github.com/gcanti)! - update effect and typeclass deps
+
 ## 0.13.0
 
 ### Minor Changes
