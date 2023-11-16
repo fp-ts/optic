@@ -1,5 +1,11 @@
 # @fp-ts/optic
 
+## 0.16.0
+
+### Minor Changes
+
+- [#62](https://github.com/fp-ts/optic/pull/62) [`ddd1c68`](https://github.com/fp-ts/optic/commit/ddd1c6894c2263d36077e0e248d7cea29faee9d1) Thanks [@gcanti](https://github.com/gcanti)! - update effect
+
 ## 0.15.0
 
 ### Minor Changes
