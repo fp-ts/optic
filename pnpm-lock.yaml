@@ -33,8 +33,8 @@ devDependencies:
     specifier: ^0.0.3
     version: 0.0.3(typescript@5.1.6)
   '@effect/typeclass':
-    specifier: ^0.14.1
-    version: 0.14.1(effect@2.0.0-next.54)
+    specifier: ^0.15.0
+    version: 0.15.0(effect@2.0.0-next.55)
   '@repo-tooling/eslint-plugin-dprint':
     specifier: ^0.0.4
     version: 0.0.4(typescript@5.1.6)
@@ -75,8 +75,8 @@ devDependencies:
     specifier: ^1.5.0
     version: 1.5.0
   effect:
-    specifier: 2.0.0-next.54
-    version: 2.0.0-next.54
+    specifier: 2.0.0-next.55
+    version: 2.0.0-next.55
   eslint:
     specifier: ^8.37.0
     version: 8.41.0
@@ -677,12 +677,12 @@ packages:
       typescript: 5.1.6
     dev: true
 
-  /@effect/typeclass@0.14.1(effect@2.0.0-next.54):
-    resolution: {integrity: sha512-dvZ5ADeuEZoMkNVL8LPbw4IYSoq+c9TmphMiGCnqnuLKkuPmEFi+ShqXBY8cA/tbKi7mbHJ5N+T14QInyUrwGw==}
+  /@effect/typeclass@0.15.0(effect@2.0.0-next.55):
+    resolution: {integrity: sha512-4ow25i4n4EaJGElAQNA66ZLquqU32cV+B9RAaSZe7FHATsJFgkmeRK6aF/a0EwLuwrWo2wnzP57UhiP6uVAtKw==}
     peerDependencies:
-      effect: 2.0.0-next.54
+      effect: 2.0.0-next.55
     dependencies:
-      effect: 2.0.0-next.54
+      effect: 2.0.0-next.55
     dev: true
 
   /@esbuild/android-arm64@0.17.19:
@@ -2683,8 +2683,8 @@ packages:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
     dev: true
 
-  /effect@2.0.0-next.54:
-    resolution: {integrity: sha512-qROhKMxlm6fpa90YRfWSgKeelDfhaDq2igPK+pIKupGehiCnZH4vd2qrY71HVZ10qZgXxh0VXpGyDQxJC+EQqw==}
+  /effect@2.0.0-next.55:
+    resolution: {integrity: sha512-kNOB/HaDSdaFSDVXK2gyf4XcTKbKKlllyoS871uDyoJskcc+024sSOHnNioXZPgkqaz55a3mad4DFfLUIETwYQ==}
     dev: true
 
   /electron-to-chromium@1.4.402:
