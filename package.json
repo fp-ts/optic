@@ -71,7 +71,7 @@
     "@effect-ts/build-utils": "0.40.7",
     "@effect-ts/core": "^0.60.5",
     "@effect/docgen": "^0.2.0",
-    "@effect/dtslint": "^0.0.3",
+    "@effect/dtslint": "^0.0.4",
     "@effect/typeclass": "^0.16.0",
     "@repo-tooling/eslint-plugin-dprint": "^0.0.4",
     "@types/benchmark": "^2.1.2",
@@ -101,7 +101,7 @@
     "prettier": "^2.8.7",
     "rimraf": "^4.4.1",
     "ts-node": "^10.9.1",
-    "typescript": "^5.1.6",
+    "typescript": "^5.3.2",
     "ultra-runner": "^3.10.5",
     "vite": "^4.3.1",
     "vitest": "0.30.1"
