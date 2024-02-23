@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest"
 
 describe("prisms", () => {
   it("right", () => {
-    const _right = Optic.id<E.Either<string, number>>()
+    const _right = Optic.id<E.Either<number, string>>()
       .compose(EitherOptic.right())
 
     expect(pipe(E.right(1), Optic.getOption(_right))).toEqual(O.some(1))
@@ -19,7 +19,7 @@ describe("prisms", () => {
   })
 
   it("left", () => {
-    const _left = Optic.id<E.Either<string, number>>()
+    const _left = Optic.id<E.Either<number, string>>()
       .compose(EitherOptic.left())
 
     expect(pipe(E.left("e"), Optic.getOption(_left))).toEqual(O.some("e"))
