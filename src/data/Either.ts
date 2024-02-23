@@ -11,10 +11,10 @@ import * as Either from "effect/Either"
  * @since 1.0.0
  */
 export const right: {
-  <E, A>(): Prism<Either.Either<E, A>, A>
-  <E, A, B>(): PolyPrism<Either.Either<E, A>, Either.Either<E, B>, A, B>
-} = <E, A>() =>
-  Optic.prism<Either.Either<E, A>, A>(
+  <A, E>(): Prism<Either.Either<A, E>, A>
+  <A, E, B>(): PolyPrism<Either.Either<A, E>, Either.Either<B, E>, A, B>
+} = <A, E>() =>
+  Optic.prism<Either.Either<A, E>, A>(
     Either.mapLeft(() => new Error("Expected a Right")),
     Either.right
   )
@@ -25,10 +25,10 @@ export const right: {
  * @since 1.0.0
  */
 export const left: {
-  <E, A>(): Prism<Either.Either<E, A>, E>
-  <E, A, B>(): PolyPrism<Either.Either<E, A>, Either.Either<B, A>, E, B>
-} = <E, A>() =>
-  Optic.prism<Either.Either<E, A>, E>(
+  <A, E>(): Prism<Either.Either<A, E>, E>
+  <A, E, B>(): PolyPrism<Either.Either<A, E>, Either.Either<A, B>, E, B>
+} = <A, E>() =>
+  Optic.prism<Either.Either<A, E>, E>(
     Either.match({
       onLeft: Either.right,
       onRight: () => Either.left(new Error("Expected a Left"))
