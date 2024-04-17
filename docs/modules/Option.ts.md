@@ -1,6 +1,6 @@
 ---
-title: data/Option.ts
-nav_order: 6
+title: Option.ts
+nav_order: 8
 parent: Modules
 ---
 

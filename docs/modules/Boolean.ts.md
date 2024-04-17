@@ -1,6 +1,6 @@
 ---
-title: data/Boolean.ts
-nav_order: 1
+title: Boolean.ts
+nav_order: 2
 parent: Modules
 ---
 

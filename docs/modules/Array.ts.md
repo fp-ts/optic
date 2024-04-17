@@ -1,10 +1,10 @@
 ---
-title: data/ReadonlyArray.ts
-nav_order: 7
+title: Array.ts
+nav_order: 1
 parent: Modules
 ---
 
-## ReadonlyArray overview
+## Array overview
 
 Added in v1.0.0
 

@@ -1,5 +1,5 @@
 import * as Optic from "@fp-ts/optic"
-import * as HashMapOptic from "@fp-ts/optic/data/HashMap"
+import * as HashMapOptic from "@fp-ts/optic/HashMap"
 import * as AtOptic from "@fp-ts/optic/typeclass/At"
 import { Either, Equal, HashMap, Option, pipe } from "effect"
 import { describe, expect, it } from "vitest"

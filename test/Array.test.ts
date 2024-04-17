@@ -1,11 +1,11 @@
 import * as Optic from "@fp-ts/optic"
-import * as ReadonlyArrayOptic from "@fp-ts/optic/data/ReadonlyArray"
+import * as ArrayOptic from "@fp-ts/optic/Array"
 import { pipe } from "effect/Function"
 import { describe, expect, it } from "vitest"
 
-describe("ReadonlyArray", () => {
+describe("Array", () => {
   it("consNonEmpty", () => {
-    const iso = ReadonlyArrayOptic.consNonEmpty<number>()
+    const iso = ArrayOptic.consNonEmpty<number>()
     expect(pipe([1], Optic.get(iso))).toEqual([1, []])
     expect(pipe([1, [2, 3]], Optic.encode(iso))).toEqual([1, 2, 3])
   })

@@ -1,5 +1,5 @@
 import * as Optic from "@fp-ts/optic"
-import * as ChunkOptic from "@fp-ts/optic/data/Chunk"
+import * as ChunkOptic from "@fp-ts/optic/Chunk"
 import { Chunk, Either, Equal, Option, pipe } from "effect"
 import { describe, expect, it } from "vitest"
 

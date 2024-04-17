@@ -4,8 +4,8 @@
 
 import type { Iso, PolyIso } from "@fp-ts/optic"
 import * as Optic from "@fp-ts/optic"
-import type { NonEmptyReadonlyArray } from "effect/ReadonlyArray"
-import * as ReadonlyArray from "effect/ReadonlyArray"
+import type { NonEmptyReadonlyArray } from "effect/Array"
+import * as Array from "effect/Array"
 
 /**
  * An optic that accesses the `Cons` case of a `NonEmptyReadonlyArray`.
@@ -23,6 +23,6 @@ export const consNonEmpty: {
   >
 } = <A>() =>
   Optic.iso<NonEmptyReadonlyArray<A>, readonly [A, ReadonlyArray<A>]>(
-    (s) => [ReadonlyArray.headNonEmpty(s), ReadonlyArray.tailNonEmpty(s)],
-    ([head, tail]) => ReadonlyArray.prepend(head)(tail)
+    (s) => [Array.headNonEmpty(s), Array.tailNonEmpty(s)],
+    ([head, tail]) => Array.prepend(head)(tail)
   )

@@ -1,6 +1,6 @@
 ---
-title: data/Either.ts
-nav_order: 4
+title: Either.ts
+nav_order: 5
 parent: Modules
 ---
 
@@ -28,8 +28,8 @@ An optic that accesses the `Left` case of an `Either`.
 
 ```ts
 export declare const left: {
-  <E, A>(): Prism<Either.Either<E, A>, E>
-  <E, A, B>(): PolyPrism<Either.Either<E, A>, Either.Either<B, A>, E, B>
+  <A, E>(): Prism<Either.Either<A, E>, E>
+  <A, E, B>(): PolyPrism<Either.Either<A, E>, Either.Either<A, B>, E, B>
 }
 ```
 
@@ -43,8 +43,8 @@ An optic that accesses the `Right` case of an `Either`.
 
 ```ts
 export declare const right: {
-  <E, A>(): Prism<Either.Either<E, A>, A>
-  <E, A, B>(): PolyPrism<Either.Either<E, A>, Either.Either<E, B>, A, B>
+  <A, E>(): Prism<Either.Either<A, E>, A>
+  <A, E, B>(): PolyPrism<Either.Either<A, E>, Either.Either<B, E>, A, B>
 }
 ```
 

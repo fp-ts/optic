@@ -1,5 +1,5 @@
 import * as Optic from "@fp-ts/optic"
-import * as StringOptic from "@fp-ts/optic/data/String"
+import * as StringOptic from "@fp-ts/optic/String"
 import { pipe } from "effect/Function"
 import * as O from "effect/Option"
 import type { Option } from "effect/Option"

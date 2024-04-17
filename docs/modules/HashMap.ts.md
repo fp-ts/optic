@@ -1,10 +1,10 @@
 ---
-title: data/SortedMap.ts
-nav_order: 8
+title: HashMap.ts
+nav_order: 6
 parent: Modules
 ---
 
-## SortedMap overview
+## HashMap overview
 
 Added in v1.0.0
 
@@ -25,7 +25,7 @@ Added in v1.0.0
 **Signature**
 
 ```ts
-export declare const getAt: <K, A>() => At<SortedMap.SortedMap<K, A>, K, Option.Option<A>>
+export declare const getAt: <K, A>() => At<HashMap.HashMap<K, A>, K, Option.Option<A>>
 ```
 
 Added in v1.0.0
@@ -35,7 +35,7 @@ Added in v1.0.0
 **Signature**
 
 ```ts
-export declare const getIndex: <K, A>() => Index<SortedMap.SortedMap<K, A>, K, A>
+export declare const getIndex: <K, A>() => Index<HashMap.HashMap<K, A>, K, A>
 ```
 
 Added in v1.0.0
