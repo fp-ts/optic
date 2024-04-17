@@ -1,5 +1,27 @@
 # @fp-ts/optic
 
+## 0.24.0
+
+### Minor Changes
+
+- [#80](https://github.com/fp-ts/optic/pull/80) [`9a4392c`](https://github.com/fp-ts/optic/commit/9a4392c3e4af7d8de168f9031c0046cb6da98aac) Thanks [@gcanti](https://github.com/gcanti)! - - update to effect 3.0.0
+
+  - remove `experimental` module
+  - rename `ReadonlyArray` module to `Array`
+  - remove `data` folder:
+
+    Before
+
+    ```ts
+    import * as StringOptic from "@fp-ts/optic/data/String";
+    ```
+
+    Now
+
+    ```ts
+    import * as StringOptic from "@fp-ts/optic/String";
+    ```
+
 ## 0.23.0
 
 ### Minor Changes
