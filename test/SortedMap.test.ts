@@ -1,5 +1,5 @@
 import * as Optic from "@fp-ts/optic"
-import * as SortedMapOptic from "@fp-ts/optic/data/SortedMap"
+import * as SortedMapOptic from "@fp-ts/optic/SortedMap"
 import * as AtOptic from "@fp-ts/optic/typeclass/At"
 import { pipe } from "effect/Function"
 import * as O from "effect/Option"

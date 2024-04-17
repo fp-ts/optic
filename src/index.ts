@@ -1,12 +1,12 @@
 /**
  * @since 1.0.0
  */
+import * as Array from "effect/Array"
 import * as Either from "effect/Either"
 import { identity, pipe } from "effect/Function"
 import * as Option from "effect/Option"
 import type { Predicate, Refinement } from "effect/Predicate"
-import * as ReadonlyArray from "effect/ReadonlyArray"
-import * as ReadonlyRecord from "effect/ReadonlyRecord"
+import * as Record from "effect/Record"
 import * as Struct from "effect/Struct"
 
 /**
@@ -161,7 +161,7 @@ export interface Optic<
    * @since 1.0.0
    */
   key<S, A>(
-    this: Optional<S, ReadonlyRecord.ReadonlyRecord<string, A>>,
+    this: Optional<S, Record.ReadonlyRecord<string, A>>,
     key: string
   ): Optional<S, A>
 }
@@ -329,30 +329,30 @@ const index = <A>(i: number): Optional<ReadonlyArray<A>, A> =>
     (s) =>
       pipe(
         s,
-        ReadonlyArray.get(i),
+        Array.get(i),
         Either.fromOption(() => new Error(`Missing index ${i}`))
       ),
     (a) =>
       (s) =>
         pipe(
-          ReadonlyArray.replaceOption(i, a)(s),
+          Array.replaceOption(i, a)(s),
           Either.fromOption(() => new Error(`Missing index ${i}`))
         )
   )
 
-const key = <A>(key: string): Optional<ReadonlyRecord.ReadonlyRecord<string, A>, A> =>
+const key = <A>(key: string): Optional<Record.ReadonlyRecord<string, A>, A> =>
   optional(
     (s) =>
       pipe(
         s,
-        ReadonlyRecord.get(key),
+        Record.get(key),
         Either.fromOption(() => new Error(`Missing key ${JSON.stringify(key)}`))
       ),
     (a) =>
       (s) =>
         pipe(
           s,
-          ReadonlyRecord.replaceOption(key, a),
+          Record.replaceOption(key, a),
           Either.fromOption(() => new Error(`Missing key ${JSON.stringify(key)}`))
         )
   )
@@ -519,7 +519,7 @@ export const cons: {
 } = <A>() =>
   prism<ReadonlyArray<A>, readonly [A, ReadonlyArray<A>]>(
     (s) =>
-      ReadonlyArray.isNonEmptyReadonlyArray(s) ?
+      Array.isNonEmptyReadonlyArray(s) ?
         Either.right([s[0], s.slice(1)]) :
         Either.left(new Error("Expected a non empty array")),
     ([head, tail]) => [head, ...tail]
@@ -642,7 +642,7 @@ export const findFirst: {
     (s) =>
       pipe(
         s,
-        ReadonlyArray.findFirst(predicate),
+        Array.findFirst(predicate),
         Either.fromOption(() =>
           new Error(message ?? "Expected a value satisfying the specified predicate")
         )
@@ -651,7 +651,7 @@ export const findFirst: {
       (s) =>
         pipe(
           s,
-          ReadonlyArray.findFirstIndex(predicate),
+          Array.findFirstIndex(predicate),
           Either.fromOption(() =>
             new Error(message ?? "Expected a value satisfying the specified predicate")
           ),

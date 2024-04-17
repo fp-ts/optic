@@ -51,7 +51,7 @@ If you also want to **become a sponsor** to ensure this library continues to imp
 
 ## Requirements
 
-- TypeScript 5.0 or newer
+- TypeScript 5.4 or newer
 - The `strict` flag enabled in your `tsconfig.json` file
 
 ```
@@ -85,11 +85,11 @@ import * as Optic from "@fp-ts/optic";
 Let's say we have an employee and we need to upper case the first character of his company street name.
 
 ```ts
-import * as O from "effect/Option";
+import * as Option from "effect/Option";
 
 interface Street {
   readonly num: number;
-  readonly name: O.Option<string>;
+  readonly name: Option.Option<string>;
 }
 interface Address {
   readonly city: string;
@@ -112,7 +112,7 @@ const from: Employee = {
       city: "london",
       street: {
         num: 23,
-        name: O.some("high street"),
+        name: Option.some("high street"),
       },
     },
   },
@@ -126,7 +126,7 @@ const to: Employee = {
       city: "london",
       street: {
         num: 23,
-        name: O.some("High street"),
+        name: Option.some("High street"),
       },
     },
   },
@@ -137,8 +137,9 @@ Let's see what could we do with `@fp-ts/optic`
 
 ```ts
 import * as Optic from "@fp-ts/optic";
-import * as StringOptic from "@fp-ts/optic/data/String";
+import * as StringOptic from "@fp-ts/optic/String";
 import * as String from "effect/String";
+import * as assert from "node:assert";
 
 const _firstChar: Optic.Optional<Employee, string> = Optic.id<Employee>()
   .at("company")
@@ -150,7 +151,7 @@ const _firstChar: Optic.Optional<Employee, string> = Optic.id<Employee>()
 
 const capitalizeName = Optic.modify(_firstChar)(String.toUpperCase);
 
-expect(capitalizeName(from)).toEqual(to);
+assert.deepStrictEqual(capitalizeName(from), to);
 ```
 
 # Understanding Optics
@@ -165,7 +166,7 @@ export interface Optic<
   out GetError,
   out SetError,
   out GetPiece,
-  out SetWholeAfter
+  out SetWholeAfter,
 > {
   readonly getOptic: (
     GetWhole: GetWhole
@@ -532,19 +533,19 @@ The `some` method is a utility function that creates an optic that focuses on th
 
 ```ts
 import { pipe } from "effect";
-import * as O from "effect/Option";
+import * as Option from "effect/Option";
 import * as Optic from "@fp-ts/optic";
 
 // This creates a prism that focuses on the 'Some' case of the 'Option<number>' object.
-const _some: Optic.Prism<O.Option<number>, number> = Optic.id<
-  O.Option<number>
+const _some: Optic.Prism<Option.Option<number>, number> = Optic.id<
+  Option.Option<number>
 >().some();
 
-const option: O.Option<number> = O.some(42);
+const option: Option.Option<number> = Option.some(42);
 
-const result: O.Option<number> = pipe(option, Optic.getOption(_some)); // returns some(42)
+const result: Option.Option<number> = pipe(option, Optic.getOption(_some)); // returns some(42)
 
-const updated: O.Option<number> = pipe(option, Optic.replace(_some)(23)); // returns some(23)
+const updated: Option.Option<number> = pipe(option, Optic.replace(_some)(23)); // returns some(23)
 ```
 
 ## index

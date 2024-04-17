@@ -1,6 +1,6 @@
 ---
 title: index.ts
-nav_order: 11
+nav_order: 7
 parent: Modules
 ---
 
@@ -157,8 +157,8 @@ Added in v1.0.0
 
 ```ts
 export declare const optional: <S, A>(
-  decode: (s: S) => Either.Either<Error, A>,
-  replaceEither: (a: A) => (s: S) => Either.Either<Error, S>
+  decode: (s: S) => Either.Either<A, Error>,
+  replaceEither: (a: A) => (s: S) => Either.Either<S, Error>
 ) => Optional<S, A>
 ```
 
@@ -170,8 +170,8 @@ Added in v1.0.0
 
 ```ts
 export declare const polyOptional: <S, T, A, B>(
-  polyDecode: (s: S) => Either.Either<readonly [Error, T], A>,
-  polyReplaceEither: (b: B) => (s: S) => Either.Either<readonly [Error, T], T>
+  polyDecode: (s: S) => Either.Either<A, readonly [Error, T]>,
+  polyReplaceEither: (b: B) => (s: S) => Either.Either<T, readonly [Error, T]>
 ) => PolyOptional<S, T, A, B>
 ```
 
@@ -183,7 +183,7 @@ Added in v1.0.0
 
 ```ts
 export declare const polyPrism: <S, T, A, B>(
-  polyDecode: (s: S) => Either.Either<readonly [Error, T], A>,
+  polyDecode: (s: S) => Either.Either<A, readonly [Error, T]>,
   encode: (b: B) => T
 ) => PolyPrism<S, T, A, B>
 ```
@@ -196,8 +196,8 @@ Added in v1.0.0
 
 ```ts
 export declare const polyTraversal: <S, T, A, B>(
-  decode: (s: S) => Either.Either<readonly [Error, T], readonly A[]>,
-  replace: (bs: readonly B[]) => (s: S) => Either.Either<readonly [Error, T], T>
+  decode: (s: S) => Either.Either<readonly A[], readonly [Error, T]>,
+  replace: (bs: readonly B[]) => (s: S) => Either.Either<T, readonly [Error, T]>
 ) => PolyTraversal<S, T, A, B>
 ```
 
@@ -208,7 +208,7 @@ Added in v1.0.0
 **Signature**
 
 ```ts
-export declare const prism: <S, A>(decode: (s: S) => Either.Either<Error, A>, encode: (a: A) => S) => Prism<S, A>
+export declare const prism: <S, A>(decode: (s: S) => Either.Either<A, Error>, encode: (a: A) => S) => Prism<S, A>
 ```
 
 Added in v1.0.0
@@ -244,8 +244,8 @@ Added in v1.0.0
 
 ```ts
 export declare const traversal: <S, A>(
-  decode: (s: S) => Either.Either<Error, readonly A[]>,
-  replace: (as: readonly A[]) => (s: S) => Either.Either<Error, S>
+  decode: (s: S) => Either.Either<readonly A[], Error>,
+  replace: (as: readonly A[]) => (s: S) => Either.Either<S, Error>
 ) => Traversal<S, A>
 ```
 
@@ -307,10 +307,10 @@ export interface Optic<
   out GetPiece,
   out SetWholeAfter
 > {
-  readonly getOptic: (GetWhole: GetWhole) => Either.Either<readonly [GetError, SetWholeAfter], GetPiece>
+  readonly getOptic: (GetWhole: GetWhole) => Either.Either<GetPiece, readonly [GetError, SetWholeAfter]>
   readonly setOptic: (
     SetPiece: SetPiece
-  ) => (SetWholeBefore: SetWholeBefore) => Either.Either<readonly [SetError, SetWholeAfter], SetWholeAfter>
+  ) => (SetWholeBefore: SetWholeBefore) => Either.Either<SetWholeAfter, readonly [SetError, SetWholeAfter]>
 
   /**
    * @since 1.0.0
@@ -416,7 +416,7 @@ export interface Optic<
    *
    * @since 1.0.0
    */
-  key<S, A>(this: Optional<S, ReadonlyRecord.ReadonlyRecord<A>>, key: string): Optional<S, A>
+  key<S, A>(this: Optional<S, Record.ReadonlyRecord<string, A>>, key: string): Optional<S, A>
 }
 ```
 
@@ -548,7 +548,7 @@ Added in v1.0.0
 **Signature**
 
 ```ts
-export declare const decode: <S, T, A, B>(optic: PolyPrism<S, T, A, B>) => (GetWhole: S) => Either.Either<Error, A>
+export declare const decode: <S, T, A, B>(optic: PolyPrism<S, T, A, B>) => (GetWhole: S) => Either.Either<A, Error>
 ```
 
 Added in v1.0.0
@@ -588,7 +588,7 @@ Added in v1.0.0
 **Signature**
 
 ```ts
-export declare const getOrModify: <S, T, A, B>(optic: PolyOptional<S, T, A, B>) => (s: S) => Either.Either<T, A>
+export declare const getOrModify: <S, T, A, B>(optic: PolyOptional<S, T, A, B>) => (s: S) => Either.Either<A, T>
 ```
 
 Added in v1.0.0
@@ -610,7 +610,7 @@ Added in v1.0.0
 ```ts
 export declare const polyReversedPrism: <S, T, A, B>(
   get: (s: S) => A,
-  polyReplaceEither: (b: B) => (s: S) => Either.Either<readonly [Error, T], T>
+  polyReplaceEither: (b: B) => (s: S) => Either.Either<T, readonly [Error, T]>
 ) => PolyReversedPrism<S, T, A, B>
 ```
 
@@ -643,7 +643,7 @@ Added in v1.0.0
 ```ts
 export declare const reversedPrism: <S, A>(
   get: (s: S) => A,
-  replaceEither: (a: A) => Either.Either<Error, S>
+  replaceEither: (a: A) => Either.Either<S, Error>
 ) => ReversedPrism<S, A>
 ```
 

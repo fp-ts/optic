@@ -1,5 +1,5 @@
 import * as Optic from "@fp-ts/optic"
-import * as EitherOptic from "@fp-ts/optic/data/Either"
+import * as EitherOptic from "@fp-ts/optic/Either"
 import * as E from "effect/Either"
 import { pipe } from "effect/Function"
 import * as O from "effect/Option"
