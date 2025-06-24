@@ -32,23 +32,6 @@ flowchart TD
 - **Unified Representation Of Optics**. All optics compose the same way because they are all instances of the same data type (`Optic`)
 - **Integration**. Built-in optics for `effect` data structures, like `Option` and `Either`.
 
-## Introduction
-
-`@fp-ts/optic` is a library that makes it easy to modify parts of larger data structures based on a single representation of an optic as a combination of a getter and setter.
-
-`@fp-ts/optic` features a unified representation of optics, deep `effect` integration, helpful error messages.
-
-# Credits and sponsorship
-
-This library was inspired by the following projects:
-
-- [zio-optics](https://github.com/zio/zio-optics)
-- [monocle-ts](https://github.com/gcanti/monocle-ts)
-
-A huge thanks to my sponsors who made the development of `@fp-ts/optic` possible.
-
-If you also want to **become a sponsor** to ensure this library continues to improve and receive maintenance, check out my [GitHub Sponsors profile](https://github.com/sponsors/gcanti?o=sd&sc=t)
-
 ## Requirements
 
 - TypeScript 5.4 or newer
@@ -71,8 +54,6 @@ To install the **alpha** version:
 ```
 npm install @fp-ts/optic
 ```
-
-**Warning**. This package is primarily published to receive early feedback and for contributors, during this development phase we cannot guarantee the stability of the APIs, consider each release to contain breaking changes.
 
 Once you have installed the library, you can import the necessary types and functions from the `@fp-ts/optic` module.
 
@@ -600,6 +581,13 @@ const updatedData: Data = pipe(data, Optic.replace(_foo)(10)); // returns { foo:
 # Documentation
 
 - [API Reference](https://fp-ts.github.io/optic/)
+
+# Credits
+
+This library was inspired by the following projects:
+
+- [zio-optics](https://github.com/zio/zio-optics)
+- [monocle-ts](https://github.com/gcanti/monocle-ts)
 
 # License
 
